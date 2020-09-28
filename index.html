@@ -1,0 +1,96 @@
+<meta charset="utf-8"/>
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, user-scalable=no">
+    <link rel="manifest" href="/manifest.json">
+
+    <title>Online Experiment</title>
+
+    <link rel="shortcut icon" href="images/favicon-ens.png" type="image/x-icon">
+
+    <!-- CSS libraries -->
+    <link rel='stylesheet' type='text/css' href='lib/css/bootstrap-theme.min.css' media="screen"/>
+    <link rel='stylesheet' type='text/css' href='lib/css/bootstrap.min.css' media="screen"/>
+    <link rel='stylesheet' type='text/css' href='lib/css/font-awesome.min.css'/>
+
+
+    <!-- JS libraries  -->
+    <script src="lib/js/slider.js"></script>
+    <script src="lib/js/pleaserotate.min.js"></script>
+    <script src="lib/js/math.min.js"></script>
+    <script src="lib/js/jquery-3.4.1.min.js"></script>
+    <script src="lib/js/popper.js"></script>
+    <script src="lib/js/bootstrap.min.js"></script>
+
+    <!-- JS our scripts -->
+    <script src="js/app.js" type="module" crossorigin="anonymous"></script>
+
+    <!-- CSS our scripts -->
+    <link rel='stylesheet' type='text/css' href='main.css' media="screen"/>
+
+    <!--<link rel="shortcut icon" href="game/TemplateData/favicon.ico">-->
+    <script src="game/TemplateData/UnityProgress.js"></script>
+    <script src="game/Build/UnityLoader.js"></script>
+    <script>
+    </script>
+
+
+
+</head>
+
+<body>
+
+<!--- Timeline of the experiment ---------------------->
+<div class="md-stepper-horizontal green" id="timeline">
+    <div class="md-step active" id="instructions">
+        <div class="md-step-circle"></div>
+        <div class="md-step-title">Introduction</div>
+        <div class="md-step-bar-left"></div>
+        <div class="md-step-bar-right"></div>
+    </div>
+<!--    <div class="md-step" id="training">-->
+<!--        <div class="md-step-circle"></div>-->
+<!--        <div class="md-step-title">Training</div>-->
+<!--        <div class="md-step-bar-left"></div>-->
+<!--        <div class="md-step-bar-right"></div>-->
+<!--    </div>-->
+    <div class="md-step" id="experiment">
+        <div class="md-step-circle"></div>
+        <div class="md-step-title">Experiment</div>
+        <div class="md-step-bar-left"></div>
+        <div class="md-step-bar-right"></div>
+    </div>
+    <div class="md-step" id="questionnaire">
+        <div class="md-step-circle"></div>
+        <div class="md-step-title">Questionnaire</div>
+        <div class="md-step-bar-left"></div>
+        <div class="md-step-bar-right"></div>
+    </div>
+</div>
+<!-------------------------------------------------->
+
+<!--- Text Panel ------------ ---------------------->
+<div class="card" id="panel">
+    <div class="card-header" id="panel-title"></div>
+    <div id="card-content" class="card-content">
+    </div>
+    <!--<div class="card-wrapper">
+    <div id="card-content" class="card-content">
+        </div>
+    </div>-->
+</div>
+<!-------------------------------------------------->
+
+<!--- Game container ----------------------------------->
+<div id='game' style="display: none">
+    <!--<div id="Stage"></div>-->
+</div>
+<!-------------------------------------------------->
+
+<!--- Modal Window ----------------------------------->
+<div id='Modal' style="display: none;"></div>
+ <!-------------------------------------------------->
+
+<body>
