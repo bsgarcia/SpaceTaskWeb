@@ -76,7 +76,7 @@ export class GUI {
 
     static panelInsertGame() {
         this.panelSetTitle('Experiment');
-        $('#card-content').html(`
+        $('#').html(`
         <div class="webgl-content">
                 <div id="unityContainer" ></div>
                 <div class="footer">

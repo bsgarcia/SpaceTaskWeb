@@ -12,7 +12,7 @@ export class Game {
         GUI.panelSetTitle('Experiment');
         GUI.panelInsertGame()
         window.unityInstance = UnityLoader.instantiate(
-            "unityContainer", "game/Build/game.json", {onProgress: UnityProgress});
+            "unityContainer", "game2/Build/game.json", {onProgress: UnityProgress});
         GUI.panelInsertButton({value:'Next', id:'next',
             clickArgs: {obj: this},
             clickFunc: function (event) {
