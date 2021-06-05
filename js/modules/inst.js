@@ -307,7 +307,7 @@ export class Instructions {
         GUI.setActiveCurrentStep('feedback');
         GUI.panelSetTitle('Thanks! Any feedback?');
         GUI.panelInsertParagraph('You won <b>' + score + '</b> points!\n Thanks for your participation!\n'
-        + 'We hope you enjoyed this game. Also, if you have any feedback to provide us with, don\'t hesitate to fill the field below, we\'d be very grateful.\n' +
+        + 'We hope you enjoyed this game. Also, if you have any feedback to provide us with, don\'t hesitate to fill the field below, we\'d be very grateful.\n\n' +
             'Best regards,\n' +
             'The Human Reinforcement Learning Team.');
         GUI.panelInsertParagraphTitle('Feedback');
