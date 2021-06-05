@@ -311,7 +311,7 @@ export class Instructions {
             'Best regards,\n' +
             'The Human Reinforcement Learning Team.');
         GUI.panelInsertParagraphTitle('Feedback');
-        GUI.panelInsertInput({maxlength: 3000, size: 400, id: "feedbackField", value: ''});
+        GUI.panelInsertTextArea({maxlength: 3000, size: 400, id: "feedbackField", value: ''});
         GUI.panelInsertButton({
             id: "toSendFeedback", value: "Send!",
             clickArgs: {obj: this},
