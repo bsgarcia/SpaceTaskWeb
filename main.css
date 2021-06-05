@@ -14,7 +14,7 @@
 
 #feedbackField:focus {
     outline: none !important;
-    box-shadow: 0 0 6px rgba(7, 7, 7, .2);
+    box-shadow: 0 0 3px rgba(7, 7, 7, .2);
 }
 
 .main {
