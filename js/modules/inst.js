@@ -1,5 +1,6 @@
 import {GUI} from './gui.js';
 import {sendToDB} from "./request.js";
+import {randint} from "./utils.js";
 
 
 export class Instructions {
@@ -37,7 +38,7 @@ export class Instructions {
         // prolific id is 24 characters
         GUI.panelSetTitle('ID confirmation');
         GUI.panelInsertParagraph('Please enter a pseudo.');
-        GUI.panelInsertInput({maxlength: 24, size: 24, id: "ID", value: this.exp.subID});
+        GUI.panelInsertInput({maxlength: 24, size: 24, id: "ID", value: 'player' + randint(0, 99999999999)});
         GUI.panelInsertButton({
             id: "toConsent", value: "Next",
             clickArgs: {obj: this},
@@ -124,12 +125,12 @@ export class Instructions {
         GUI.panelSetTitle('General Instructions');
 
         let text = {
-            1: 'In this mini-game, you play a spaceship from the Rebel-Alliance trying to escape from the Empire Fleet.\n' +
+            1: 'In this mini-game, you play a spaceship from the Rebel-Alliance trying to escape from the Empire Fleet.\n\n' +
                 ' On your way, you encounter several waves of asteroids. Those asteroids have different colors, which represent' +
-                ' different probabities of reward. Your objective is to maximize your score by shooting the right target in' +
-                ' different pairs of asteroids.\nTo do so, you will be able to move your ship using arrow keys, and shoot using your space key.' +
-                ' Please note that sometimes, after you shoot an asteroid, the reward associated to the other asteroid will also be displayed.' +
-                'However the latter will be displayed in grey, and does not affect your score.\n' +
+                ' different rewards. <b>Your objective is to maximize your score by shooting the right target within' +
+                ' different pairs of asteroids</b>.\n\nTo do so, you will be able to move your ship using arrow keys, and shoot using your space key.' +
+                '\n <b>Please note that sometimes, after you shoot an asteroid, the reward associated to the other asteroid will also be displayed.</b>' +
+                ' However the latter will be displayed in <b>grey</b>, and does <b>not</b> affect your score.\n' +
                 'Good luck!'
         };
 
@@ -167,18 +168,18 @@ export class Instructions {
                     pageNum++;
                     GUI.panelSetParagraph(text[pageNum]);
                 } else {
-                    if (event.data.obj.exp.online) {
-                        sendToDB(0,
-                            {
-                                expID: event.data.obj.exp.expID,
-                                id: event.data.obj.exp.subID,
-                                exp: event.data.obj.exp.expName,
-                                browser: event.data.obj.exp.browsInfo,
-                                conversionRate: event.data.obj.exp.conversionRate
-                            },
-                            'php/InsertExpDetails.php'
-                        );
-                    }
+                    // if (event.data.obj.exp.online) {
+                    //     sendToDB(0,
+                    //         {
+                    //             expID: event.data.obj.exp.expID,
+                    //             id: event.data.obj.exp.subID,
+                    //             exp: event.data.obj.exp.expName,
+                    //             browser: event.data.obj.exp.browsInfo,
+                    //             conversionRate: event.data.obj.exp.conversionRate
+                    //         },
+                    //         'php/InsertExpDetails.php'
+                    //     );
+                    // }
                     nextFunc(nextParams);
                 }
             }
@@ -284,7 +285,6 @@ export class Instructions {
 
         GUI.initGameStageDiv();
 
-        let points = window.score;
         let pence = this.exp.pointsToPence(points).toFixed(2);
         let pounds = this.exp.pointsToPounds(points).toFixed(2);
 
@@ -296,6 +296,43 @@ export class Instructions {
             'Thank you for playing!<br><br><a href="' + this.exp.compLink + '">Please click the link to complete this study</a><br></h3><br>';
 
         $('#TextBoxDiv').html(Title);
+    }
+
+    endExperimentWithFeedback() {
+
+        let score = window.score;
+
+        GUI.panelFlush();
+        GUI.panelShow();
+        GUI.setActiveCurrentStep('feedback');
+        GUI.panelSetTitle('Thanks! Any feedback?');
+        GUI.panelInsertParagraph('Wow you won' + score + ' points! Thanks for your participation!\n'
+        + 'We hope you enjoyed this game. Also, if you have any feedback to provide us with, don\'t hesitate to fill the field below, we\'d be very grateful.\n' +
+            'Best regards,\n' +
+            'The Human Reinforcement Learning Team.');
+        GUI.panelInsertParagraphTitle('Feedback');
+        GUI.panelInsertInput({maxlength: 3000, size: 400, id: "feedbackField", value: ''});
+        GUI.panelInsertButton({
+            id: "toSendFeedback", value: "Send!",
+            clickArgs: {obj: this},
+            clickFunc: function (event) {
+                let answer = document.getElementById('feedbackField').value;
+
+                    sendToDB(0,
+                             {
+                                 id: window.subID,
+                                browser: event.data.obj.exp.browsInfo,
+                                 feedback: answer,
+                            },
+                            'php/InsertFeedback.php'
+                        );
+
+                    GUI.displayModalWindow('Thanks!',
+                        'Thanks for your feedback! We really appreciate it.', 'info');
+
+            }
+        });
+
     }
 
 }

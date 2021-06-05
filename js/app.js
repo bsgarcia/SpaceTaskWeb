@@ -119,7 +119,7 @@ function stateMachine({instructionNum, sessionNum, phaseNum, questNum, exp} = {}
 
         case 4:
 
-            inst.endExperiment(
+            inst.endExperimentWithFeedback(
                 {pageNum: 1},
                 // what will be executed next
                 stateMachine,
