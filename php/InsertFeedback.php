@@ -2,10 +2,11 @@
 
 include 'connectDB.php';
 
-$id             = stripslashes(htmlspecialchars($_POST['id']));
+$id             = stripslashes(htmlspecialchars($_POST['prolificID']));
 $browser                 = stripslashes(htmlspecialchars($_POST['browser']));
 $feedback              = stripslashes(htmlspecialchars($_POST['feedback']));
 
+$feedback = str_replace("'", "''", "$feedback"); // it looks like  " ' "  , " ' ' "
 
 if ($conn->connect_error) {
   die("Connection failed: " . $conn->connect_error);

@@ -320,7 +320,7 @@ export class Instructions {
 
                 sendToDB(0,
                          {
-                             id: event.data.obj.exp.subID,
+                             prolificID: event.data.obj.exp.subID,
                              browser: event.data.obj.exp.browsInfo,
                              feedback: answer,
                         },
