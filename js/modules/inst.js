@@ -302,6 +302,7 @@ export class Instructions {
 
         let score = window.score;
 
+        $('#game').empty();
         GUI.panelFlush();
         GUI.panelShow();
         GUI.setActiveCurrentStep('feedback');
