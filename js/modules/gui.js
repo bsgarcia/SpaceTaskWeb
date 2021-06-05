@@ -113,14 +113,12 @@ export class GUI {
 
     static panelInsertTextArea({
                                 classname = 'card-center',
-                                maxlength = "24",
-                                size = "24",
                                 id = "textbox_id",
                                 div = "card-content",
                                 value = "123"
                             } = {}) {
         $('#' + div).append(
-            '<textarea class="' + classname + '" type="text" value="' + value + '" maxlength="' + maxlength + '" size="' + size + '" id="' + id
+            '<textarea class="' + classname + '" type="text" value="' + value + '" id="' + id
             + '">');
     }
 
