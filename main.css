@@ -1,3 +1,9 @@
+.webgl-content {
+    margin-top: 5% !important;
+    border: 10px solid black !important;
+    border-radius: 5px !important;
+}
+
 .main {
     display: block;
     margin-right: auto;
@@ -691,6 +697,7 @@ body {
 #game {
     padding-left: 15%;
     padding-right: 15%;
+    padding-top: 3%;
 }
 
 #TextBoxDiv {

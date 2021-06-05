@@ -36,7 +36,7 @@ export class Instructions {
 
         // prolific id is 24 characters
         GUI.panelSetTitle('ID confirmation');
-        GUI.panelInsertParagraph('Please enter your Prolific id (if the field is not already filled in).');
+        GUI.panelInsertParagraph('Please enter a pseudo.');
         GUI.panelInsertInput({maxlength: 24, size: 24, id: "ID", value: this.exp.subID});
         GUI.panelInsertButton({
             id: "toConsent", value: "Next",
@@ -124,7 +124,13 @@ export class Instructions {
         GUI.panelSetTitle('General Instructions');
 
         let text = {
-            1: 'Here is an RL space shooter game, have fun :)'
+            1: 'In this mini-game, you play a spaceship from the Rebel-Alliance trying to escape from the Empire Fleet.\n' +
+                ' On your way, you encounter several waves of asteroids. Those asteroids have different colors, which represent' +
+                ' different probabities of reward. Your objective is to maximize your score by shooting the right target in' +
+                ' different pairs of asteroids.\nTo do so, you will be able to move your ship using arrow keys, and shoot using your space key.' +
+                ' Please note that sometimes, after you shoot an asteroid, the reward associated to the other asteroid will also be displayed.' +
+                'However the latter will be displayed in grey, and does not affect your score.\n' +
+                'Good luck!'
         };
 
         GUI.panelSetParagraph(text[pageNum]);

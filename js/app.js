@@ -38,7 +38,7 @@ function main() {
     let exp = new ExperimentParameters(
         {
             online: false,   // send network requests
-            isTesting: false, // isTesting==in development vs in production
+            isTesting: true, // isTesting==in development vs in production
             expName: 'spaceRL', // experience name
             completeFeedback: true, // display feedback of both options
             maxPoints: undefined, // max points cumulated all along the experiment
@@ -91,7 +91,7 @@ function stateMachine({instructionNum, sessionNum, phaseNum, questNum, exp} = {}
                 // what will be executed next
                 stateMachine,
                 {
-                    instructionNum: 2, exp: exp, sessionNum: sessionNum, phaseNum: 1
+                    instructionNum: 3, exp: exp, sessionNum: sessionNum, phaseNum: 1
                 }
             );
             return;
