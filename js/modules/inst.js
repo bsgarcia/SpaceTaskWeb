@@ -306,7 +306,7 @@ export class Instructions {
         GUI.panelShow();
         GUI.setActiveCurrentStep('feedback');
         GUI.panelSetTitle('Thanks! Any feedback?');
-        GUI.panelInsertParagraph('Wow you won' + score + ' points! Thanks for your participation!\n'
+        GUI.panelInsertParagraph('You won <b>' + score + '</b> points!\n Thanks for your participation!\n'
         + 'We hope you enjoyed this game. Also, if you have any feedback to provide us with, don\'t hesitate to fill the field below, we\'d be very grateful.\n' +
             'Best regards,\n' +
             'The Human Reinforcement Learning Team.');
@@ -318,17 +318,17 @@ export class Instructions {
             clickFunc: function (event) {
                 let answer = document.getElementById('feedbackField').value;
 
-                    sendToDB(0,
-                             {
-                                 id: window.subID,
-                                browser: event.data.obj.exp.browsInfo,
-                                 feedback: answer,
-                            },
-                            'php/InsertFeedback.php'
-                        );
+                sendToDB(0,
+                         {
+                             id: window.subID,
+                             browser: event.data.obj.exp.browsInfo,
+                             feedback: answer,
+                        },
+                        'php/InsertFeedback.php'
+                    );
 
-                    GUI.displayModalWindow('Thanks!',
-                        'Thanks for your feedback! We really appreciate it.', 'info');
+                GUI.displayModalWindow('Thanks!',
+                    'Thanks for your feedback! We really appreciate it.', 'info');
 
             }
         });
