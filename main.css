@@ -11,9 +11,10 @@
 
 #feedbackField:focus {
     outline: none !important;
-    border-color: rgba(50, 174, 151, 1);
-    box-shadow: 0 0 10px rgba(50, 174, 151, 1);
+    border-color: rgba(50, 174, 151, .5);
+    box-shadow: 0 0 6px rgba(50, 174, 151, .5);
 }
+
 .main {
     display: block;
     margin-right: auto;
