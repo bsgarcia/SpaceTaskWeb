@@ -12,7 +12,7 @@ if ($conn->connect_error) {
   die("Connection failed: " . $conn->connect_error);
 }
 
-$sql = "INSERT INTO spaceRL_feedback (prolificID, browser, feedback) VALUES ('$prolificID', '$browser', '$feedback')";
+$sql = "INSERT INTO spaceRL_feedback (prolificID, browser, feedback) VALUES ('$id', '$browser', '$feedback')";
 
 if ($conn->query($sql) === TRUE) {
   echo "New record created successfully";
