@@ -1,8 +1,38 @@
 .webgl-content {
     margin-top: 5% !important;
-    border: 10px solid black !important;
-    border-radius: 5px !important;
+
+    /*border-radius: 5px !important;*/
 }
+
+#unityContainer {
+    border: 9px solid black !important;
+}
+.header {
+    background-color: black !important;
+    color: white;
+    height: 28px!important;
+    padding: 7px;
+}
+
+.header:hover {
+    font-weight: bolder;
+    animation: linear 1s;
+}
+
+.fullscreen-logo {
+    float: left;
+    display: block;
+    width: 20px;
+}
+
+.fullscreen-logo:hover {
+    float: left;
+    display: block;
+    width: 25px;
+    animation: linear 1s;
+}
+
+
 
 #feedbackField {
     width: 100%;
@@ -10,6 +40,20 @@
     background: rgba(7, 7, 7, .04);
     border: 0;
     border-radius: 5px;
+}
+
+input {
+    background: rgba(7, 7, 7, .04);
+
+    border: 0;
+    border-radius: 5px;
+}
+input:focus {
+    background: rgba(7, 7, 7, .04);
+    border: 0;
+    border-radius: 5px;
+    outline: none !important;
+    box-shadow: 0 0 3px rgba(7, 7, 7, .2);
 }
 
 #feedbackField:focus {
@@ -269,7 +313,7 @@ form {
     margin: auto;
     margin-top: 5%;
     margin-bottom: 2%;
-    width: 55%;
+    width: 40%;
     box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
 }
 

@@ -1,2 +1,2 @@
-python -m http.server &
-start firefox http://localhost:8000
+python3 -m http.server &
+firefox http://localhost:8000

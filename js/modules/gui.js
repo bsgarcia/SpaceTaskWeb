@@ -78,8 +78,9 @@ export class GUI {
         this.panelSetTitle('Experiment');
         $('#game').html(`
         <div class="webgl-content">
+        <div class="header" onclick="unityInstance.SetFullscreen(1)"><img class="fullscreen-logo" src="images/fullscreen.png"> &nbsp; Go fullscreen</div>
                 <div id="unityContainer" ></div>
-                <div class="footer">
+                <div class="foot">
                 </div>
             </div>
         `);
