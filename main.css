@@ -17,6 +17,7 @@
 .header:hover {
     font-weight: bolder;
     animation: linear 1s;
+    cursor: pointer;
 }
 
 .fullscreen-logo {
@@ -30,6 +31,7 @@
     display: block;
     width: 25px;
     animation: linear 1s;
+    cursor: pointer;
 }
 
 
