@@ -1,6 +1,5 @@
 # Reinforcement Learning Space Shooter
-
-## Description
+## Description
 
 This project is a website involving a space shooter programmed with the unity game engine. The game is programmed in C# and is then transpiled to javascript (more specifically, WebGL), allowing for webpage integration. 
 
