@@ -58,20 +58,6 @@ export class ExperimentParameters {
 
         this.compLink = compLink;
 
-        //
-        //     // initGameStageDiv
-        //     this._initContingencies();
-        //     this._loadImg(imgPath, nCond, nSession);
-        //     this._initConditionArrays(
-        //         nTrialPerCondition, nTrialPerConditionTraining, nCond, nSession);
-        //     this._initTrialObj(nCond, nSession);
-        //
-        //     if (maxPoints) {
-        //         this.maxPoints = maxPoints;
-        //     } else {
-        //         this.maxPoints = this._computeMaxPoints(nSession);
-        //     }
-        //
         this.maxPoints = 100;
         // define compensation functions
         // ===================================================================== //
