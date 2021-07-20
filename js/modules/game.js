@@ -14,6 +14,7 @@ export class Game {
         window.unityInstance = UnityLoader.instantiate(
             "unityContainer", "game/Build/game.json", {onProgress: UnityProgress});
 
+        // set next function to window in order to access it from unity js plugin
         window.nextFunc = nextFunc;
         window.nextParams = nextParams;
         GUI.setActiveCurrentStep('experiment');
