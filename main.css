@@ -1,4 +1,41 @@
+body {
+    background-color: #333 !important;
+}
+.center {
+    margin:auto;
+    margin-top: 25%;
+    width: 400px;
+}
 
+.adjust {
+    top: -70 !important;
+    color:rgba(50, 174, 151, .8);
+}
+
+.adjust:active {
+    color:rgba(50, 174, 151, .8);
+}
+
+.adjust:focus {
+    color:rgba(50, 174, 151, .8) !important;
+}
+
+.input-bigger {
+    font-size: 30px !important;
+    color: whitesmoke !important;
+    padding-bottom: 12px !important;
+    -webkit-box-shadow: 0 1px 0 0 #26a69a !important;
+    box-shadow: 0 1px 0 0 #26a69a !important;
+
+    border-bottom: 1px solid #26a69a !important;
+}
+
+.input-bigger:focus {
+    border-bottom: 1px solid #26a69a !important;
+    -webkit-box-shadow: 0 1px 0 0 #26a69a !important;
+    box-shadow: 0 1px 0 0 #26a69a !important;
+    
+}
 .webgl-content {
     margin-top: 5% !important;
 
@@ -323,6 +360,7 @@ body {
 
 .card-content {
     padding: 3% !important;
+    margin: auto;
 }
 
 /*.btn-info, .btn-info:hover, .btn-info:active, .btn-info:visited {*/

@@ -39,7 +39,7 @@ function main() {
         {
             online: false,   // send network requests
             isTesting: true, // isTesting==in development vs in production
-            expName: 'spaceRL', // experience name
+            expName: 'spaceRLHighSchool', // experience name
             completeFeedback: true, // display feedback of both options
             maxPoints: undefined, // max points cumulated all along the experiment
                                  // if undefined or 0, will be computed automatically
@@ -91,7 +91,7 @@ function stateMachine({instructionNum, sessionNum, phaseNum, questNum, exp} = {}
                 // what will be executed next
                 stateMachine,
                 {
-                    instructionNum: 3, exp: exp, sessionNum: sessionNum, phaseNum: 1
+                    instructionNum: 'end', exp: exp, sessionNum: sessionNum, phaseNum: 1
                 }
             );
             return;
