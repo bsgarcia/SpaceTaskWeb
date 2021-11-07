@@ -9,6 +9,14 @@
     <title>Online Experiment</title>
 
     <link rel="shortcut icon" href="images/favicon-ens.png" type="image/x-icon">
+    
+    
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+            
 
     <!-- CSS libraries -->
     <link rel='stylesheet' type='text/css' href='lib/css/bootstrap-theme.min.css' media="screen"/>
@@ -46,8 +54,8 @@
 <body>
 
 <!--- Timeline of the experiment ---------------------->
-<div class="md-stepper-horizontal green" id="timeline">
-    <div class="md-step active" id="instructions">
+<!-- <div class="md-stepper-horizontal green" id="timeline"> -->
+    <!-- <div class="md-step active" id="instructions">
         <div class="md-step-circle"></div>
         <div class="md-step-title">Introduction</div>
         <div class="md-step-bar-left"></div>
@@ -64,16 +72,24 @@
         <div class="md-step-title">Feedback</div>
         <div class="md-step-bar-left"></div>
         <div class="md-step-bar-right"></div>
-    </div>
-</div>
+    </div> -->
+<!-- </div> -->
 <!-------------------------------------------------->
 
+<div id='pseudo' class="input-field center">
+    <!-- <i class="material-icons prefix">account_circle</i> -->
+    <input value="" id="icon_prefix" type="text" class="validate input-bigger">
+    <label for="icon_prefix" class="adjust" style="font-size: 40px;">Pseudo</label>
+    <button id='continue' class="btn" style="margin-top: 20px;">Continue</button>
+  </div>
+
+
 <!--- Text Panel ------------ ---------------------->
-<div class="card" id="panel">
-    <div class="card-header" id="panel-title"></div>
-    <div id="card-content" class="card-content">
-    </div>
-</div>
+<!-- <div class="card" id="panel"> -->
+    <!-- <div class="card-header" id="panel-title"></div> -->
+    <!-- <div id="card-content" class="card-content"> -->
+    <!-- </div> -->
+<!-- </div> -->
 <!-------------------------------------------------->
 
 <!--- Game container ----------------------------------->

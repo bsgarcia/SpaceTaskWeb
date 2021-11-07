@@ -75,7 +75,7 @@ export class GUI {
     }
 
     static InsertGame() {
-        this.panelSetTitle('Experiment');
+        $('#game').css('display', 'none');
         $('#game').html(`
         <div class="webgl-content">
         <div class="header" onclick="unityInstance.SetFullscreen(1)"><img class="fullscreen-logo" src="images/fullscreen.png"> &nbsp; Go fullscreen</div>
@@ -84,6 +84,8 @@ export class GUI {
                 </div>
             </div>
         `);
+        $('#game').fadeIn(400);
+    
     }
 
     static panelInsertButton({

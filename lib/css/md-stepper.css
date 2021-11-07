@@ -3,7 +3,7 @@
     width: 100%;
     margin: 0 auto;
     background-color: #FFFFFF;
-    background: url('images/logo-ens.png') no-repeat 1% 50%;
+    background: url('../../images/logo-ens.png') no-repeat 1% 50%;
     background-size: 70px;
 
     box-shadow: 0 3px 8px -6px rgba(0, 0, 0, .50);
@@ -25,7 +25,7 @@
     /*max-width: 160% !important;*/
     /*}*/
     .md-stepper-horizontal {
-        background: url('images/logo-ens.png') no-repeat 1% 50%;
+        background: url('../../images/logo-ens.png') no-repeat 1% 50%;
         background-size: 27px;
     }
 

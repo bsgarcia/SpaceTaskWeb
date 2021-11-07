@@ -33,30 +33,22 @@ export class Instructions {
 
     setUserID(nextFunc, nextParams) {
 
-        GUI.panelFlush();
+        // GUI.panelFlush();
 
+        $('#icon_prefix').val('player' + randint(1000, 999999999))
         // prolific id is 24 characters
-        GUI.panelSetTitle('ID confirmation');
-        GUI.panelInsertParagraph('Please enter a pseudo.');
-        GUI.panelInsertInput(
-            {maxlength: 24, size: 24,
-                id: "ID", value: 'player' + randint(0, 99999999999)});
-        GUI.panelInsertButton({
-            id: "toConsent", value: "Next",
-            clickArgs: {obj: this},
-            clickFunc: function (event) {
-                let answer = document.getElementById('ID').value;
+        // GUI.panelSetTitle('');
+        // GUI.panelInsertParagraph('Please enter a pseudo.');
+        $('#continue').click({obj: this},
+            function (event) {
+                let answer = $('#icon_prefix').val();
 
-                if (answer.length === 24 || event.data.obj.exp.isTesting) {
-                    event.data.obj.exp.subID = answer;
-                    window.subID = answer;
-                    nextFunc(nextParams);
-                } else {
-                    GUI.displayModalWindow('Error',
-                        'You must enter a valid Prolific ID (24 alphanumeric characters).', 'error');
-                }
-            }
-        });
+                event.data.obj.exp.subID = answer;
+                window.subID = answer;
+                $('#pseudo').fadeOut(300);
+                nextFunc(nextParams);
+            }, nextParams
+        );
     }
 
     displayConsent(nextFunc, nextParams) {
