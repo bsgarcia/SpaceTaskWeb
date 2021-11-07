@@ -145,9 +145,10 @@ function stateMachine({instructionNum, sessionNum, phaseNum, questNum, exp} = {}
             // select stimuli depending on sessionNum;
             // Using arrays allows to avoid multiple if statements
             let game = new Game(exp);
-            game.run(console.log,
-            'end'   
-            );
+            game.run(stateMachine,
+                {
+                    instructionNum: 4, exp: exp, sessionNum: sessionNum, phaseNum: 1
+                });
 
             return;
 
