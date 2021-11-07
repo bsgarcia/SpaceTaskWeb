@@ -119,14 +119,14 @@ function stateMachine({instructionNum, sessionNum, phaseNum, questNum, exp} = {}
 
         case 4:
 
-            inst.endExperimentWithFeedback(
-                {pageNum: 1},
+            // inst.endExperimentWithFeedback(
+                // {pageNum: 1},
                 // what will be executed next
-                stateMachine,
-                {
-                    instructionNum: 'end', exp: exp, sessionNum: sessionNum, phaseNum: 1
-                }
-            );
+                // stateMachine,
+                // {
+                    // instructionNum: 'end', exp: exp, sessionNum: sessionNum, phaseNum: 1
+                // }
+            // );
             return;
         case 'end':
         case undefined:
