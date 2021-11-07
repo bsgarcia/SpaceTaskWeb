@@ -12,7 +12,7 @@ export class Game {
         GUI.initGameStageDiv();
         GUI.InsertGame();
         window.unityInstance = UnityLoader.instantiate(
-            "unityContainer", "game/Build/spaceRLHighSchool.json", {onProgress: UnityProgress});
+            "unityContainer", "game/Build/SpaceRLHighSchool.json", {onProgress: UnityProgress});
 
         // set next function to window in order to access it from unity js plugin
         window.nextFunc = nextFunc;
