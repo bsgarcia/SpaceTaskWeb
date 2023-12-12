@@ -5,7 +5,11 @@ import {Game} from "./modules/game.js";
 
 
 // When the page is fully loaded, the main function will be called
-$(document).ready(main);
+if (document.readyState !== 'loading') {
+    main();
+} else {
+    document.addEventListener('DOMContentLoaded', main);
+}
 
 
 function main() {
