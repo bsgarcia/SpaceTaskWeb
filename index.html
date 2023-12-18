@@ -4,17 +4,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="google" content="notranslate">
-    <title>Hello world</title>
+    <title>Online Experiment</title>
     <!--load beer css and js -->
     <link href="https://cdn.jsdelivr.net/npm/beercss@3.4.9/dist/cdn/beer.min.css" rel="stylesheet">
     <script type="module" src="https://cdn.jsdelivr.net/npm/beercss@3.4.9/dist/cdn/beer.min.js"></script>
     <script type="module" src="https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.0/dist/cdn/material-dynamic-colors.min.js"></script>
+    <!-- Lightweight client-side loader that feature-detects and load polyfills only when necessary -->
+    <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs@2/webcomponents-loader.min.js"></script>
+    <!-- Load the element definition -->
+    <script type="module" src="https://cdn.jsdelivr.net/gh/zerodevx/zero-md@1/src/zero-md.min.js"></script>
+    <!-- Simply set the `src` attribute to your MD file and win -->
+
     <!-- load custom css -->
     <link rel="stylesheet" href="main.css">
     <link rel="stylesheet" href="lib/css/md-stepper.css">
+    <link rel="stylesheet" href="lib/css/admonition.css">
+    
+    <!-- load custom js -->
+    <script src="js/main.mjs" type="module" crossorigin="anonymous"></script>
+    <!-- <script src="js/modules/utils.js" crossorigin="anonymous"></script> -->
   </head>
   <body class="dark">
-    <nav class="top">
+    <nav class="top nav">
     <!-- Timeline of the experiment ---------------------->
     <div class="md-stepper-horizontal" id="timeline">
         <div class="md-step active" id="instructions">
@@ -31,7 +42,7 @@
         </div>
         <div class="md-step" id="feedback">
             <div class="md-step-circle"></div>
-            <div class="md-step-title">Feedback</div>
+            <div class="md-step-title">Survey</div>
             <div class="md-step-bar-left"></div>
             <div class="md-step-bar-right"></div>
         </div>
@@ -39,15 +50,24 @@
 
       </nav>
       <main class="responsive">
-        <h3>Compact</h3>
-        <article>
-            <h5>Title</h5>
-            <p>Some text here</p>
+        <!-- <h3>Welcome!</h3> -->
+        <article id="panel" class="medium-elevate card">
+            <div class="card-text">
+                <!-- <h1>Welcome to this</h1><br> -->
+                <h1>Welcome to our</h1><br><h1 style="color: var(--primary); font-weight: bolder;">experiment!</h1>
+                <!-- <h1>Welcome to this <span style = "display: block; color: var(--primary)"> experiment!</span></h1> -->
+                <!-- <h1><b style="color: var(--primary)"> experiment!</b></h1> -->
+            </div>
+                <!-- <p>Some text here</p> -->
+            <div class="card-img">
+              <img class="front-img" src="images/spaceship_illustration.png" alt="">
+            </div>
+        </div>
         </article>
         <div class="button-group center-align">
-          <button class="extend circle left-round center-align"><i>add</i><span>Previous</span></button>
-          <button class="extend circle right-round light-green4 center-align"><i>add</i><span>Next</span></button>
-        </div>
+          <button id="prev-button" style="display: none" class="extend circle center-align medium-elevate"><i>&larr;</i><span>Previous</span></button>
+          <button id="next-button" class="extend circle center-align medium-elevate"><i>&rarr;</i><span>Next</span></button>
       </main> 
+  <p class="subID"></p>
   </body>
 </html>

@@ -1,4 +1,4 @@
-body {
+body.dark {
     --primary:#53dbc9;
     --on-primary:#003731;
     --primary-container:#005048;
@@ -35,4 +35,70 @@ body {
     --surface-container:#1d201f;
     --surface-container-high:#272b2a;
     --surface-container-highest:#323534;
+}
+
+.nav {
+    background: url('https://www.unige.ch/cdn/themes/unige2016/img/unige-logo.svg') no-repeat 1% 50%;
+    background-size: 150px;
+    block-size: 4rem !important;
+}
+
+.video-inst {
+    left: 70;
+    border-radius: .8em;
+    overflow: hidden;
+}
+
+.button-group {
+    margin-top: 2%;
+}
+
+.card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* background-color: #f2f2f2; */
+    /* border-radius: 8px; */
+    padding: 5%;
+    max-height: 700px;
+    min-height: 700px;
+    /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
+    /* margin: 20px; */
+}
+
+/* Styles for the text on the left */
+.card-text {
+    /* flex: 1; */
+    /* padding-right: 20px; */
+    left: 75;
+}
+
+.card-text h2 {
+    margin-bottom: 10px;
+    font-size: 24px;
+}
+
+.card-text p {
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+/* Styles for the image on the right */
+.card-img {
+    flex: 1;
+    /* text-align: right; */
+    /* width: 50%; */
+}
+
+.card-img img {
+    max-width: 82%;
+    height: auto;
+    border-radius: 8px;
+    right: -100;
+}
+
+.subID {
+    bottom: 0;
+    left: 20;
+    position: absolute;
 }

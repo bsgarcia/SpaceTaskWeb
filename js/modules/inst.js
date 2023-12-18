@@ -1,6 +1,6 @@
 import {GUI} from './gui.js';
 import {sendToDB} from "./request.js";
-import {randint} from "./utils.js";
+import {randint} from "./utils.mjs";
 
 
 export class Instructions {

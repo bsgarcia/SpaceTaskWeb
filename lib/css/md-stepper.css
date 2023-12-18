@@ -1,11 +1,9 @@
 .md-stepper-horizontal {
     display: table;
-    width: 100%;
-    margin: 0 auto;
-    background-color: #FFFFFF;
-    background: url('https://www.unige.ch/cdn/themes/unige2016/img/unige-logo.svg') no-repeat 1% 50%;
-    background-size: 100px;
-
+    width: 50%;
+    /* margin: 0 auto; */
+    /* background-color: #FFFFFF; */
+    color: whitesmoke !important;
     box-shadow: 0 3px 8px -6px rgba(0, 0, 0, .50);
 }
 
@@ -84,6 +82,7 @@
 /*.md-stepper-horizontal .md-step:hover,*/
 .md-stepper-horizontal .md-step:active {
     background-color: rgba(0, 0, 0, 0.04);
+    /* background-color: var(--primary); */
 }
 
 .md-stepper-horizontal .md-step:active {
@@ -132,7 +131,7 @@
 }
 
 .md-stepper-horizontal .md-step.active .md-step-circle {
-    background-color: rgb(33, 150, 243);
+    background-color: var(--primary);
 }
 
 .md-stepper-horizontal .md-step.done .md-step-circle:before {
@@ -147,7 +146,7 @@
 }
 
 .md-stepper-horizontal .md-step.editable .md-step-circle {
-    -moz-transform: scaleX(-1);
+    -moz-transform: scaleX(
     -o-transform: scaleX(-1);
     -webkit-transform: scaleX(-1);
     transform: scaleX(-1);
