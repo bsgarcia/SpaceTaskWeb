@@ -173,10 +173,13 @@ function getOS() {
     return OSName;
 }
 
+function getURLParams(name) {
+    return (new URL(document.location)).searchParams.get(name);
+}
 
 export {
     sum, assert, range, shuffle,
     getBrowser, getColor, getKeyCode,
-    getOS, isFloat, createDiv, isString, randint, createCode
+    getOS, isFloat, createDiv, isString, randint, createCode, getURLParams
 };
-
+ 

@@ -44,19 +44,6 @@ function main() {
             online: false,   // send network requests
             isTesting: true, // isTesting==in development vs in production
             expName: 'spaceRLHighSchool', // experience name
-            completeFeedback: true, // display feedback of both options
-            maxPoints: undefined, // max points cumulated all along the experiment
-                                 // if undefined or 0, will be computed automatically
-            maxCompensation: 250, // in pence (in addition of the initial endowment)
-            feedbackDuration: 1400, // how many milliseconds we present the outcome
-            beforeFeedbackDuration: 900, // how many milliseconds before the outcome
-            maxTrainingNum: -2, // if sessionNum == maxTrainingNum
-                                // do not allow for new training sessions
-            nTrialPerConditionTraining: 5,
-            nTrialPerCondition: 60,
-            nSession: 1,
-            nCond: 2,
-            imgPath: 'images/cards_gif/',
             compLink: 'https://app.prolific.ac/submissions/complete?cc=RNFS5HP5' // prolific completion link
                                                                                 // will be displayed at the end
         }

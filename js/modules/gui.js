@@ -1,4 +1,4 @@
-import {createDiv, range, randint} from './utils.js'
+import {createDiv, range, randint} from './utils.mjs'
 
 
 export class GUI {

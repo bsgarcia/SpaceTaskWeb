@@ -1,6 +1,6 @@
 import {GUI} from './gui.js';
 import {sendToDB} from "./request.js";
-import {shuffle} from "./utils.js";
+import {shuffle} from "./utils.mjs";
 
 
 export class Questionnaire {
