@@ -1,73 +1,197 @@
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta name="google" content="notranslate">
-    <title>Online Experiment</title>
-    <!--load beer css and js -->
-    <link href="https://cdn.jsdelivr.net/npm/beercss@3.4.9/dist/cdn/beer.min.css" rel="stylesheet">
-    <script type="module" src="https://cdn.jsdelivr.net/npm/beercss@3.4.9/dist/cdn/beer.min.js"></script>
-    <script type="module" src="https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.0/dist/cdn/material-dynamic-colors.min.js"></script>
-    <!-- Lightweight client-side loader that feature-detects and load polyfills only when necessary -->
-    <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs@2/webcomponents-loader.min.js"></script>
-    <!-- Load the element definition -->
-    <script type="module" src="https://cdn.jsdelivr.net/gh/zerodevx/zero-md@1/src/zero-md.min.js"></script>
-    <!-- Simply set the `src` attribute to your MD file and win -->
 
-    <!-- load custom css -->
-    <link rel="stylesheet" href="main.css">
-    <link rel="stylesheet" href="lib/css/md-stepper.css">
-    <link rel="stylesheet" href="lib/css/admonition.css">
-    
-    <!-- load custom js -->
-    <script src="js/main.mjs" type="module" crossorigin="anonymous"></script>
-    <!-- <script src="js/modules/utils.js" crossorigin="anonymous"></script> -->
-  </head>
-  <body class="dark">
-    <nav class="top nav">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="google" content="notranslate">
+  <!-- favicon -->
+  <link rel="shortcut icon" href="images/logo-unige.png" type="image/x-icon">
+  <title>Online Experiment</title>
+  <!--load beer css and js -->
+  <link href="https://cdn.jsdelivr.net/npm/beercss@3.4.9/dist/cdn/beer.min.css" rel="stylesheet">
+  <script type="module" src="https://cdn.jsdelivr.net/npm/beercss@3.4.9/dist/cdn/beer.min.js"></script>
+  <script type="module"
+    src="https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.0/dist/cdn/material-dynamic-colors.min.js"></script>
+  <!-- Lightweight client-side loader that feature-detects and load polyfills only when necessary -->
+  <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs@2/webcomponents-loader.min.js"></script>
+  <!-- Load the element definition -->
+  <script type="module" src="https://cdn.jsdelivr.net/gh/zerodevx/zero-md@1/src/zero-md.min.js"></script>
+  <!-- Simply set the `src` attribute to your MD file and win -->
+
+  <!-- load custom css -->
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="lib/css/md-stepper.css">
+  <link rel="stylesheet" href="lib/css/admonition.css">
+
+  <!--unity css -->
+  <link rel="stylesheet" href="game/Demo2trials/TemplateData/style.css">
+
+  <!-- load custom js -->
+  <script src="js/main.mjs" type="module" crossorigin="anonymous"></script>
+  <!-- <script src="js/modules/utils.js" crossorigin="anonymous"></script> -->
+</head>
+
+<body class="dark">
+  <nav class="top nav">
     <!-- Timeline of the experiment ---------------------->
     <div class="md-stepper-horizontal" id="timeline">
-        <div class="md-step active" id="instructions">
-            <div class="md-step-circle"></div>
-            <div class="md-step-title">Introduction</div>
-            <div class="md-step-bar-left"></div>
-            <div class="md-step-bar-right"></div>
-        </div>
-        <div class="md-step" id="experiment">
-            <div class="md-step-circle"></div>
-            <div class="md-step-title">Experiment</div>
-            <div class="md-step-bar-left"></div>
-            <div class="md-step-bar-right"></div>
-        </div>
-        <div class="md-step" id="feedback">
-            <div class="md-step-circle"></div>
-            <div class="md-step-title">Survey</div>
-            <div class="md-step-bar-left"></div>
-            <div class="md-step-bar-right"></div>
-        </div>
+      <div class="md-step active" id="introduction">
+        <div class="md-step-circle"></div>
+        <div class="md-step-title">Introduction</div>
+        <div class="md-step-bar-left"></div>
+        <div class="md-step-bar-right"></div>
+      </div>
+      <div class="md-step" id="experiment">
+        <div class="md-step-circle"></div>
+        <div class="md-step-title">Experiment</div>
+        <div class="md-step-bar-left"></div>
+        <div class="md-step-bar-right"></div>
+      </div>
+      <div class="md-step" id="survey">
+        <div class="md-step-circle"></div>
+        <div class="md-step-title">Survey</div>
+        <div class="md-step-bar-left"></div>
+        <div class="md-step-bar-right"></div>
+      </div>
     </div>
 
-      </nav>
-      <main class="responsive">
-        <!-- <h3>Welcome!</h3> -->
-        <article id="panel" class="medium-elevate card">
-            <div class="card-text">
-                <!-- <h1>Welcome to this</h1><br> -->
-                <h1>Welcome to our</h1><br><h1 style="color: var(--primary); font-weight: bolder;">experiment!</h1>
-                <!-- <h1>Welcome to this <span style = "display: block; color: var(--primary)"> experiment!</span></h1> -->
-                <!-- <h1><b style="color: var(--primary)"> experiment!</b></h1> -->
-            </div>
-                <!-- <p>Some text here</p> -->
-            <div class="card-img">
-              <img class="front-img" src="images/spaceship_illustration.png" alt="">
-            </div>
+  </nav>
+  <main class="responsive">
+    <!-- <h3>Welcome!</h3> -->
+    <article id="panel" class="medium-elevate card">
+      <div class="card-text">
+        <!-- <h1>Welcome to this</h1><br> -->
+        <h1>Welcome to our</h1><br>
+        <h1 style="color: var(--primary); font-weight: bolder;">experiment!</h1>
+        <!-- <h1>Welcome to this <span style = "display: block; color: var(--primary)"> experiment!</span></h1> -->
+        <!-- <h1><b style="color: var(--primary)"> experiment!</b></h1> -->
+      </div>
+      <!-- <p>Some text here</p> -->
+      <div class="card-img">
+        <img class="front-img" src="images/spaceship_illustration.png" alt="">
+      </div>
+      </div>
+    </article>
+    <div class="button-group center-align">
+      <button id="prev-button" style="display: none"
+        class="extend circle center-align medium-elevate"><i>&larr;</i><span>Previous</span></button>
+      <button id="next-button" class="extend circle center-align medium-elevate"><i>&rarr;</i><span>Next</span></button>
+    </div>
+    <div id="game" style="display: none; margin-top: 25%;">
+      <div id="unity-container" class="unity-desktop">
+        <canvas id="unity-canvas" style="width: 980px; height: 600px; border-radius: .8rem;"></canvas>
+        <div id="unity-loading-bar">
+          <div id="unity-logo"></div>
+          <div id="unity-progress-bar-empty">
+            <div id="unity-progress-bar-full"></div>
+          </div>
         </div>
-        </article>
-        <div class="button-group center-align">
-          <button id="prev-button" style="display: none" class="extend circle center-align medium-elevate"><i>&larr;</i><span>Previous</span></button>
-          <button id="next-button" class="extend circle center-align medium-elevate"><i>&rarr;</i><span>Next</span></button>
-      </main> 
+        <div id="unity-warning"> </div>
+        <div id="unity-footer" style="background-color: whitesmoke;">
+          <div id="unity-webgl-logo" style="background-color: var(--primary); border-radius: .6rem;"></div>
+          <div id="unity-fullscreen-button"></div>
+          <div id="unity-build-title">fullscreen</div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script>
+
+    var container = document.querySelector("#unity-container");
+    var canvas = document.querySelector("#unity-canvas");
+    var loadingBar = document.querySelector("#unity-loading-bar");
+    var progressBarFull = document.querySelector("#unity-progress-bar-full");
+    var fullscreenButton = document.querySelector("#unity-fullscreen-button");
+    var warningBanner = document.querySelector("#unity-warning");
+
+    // Shows a temporary message banner/ribbon for a few seconds, or
+    // a permanent error message on top of the canvas if type=='error'.
+    // If type=='warning', a yellow highlight color is used.
+    // Modify or remove this function to customize the visually presented
+    // way that non-critical warnings and error messages are presented to the
+    // user.
+    function unityShowBanner(msg, type) {
+      function updateBannerVisibility() {
+        warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
+      }
+      var div = document.createElement('div');
+      div.innerHTML = msg;
+      warningBanner.appendChild(div);
+      if (type == 'error') div.style = 'background: red; padding: 10px;';
+      else {
+        if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
+        setTimeout(function () {
+          warningBanner.removeChild(div);
+          updateBannerVisibility();
+        }, 5000);
+      }
+      updateBannerVisibility();
+    }
+
+    var buildUrl = "game/Demo2trials/Build";
+    var loaderUrl = buildUrl + "/Demo2trials.loader.js";
+    var config = {
+      dataUrl: buildUrl + "/Demo2trials.data",
+      frameworkUrl: buildUrl + "/Demo2trials.framework.js",
+      codeUrl: buildUrl + "/Demo2trials.wasm",
+      streamingAssetsUrl: "StreamingAssets",
+      companyName: "DefaultCompany",
+      productName: "Space Shooter",
+      productVersion: "1.0",
+      showBanner: unityShowBanner,
+    };
+
+    // By default, Unity keeps WebGL canvas render target size matched with
+    // the DOM size of the canvas element (scaled by window.devicePixelRatio)
+    // Set this to false if you want to decouple this synchronization from
+    // happening inside the engine, and you would instead like to size up
+    // the canvas DOM size and WebGL render target sizes yourself.
+    // config.matchWebGLToCanvasSize = false;
+
+    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+      // Mobile device style: fill the whole browser client area with the game canvas:
+
+      var meta = document.createElement('meta');
+      meta.name = 'viewport';
+      meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+      document.getElementsByTagName('head')[0].appendChild(meta);
+      container.className = "unity-mobile";
+      canvas.className = "unity-mobile";
+
+      // To lower canvas resolution on mobile devices to gain some
+      // performance, uncomment the following line:
+      // config.devicePixelRatio = 1;
+
+
+    } else {
+      // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
+
+      // canvas.style.width = "700px";
+      // canvas.style.height = "900px";
+    }
+
+    loadingBar.style.display = "block";
+
+    var script = document.createElement("script");
+    script.src = loaderUrl;
+    script.onload = () => {
+      createUnityInstance(canvas, config, (progress) => {
+        progressBarFull.style.width = 100 * progress + "%";
+      }).then((unityInstance) => {
+        loadingBar.style.display = "none";
+        fullscreenButton.onclick = () => {
+          unityInstance.SetFullscreen(1);
+        };
+      }).catch((message) => {
+        alert(message);
+      });
+    };
+
+    document.body.appendChild(script);
+
+  </script>
   <p class="subID"></p>
-  </body>
+</body>
+
 </html>

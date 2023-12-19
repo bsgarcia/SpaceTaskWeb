@@ -1,4 +1,6 @@
 export const getInstructionPage = async (path) => {
+  // add loading beer.css
+  document.querySelector('#panel').innerHTML = '<progress style="width:35%; margin: auto"></progress>';
   // read file 
   const file = await fetch(path).then(r => r.text());
   // if there is the word video in it, use video html template
@@ -28,7 +30,7 @@ export const getInstructionPage = async (path) => {
     let videoPath = `./instructions/videos/${video}`;
     template += `<div class="s6">
       <div class="video-inst">
-      <video width="70%" height="100%" controls>
+      <video width="70%" height="100%" controls autoplay>
         <source src="${videoPath}">
         Your browser does not support the video tag.
         </video>
