@@ -1,6 +1,5 @@
 # Hello!
-### Welcome to this Decision-Making Task! In this task, you will engage in a space shooter game where your goal is to maximize your total score by making strategic decisions. This task length is approximately 30 min. Please read the instructions carefully before starting.
-
+Welcome to this Decision-Making Task! In this task, you will engage in a space shooter game where your goal is to maximize your total score by making strategic decisions. This task length is approximately 30 min. Please read the instructions carefully before starting.
 
 # Task Overview:
 

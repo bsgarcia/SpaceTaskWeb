@@ -46,7 +46,16 @@ body.dark {
 .video-inst {
     left: 70;
     border-radius: .8em;
-    overflow: hidden;
+    /* border-width: 5px; */
+    /* border-style: solid; */
+    /* border-color: #444746; */
+    display: inline-block;
+    /* overflow: hidden; */
+}
+
+.video-inst video {
+    width: 100%;
+    height: auto;
 }
 
 .button-group {
