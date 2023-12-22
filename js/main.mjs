@@ -1,10 +1,15 @@
 import { getInstructionPage, landingPage } from "./modules/html_templates.mjs";
 import {getURLParams, createCode} from "./modules/utils.mjs";
 
-var instNum = 0;
+// globals
+// -----------------------------//
+var instNum = localStorage.getItem('instNum') || 0;
 var maxInstNum = 3;
 var clickBlocked = false;
+var end = localStorage.getItem('end');
 const clickBlockedTime = 300;
+window.subID = 'not_set';
+// -----------------------------//
 
 
 function main() {
@@ -16,6 +21,14 @@ function main() {
     const prevButton = document.getElementById('prev-button');
     prevButton.addEventListener('click', prev);
     
+    if (end) {
+        window.gameEnded();
+        return;
+    }
+
+    if (instNum != 0) {
+        setPageInstruction(instNum);
+    }
 }
 
 const setStep = (step) => {
@@ -37,7 +50,7 @@ const startGame = () => {
 }
 
 const setSubID = () => {
-    window.subID = getURLParams('prolificID').toString();
+    window.subID = getURLParams('prolificID') || 'random-'+createCode(5);
     document.querySelector('.subID').innerHTML = 'id: ' + window.subID;
 }
 
@@ -67,6 +80,7 @@ const blockClick = () => {
 }
 
 const setPageInstruction = async (instNum) => {
+    localStorage.setItem('instNum', instNum);
     if (instNum == 0) {
         document.querySelector('#panel').innerHTML = landingPage;
         document.querySelector('#prev-button').style.display = 'none';
@@ -80,9 +94,16 @@ const setPageInstruction = async (instNum) => {
 }
 
 window.gameEnded = () => {
+    localStorage.setItem('end', true);
     setStep('survey');
-    // document.querySelector('#game').style.display = 'none';
-    // document.querySelector('#survey').style.display = 'block';
+    document.querySelector('#game').style.display = 'none';
+    document.querySelector('#panel').style.display = 'block';
+    document.querySelector('#panel').innerHTML = `
+            <h1>Thank you!</h1>
+            <p>Thank you for participating in our experiment!</p>
+            <p>Please click the button below to submit your results.</p>
+            <button id="submit-button" class="btn btn-primary">Submit</button>
+    `;
 }
 
 // ------------------------------ RUN ------------------------------ //
