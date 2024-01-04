@@ -31,21 +31,24 @@ function main() {
     }
 }
 
-const setStep = (step) => {
-    document.querySelector('#'+step).classList.add('active');
-    const stepList = ['introduction', 'experiment', 'survey'];
-    stepList.forEach(s => {
-        if (s != step) {
-            document.querySelector('#'+s).classList.remove('active');
-        }
-    })
+const setCurrentStep = (step) => {
+    document.querySelector('#'+step).classList.add('active-step');
+}
+
+const unsetStep = (step) => {
+    document.querySelector('#'+step).classList.remove('active-step');
+}
+
+const setStepDone = (step) => {
+    document.querySelector('#'+step).classList.add('done-step');
 }
 
 const startGame = () => {
     // hide instructions
     document.querySelector('#panel').style.display = 'none';
     // set step
-    setStep('experiment');
+    setCurrentStep('experiment');
+    setStepDone('introduction');
     document.querySelector('#game').style.display = 'block';
 }
 
@@ -95,14 +98,22 @@ const setPageInstruction = async (instNum) => {
 
 window.gameEnded = () => {
     localStorage.setItem('end', true);
-    setStep('survey');
+    hideButton();
+    setStepDone('introduction');    
+    setStepDone('experiment');
+    setCurrentStep('survey');
     document.querySelector('#game').style.display = 'none';
-    document.querySelector('#panel').style.display = 'block';
+    document.querySelector('#panel').style.display = 'flex';
     document.querySelector('#panel').innerHTML = `
-            <h1>Thank you!</h1>
+            <div class="center-align" style="margin: auto">
+            <h1 style="display: block">🚀Thank you!🚀</h1>
+            <br>
+            <br>
             <p>Thank you for participating in our experiment!</p>
-            <p>Please click the button below to submit your results.</p>
-            <button id="submit-button" class="btn btn-primary">Submit</button>
+            <p>Please click the button below and answer a few questions to complete your submission.</p>
+            <br>
+            <button id="submit-button" class="btn btn-primary">Survey</button>
+            </div>
     `;
 }
 

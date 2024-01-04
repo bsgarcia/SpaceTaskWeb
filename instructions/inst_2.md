@@ -1,11 +1,11 @@
 # Your objective 
-In this task, to maximize you overall score (displayed at the top left of the screen), there are two things you have to learn. <br>
+In this task, to maximize you overall score (displayed at the top left of the screen), there are two things you have to learn. <br><br>
 🌌 **Forcefield resistance:** Estimate the forcefield resistance of the spaceships indicated by color. Forcefields are randomly drawn at the beginning of each trial. 
-<br>
+<br><br>
 🚀**Spaceships' average rewards:** Learn the average reward of each spaceship. Each spaceship has a different average reward. 
-
+<br><br>
 You will face waves of spaceship pairs. 
-In order to destroy a target, you have to press either left or right arrow key, and then press space to shoot, as demonstrated in the video on the right.  
+In order to destroy a target, you have to press either **left or right arrow key**, and then press **space to shoot**, as demonstrated in the video on the right.  
 
 <!---
 admonition=<div class="admonition warning">
