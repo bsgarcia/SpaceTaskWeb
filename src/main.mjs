@@ -11,6 +11,10 @@ const clickBlockedTime = 300;
 window.subID = 'not_set';
 // -----------------------------//
 
+const reload = () => {
+    localStorage.clear();
+    window.location.reload();
+}
 
 function main() {
     setSubID();
@@ -20,6 +24,7 @@ function main() {
     nextButton.addEventListener('click', next);
     const prevButton = document.getElementById('prev-button');
     prevButton.addEventListener('click', prev);
+    document.querySelector('#reload').addEventListener('click', reload);
     
     if (end) {
         window.gameEnded();
