@@ -7,7 +7,7 @@ import {startUnityGame, quitUnityGame} from "./modules/game.mjs";
 var instNum = parseInt(localStorage.getItem('instNum')) || 0;
 const PERCEPTUAL_TRAINING = 4;
 const RL_TRAINING = 6;
-const EXPERIMENT = 8;
+const EXPERIMENT = 9;
 var clickBlocked = false;
 var end = localStorage.getItem('end');
 const clickBlockedTime = 300;
