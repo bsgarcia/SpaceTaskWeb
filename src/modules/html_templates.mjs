@@ -13,12 +13,19 @@ export const getInstructionPage = async (path) => {
             color: whitesmoke;
             font-size: larger;
             width: 85%; 
-            /* align text center */
+            /*margin-top: 10%;*/
             margin: auto;
           }
         </style>
       </template>
       </zero-md>`;
+  if (path.includes('inst_8')) {
+    template = template.replace('width: 85%', 'width: 100%')
+    template = template.replace('margin: auto', '')
+    template = template.replace('/*', '')
+    template = template.replace('*/', '')
+  }
+
   if (file.includes("display=")) {
     let display = file.split("display=")[1].split("--->")[0]
     document.querySelector('#panel').style.display = display;
