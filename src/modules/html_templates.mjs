@@ -12,6 +12,9 @@ export const getInstructionPage = async (path) => {
           .markdown-body {
             color: whitesmoke;
             font-size: larger;
+            width: 85%; 
+            /* align text center */
+            margin: auto;
           }
         </style>
       </template>
@@ -25,6 +28,7 @@ export const getInstructionPage = async (path) => {
     template += `${admonition}</div>`;
   }
   if (file.includes("video=")) {
+    template = template.replace('width: 85%', '')
     template = `<div class="grid"><div class="s6">` + template;
     let video = file.split("video=")[1].split("--->")[0]
     let videoPath = `./instructions/videos/${video}`;
@@ -50,6 +54,6 @@ export const landingPage = `
         </div>
             <!-- <p>Some text here</p> -->
             <div class="card-img">
-              <img class="front-img" src="images/spaceship_illustration.png" alt="">
+              <img class="front-img" src="images/spaceship_illustration.png" alt="" loading="lazy">
             </div>
 `

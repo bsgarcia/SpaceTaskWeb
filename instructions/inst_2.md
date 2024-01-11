@@ -1,28 +1,26 @@
-# Your objective 
-In this task, to maximize you overall score (displayed at the top left of the screen), there are two things you have to learn. <br><br>
-🌌 **Forcefield resistance:** Estimate the forcefield resistance of the spaceships indicated by color. Forcefields are randomly drawn at the beginning of each trial. 
-<br><br>
-🚀**Spaceships' average rewards:** Learn the average reward of each spaceship. Each spaceship has a different average reward. 
-<br><br>
-You will face waves of spaceship pairs. 
-In order to destroy a target, you have to press either **left or right arrow key**, and then press **space to shoot**, as demonstrated in the video on the right.  
+# Training 
 
-<!---
-admonition=<div class="admonition warning">
-	<p class="title">Warning</p>
-	<p class="content">You can only shoot one spaceship per wave of 2!</p>
-</div>
+Before the experiment phase (see timeline at the top of this webpage), you will undergo two training phases:
 <br>
-<div class="admonition notice">
-	<p class="title">Notice</p>
-	<p class="content">The spaceships fall down the screen for approximately 5 seconds. If you don't shoot, they will leave the screen, and you will lose an opportunity to gain points.</p>
-</div>
---->
 
-<!--- 
-video=1.mp4
---->
+🌌 **Forcefield resistance training:**: You will encounter spaceships protected by forcefields. Your objective here is to estimate the forcefield resistance of the spaceships indicated by color. <br><br>
+  
+🚀 **Spaceship reward training:** You will encounter unprotected spaceships (i.e. without  forcefields). You have to focus on finding the most rewarding spaceship.
+<br>
+<br>
+<br>
 
 <!---
-display=flex
+admonition=<div class="admonition notice" style="margin: auto">
+			<p class="title">Note</p>
+      <p class="content">
+      The points earned during training won't count towards your final compensation.
+		</div>
+<br>
+<div class="admonition tip" style="margin: auto">
+			<p class="title">Tip</p>
+      <p class="content">
+Take your time to understand the learning mechanisms during training phases to perform better in the experiment phase.
+		</div>
 --->
+<!--- display=block --->

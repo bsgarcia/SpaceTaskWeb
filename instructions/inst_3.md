@@ -1,22 +1,29 @@
-# Training 
+# 🌌 Forcefield resistance Training 🌌
 
-### Before the main phase of the task described in the last panel, you will undergo two training phases:
-  🌌 **Forcefield resistance learning:**  You will encounter identical spaceships with varying forcefield colors. You have to focus on the forcefield mechanism, as spaceships won't provide any reward or points. <br>
-  🚀 **Spaceship reward learning:** You will encounter unprotected spaceships (i.e. without  forcefields). You have to focus finding the most rewarding spaceship.
+<br><br>
+The first training will consist in learning forcefield resistance by shooting at them. You will encounter identical spaceships with varying forcefield colors. Your objective here is to estimate the forcefield resistance of the spaceships indicated by color. Said differently, there are colors that are offer more or less resistance. Ignore rewards here, there are fixed to 5. Instead, focus whether the forcefield was destroyed or not, and which color it was <br><br>
+  
+## Ready?
 
-# Ready?
-### You can now start the experiment by clicking on next.
+If you click next, the first training will start. 
+
 <!---
-admonition=<div class="admonition notice">
+admonition=<div class="admonition notice" style="margin: auto">
 			<p class="title">Note</p>
       <p class="content">
-      The points earned during training won't count towards your final compensation.
+      Use arrow keys to move, and space to shoot. A small tutorial will show you how to do that before starting the training.
 		</div>
 <br>
-<div class="admonition tip">
-			<p class="title">Tip</p>
-      <p class="content">
-Take your time to understand the learning mechanisms during training phases to perform better in the main task.
-		</div>
 --->
+<!---
+admonition=<div class="admonition Warning" style="margin: auto">
+			<p class="title">Warning</p>
+      <p class="content">
+	  You can only shoot one spaceship among at a time!
+		</div>
+<br>
+--->
+
+
+
 <!--- display=block --->
