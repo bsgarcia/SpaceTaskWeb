@@ -56,6 +56,7 @@ body.dark {
 .video-inst video {
     width: 100%;
     height: auto;
+    margin-top: 8%;
 }
 
 .button-group {
