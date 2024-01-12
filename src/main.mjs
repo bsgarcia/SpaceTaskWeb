@@ -22,7 +22,7 @@ const reload = () => {
 
 const loadInstructions = async () => {
     [1, 2, 3, 4, 5, 6].forEach(async (instNum) => {
-        inst[instNum] = await getInstructionPage(`./instructions/inst_${instNum}.md`);
+        inst[instNum] = await getInstructionPage(`src/instructions/inst_${instNum}.md`);
     })
     
 }
@@ -175,7 +175,8 @@ const setPageInstruction = async (instNum) => {
     } else {    
 
         document.querySelector('#panel').innerHTML = '<progress style="width:35%; margin: auto"></progress>';
-        document.querySelector('#panel').innerHTML = await getInstructionPage(`./instructions/inst_${instNum}.md`) // inst[instNum];
+        document.querySelector('#panel').style.display = 'flex';
+        document.querySelector('#panel').innerHTML = await getInstructionPage(`src/instructions/inst_${instNum}.md`) // inst[instNum];
         showButton();
         if ((instNum == 0) ||
          [PERCEPTUAL_TRAINING, RL_TRAINING, EXPERIMENT].includes(instNum-1)) {

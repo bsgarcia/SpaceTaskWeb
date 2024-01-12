@@ -31,7 +31,7 @@
       updateBannerVisibility();
     }
     
-    var buildUrl = "game/" + phase + "/Build";
+    var buildUrl = "src/game/" + phase + "/Build";
     var loaderUrl = buildUrl + "/" + phase + ".loader.js";
     var config = {
       dataUrl: buildUrl + `/${phase}.data`,
