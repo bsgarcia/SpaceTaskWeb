@@ -1,6 +1,6 @@
 export const getInstructionPage = async (path) => {
   // add loading beer.css
-  document.querySelector('#panel').innerHTML = '<progress style="width:35%; margin: auto"></progress>';
+  // document.querySelector('#panel').innerHTML = '<progress style="width:35%; margin: auto"></progress>';
   // read file 
   const file = await fetch(path).then(r => r.text());
   // if there is the word video in it, use video html template
@@ -19,6 +19,7 @@ export const getInstructionPage = async (path) => {
         </style>
       </template>
       </zero-md>`;
+
   if (path.includes('inst_8')) {
     template = template.replace('width: 85%', 'width: 100%')
     template = template.replace('margin: auto', '')
@@ -30,15 +31,17 @@ export const getInstructionPage = async (path) => {
     let display = file.split("display=")[1].split("--->")[0]
     document.querySelector('#panel').style.display = display;
   }
+
   if (file.includes("admonition=")) {
     let admonition = file.split("admonition=")[1].split("--->")[0]
     template += `${admonition}</div>`;
   }
+
   if (file.includes("video=")) {
     template = template.replace('width: 85%', '')
     template = `<div class="grid"><div class="s6">` + template;
     let video = file.split("video=")[1].split("--->")[0]
-    let videoPath = `./instructions/videos/${video}`;
+    let videoPath = `src/instructions/videos/${video}`;
     template += `<div class="s6">
       <div class="video-inst">
       <video width="70%" height="100%" controls autoplay>
@@ -49,6 +52,7 @@ export const getInstructionPage = async (path) => {
       </div>
       </div>`
   }
+
   return template;
 }
 
