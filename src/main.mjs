@@ -39,6 +39,19 @@ const stopLoading = () => {
     document.querySelector('progress').style.display = 'none';
 }
 
+const skipCurrentStep = () => {
+    if (instNum<=3) {
+        instNum = PERCEPTUAL_TRAINING;
+        setPageInstruction(instNum);
+    } else if (instNum==PERCEPTUAL_TRAINING) {
+        window.endTrainingPerceptual();
+    } else if ((instNum==5) || (instNum==RL_TRAINING)) {
+        window.endTrainingRL();
+    } else if (instNum>6) {
+        window.endGame();
+    }
+}
+
 // const start = async () => {  
     // loading()
     // await loadInstructions()
@@ -55,6 +68,7 @@ function main() {
     const prevButton = document.getElementById('prev-button');
     prevButton.addEventListener('click', prev);
     document.querySelector('#reload').addEventListener('click', reload);
+    document.querySelector('#skip').addEventListener('click', skipCurrentStep);
     
     if (end) {
         window.endGame();
