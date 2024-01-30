@@ -209,17 +209,18 @@ const setPageInstruction = async (instNum) => {
         // setCurrentStep('block'+window.session);
         setCurrentStep('block'+(window.session+1));
     }
-    else {    
+    else if (instNum<=3) {
+        document.querySelector('#panel').innerHTML = '<progress style="width:35%; margin: auto"></progress>';
+        document.querySelector('#panel').style.display = 'flex';
+        document.querySelector('#panel').innerHTML = await getInstructionPage(`src/instructions/inst_${instNum}.md`) // inst[instNum];
+        showButton();
+        if ((instNum == 0) ||
+             BLOCKS.includes(instNum-1)) {
+                hidePrevButton();
+        }
+    } else {    
         window.endGame();
 
-        // document.querySelector('#panel').innerHTML = '<progress style="width:35%; margin: auto"></progress>';
-        // document.querySelector('#panel').style.display = 'flex';
-        // document.querySelector('#panel').innerHTML = await getInstructionPage(`src/instructions/inst_${instNum}.md`) // inst[instNum];
-        // showButton();
-        // if ((instNum == 0) ||
-            // BLOCKS.includes(instNum-1)) {
-                // hidePrevButton();
-        // }
     }
 }
 
