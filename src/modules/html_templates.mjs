@@ -72,6 +72,7 @@ export const landingPage = `
 export const restPage = `
   <div class="card-text">
             <h1>🚀 Well done!🚀 </h1>
+            <h2>You've completed block {block_nb}!</h2>
             <p>Take a break and relax for a moment. You can continue to the next block by clicking the arrow button below.</p>
   <br>
   <br>
