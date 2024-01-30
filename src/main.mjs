@@ -1,18 +1,21 @@
-import { getInstructionPage, landingPage } from "./modules/html_templates.mjs";
+import { getInstructionPage, landingPage, restPage } from "./modules/html_templates.mjs";
 import {getURLParams, createCode} from "./modules/utils.mjs";
 import {startUnityGame, quitUnityGame} from "./modules/game.mjs";
 
 // globals
 // -----------------------------//
 var instNum = parseInt(localStorage.getItem('instNum')) || 0;
-const PERCEPTUAL_TRAINING = 4;
-const RL_TRAINING = 6;
-const EXPERIMENT = 9;
+// instNum coding
+const BLOCKS = [4, 6, 8, 10, 12, 14, 16];
+const REST = [5, 7, 9, 11, 13, 15];
+// session coding
+const END = 6;
 var clickBlocked = false;
 var end = localStorage.getItem('end');
 const clickBlockedTime = 300;
 var inst = [];
 window.subID = 'not_set';
+window.session = parseInt(localStorage.getItem('session')) || 0;
 // -----------------------------//
 
 const reload = () => {
@@ -41,14 +44,15 @@ const stopLoading = () => {
 
 const skipCurrentStep = () => {
     if (instNum<=3) {
-        instNum = PERCEPTUAL_TRAINING;
+        instNum = BLOCKS[0];
         setPageInstruction(instNum);
-    } else if (instNum==PERCEPTUAL_TRAINING) {
+    } else if (BLOCKS.includes(instNum)) {
+        // alert('InstNum: '+instNum + '\n' + 'Session: '+window.session + '\n' + 'Block: '+BLOCKS.indexOf(instNum))
         window.endTrainingPerceptual();
-    } else if ((instNum==5) || (instNum==RL_TRAINING)) {
-        window.endTrainingRL();
-    } else if (instNum>6) {
-        window.endGame();
+    } else if (REST.includes(instNum)) {
+        // alert('InstNum: '+instNum + '\n' + 'Session: '+window.session + '\n' + 'Block: '+BLOCKS.indexOf(instNum))
+        instNum = BLOCKS[REST.indexOf(instNum)+1]
+        setPageInstruction(instNum);
     }
 }
 
@@ -80,6 +84,17 @@ function main() {
     }
 }
 
+const setPreviousStepDone = () => {
+    setStepDone('introduction');
+    [...Array(window.session).keys()].forEach((i) => {
+        try {
+            setStepDone('block'+(i+1));
+        } catch (e) {
+            console.log(e);
+        }
+    })
+}
+
 const setCurrentStep = (step) => {
     document.querySelector('#'+step).classList.add('active-step');
 }
@@ -109,11 +124,12 @@ const startTrainingPerceptual = () => {
     // hide instructions
     hidePanel();
     hideButton()
-    // insert progress circle beer css
     // set step
-    setCurrentStep('training1');
+    setCurrentStep('block'+(window.session+1));
     setStepDone('introduction');
-    startUnityGame('training1');
+    // range from 1 to idx set done
+    setPreviousStepDone();
+    startUnityGame('block');
 }
 
 const startTrainingRL = () => {
@@ -147,6 +163,7 @@ const next = () => {
     instNum++;
     setPageInstruction(instNum);
 }
+
 const prev = () => {
     if (clickBlocked) return;
     blockClick();
@@ -180,22 +197,29 @@ const setPageInstruction = async (instNum) => {
         document.querySelector('#panel').style.display = 'flex';
         document.querySelector('#prev-button').style.display = 'none';
         document.querySelector('#game').style.display = 'none';
-    } else if (instNum == PERCEPTUAL_TRAINING) {
+    } else if (BLOCKS.includes(instNum)) {
+        setPreviousStepDone()
         startTrainingPerceptual();
-    } else if (instNum == RL_TRAINING) {
-        startTrainingRL();
-    } else if (instNum == EXPERIMENT) {
-        startGame();
-    } else {    
-
-        document.querySelector('#panel').innerHTML = '<progress style="width:35%; margin: auto"></progress>';
+    }  else if (REST.includes(instNum)) {
+        setPreviousStepDone()
+        document.querySelector('#panel').innerHTML = restPage;
         document.querySelector('#panel').style.display = 'flex';
-        document.querySelector('#panel').innerHTML = await getInstructionPage(`src/instructions/inst_${instNum}.md`) // inst[instNum];
-        showButton();
-        if ((instNum == 0) ||
-         [PERCEPTUAL_TRAINING, RL_TRAINING, EXPERIMENT].includes(instNum-1)) {
-                hidePrevButton();
-        }
+        hidePrevButton();
+        document.querySelector('#game').style.display = 'none';
+        // setCurrentStep('block'+window.session);
+        setCurrentStep('block'+(window.session+1));
+    }
+    else {    
+        window.endGame();
+
+        // document.querySelector('#panel').innerHTML = '<progress style="width:35%; margin: auto"></progress>';
+        // document.querySelector('#panel').style.display = 'flex';
+        // document.querySelector('#panel').innerHTML = await getInstructionPage(`src/instructions/inst_${instNum}.md`) // inst[instNum];
+        // showButton();
+        // if ((instNum == 0) ||
+            // BLOCKS.includes(instNum-1)) {
+                // hidePrevButton();
+        // }
     }
 }
 
@@ -203,9 +227,8 @@ window.endGame = () => {
     quitUnityGame();
     localStorage.setItem('end', true);
     hideButton();
-    setStepDone('introduction');    
-    setStepDone('experiment');
-    setCurrentStep('survey');
+    setPreviousStepDone();
+    setCurrentStep('end')
     document.querySelector('#game').style.display = 'none';
     document.querySelector('#panel').style.display = 'flex';
     document.querySelector('#panel').innerHTML = `
@@ -237,13 +260,19 @@ window.endTrainingRL = () => {
 
 window.endTrainingPerceptual = () => {
     quitUnityGame();
-    setStepDone('introduction');    
-    setStepDone('training1');
-    setCurrentStep('training2');
-    document.querySelector('#game').style.display = 'none';
-    document.querySelector('#panel').style.display = 'flex';
+    window.session++;
+    localStorage.setItem('session', window.session);
+    
+    setPreviousStepDone(); 
+
+    if (window.session == END) {
+        hideButton();
+        window.endGame();
+        return;
+    }
+    
     showButton();
-    instNum = 5;
+    instNum = REST[window.session];
     setPageInstruction(instNum);
     hidePrevButton();
 }

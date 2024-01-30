@@ -241,8 +241,8 @@
   }
   
   .mdl-stepper-horizontal-alternative .mdl-stepper-step {
-    width: 25%;
-    /* 100 / no_of_steps */
+    /* width: 30%; */
+    /* 100 /4no_of_steps */
     /* background: black; */
   }
   
@@ -251,7 +251,7 @@
   
   .mdl-stepper-horizontal-alternative {
     display: table;
-    width: 50%;
+    /* width: 70%; */
     margin: 0 auto;
   }
   
