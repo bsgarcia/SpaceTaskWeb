@@ -202,7 +202,7 @@ const setPageInstruction = async (instNum) => {
         startTrainingPerceptual();
     }  else if (REST.includes(instNum)) {
         setPreviousStepDone()
-        document.querySelector('#panel').innerHTML = restPage;
+        document.querySelector('#panel').innerHTML = restPage.replace('{block_nb}', ''+(window.session));
         document.querySelector('#panel').style.display = 'flex';
         hidePrevButton();
         document.querySelector('#game').style.display = 'none';
