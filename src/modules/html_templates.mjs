@@ -68,3 +68,22 @@ export const landingPage = `
               <img class="front-img" src="images/spaceship_illustration.png" alt="" loading="lazy">
             </div>
 `
+
+export const restPage = `
+  <div class="card-text">
+            <h1>🚀 Well done!🚀 </h1>
+            <p>Take a break and relax for a moment. You can continue to the next block by clicking the arrow button below.</p>
+  <br>
+  <br>
+    <div class="admonition notice">
+        <p class="title">Prolific maximum completion time</p>
+        <p class="content">
+          Beware of the time you spend on this page. Prolific gives you a maximum of ~120 minutes to complete this submission. 
+          This experiment is supposed to take ~30 minutes.
+        </p>
+      </div>
+  </div>
+  <div class="card-img" style="flex:auto">
+      <img class="front-img" src="images/rest_illustration.png" alt="" loading="lazy">
+  </div>
+`
