@@ -13,8 +13,15 @@ Welcome to this **decision-making task**! In this task, you will engage in a **s
 
 * **Outcome** - If the targeted enemy is **destroyed**, **reward points** will be displayed. 
 
-* **Bonus rate** - 1 point = 0.004 pounds. Maximum estimated bonus is **~ £5**.
 
 <!---
-display=flex 
+admonition=<div class="admonition notice" style="margin-left: 9%">
+			<p class="title">Bonus</p>
+      <p class="content">
+1 point = 0.004 pounds. Maximum estimated bonus is <b>~ £5</b>.
+		</p><div>
+--->
+
+<!---
+display=block
 --->
