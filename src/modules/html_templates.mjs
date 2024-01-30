@@ -38,8 +38,12 @@ export const getInstructionPage = async (path) => {
   }
 
   if (file.includes("admonition=")) {
-    let admonition = file.split("admonition=")[1].split("--->")[0]
-    template += `${admonition}</div>`;
+    let admonition1 = file.split("admonition=")[1].split("--->")[0]
+    template += `${admonition1}`;
+    if (file.split("admonition=").length > 2){
+      let admonition2 = file.split("admonition=")[2].split("--->")[0]
+      template += `${admonition2}`;
+    }
   }
 
   if (file.includes("video=")) {
