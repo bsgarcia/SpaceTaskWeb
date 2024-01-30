@@ -16,6 +16,11 @@ export const getInstructionPage = async (path) => {
             /*margin-top: 10%;*/
             margin: auto;
           }
+          
+          strong {
+            color: #53dbc9;
+          }
+
         </style>
       </template>
       </zero-md>`;

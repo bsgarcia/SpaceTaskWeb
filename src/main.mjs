@@ -6,8 +6,8 @@ import {startUnityGame, quitUnityGame} from "./modules/game.mjs";
 // -----------------------------//
 var instNum = parseInt(localStorage.getItem('instNum')) || 0;
 // instNum coding
-const BLOCKS = [4, 6, 8, 10, 12, 14, 16];
-const REST = [5, 7, 9, 11, 13, 15];
+const BLOCKS = [3, 5, 7, 9, 11, 13, 15];
+const REST = [4, 6, 8, 10, 12, 14];
 // session coding
 const END = 6;
 var clickBlocked = false;
@@ -43,7 +43,7 @@ const stopLoading = () => {
 }
 
 const skipCurrentStep = () => {
-    if (instNum<=3) {
+    if (instNum<=2) {
         instNum = BLOCKS[0];
         setPageInstruction(instNum);
     } else if (BLOCKS.includes(instNum)) {
@@ -209,7 +209,7 @@ const setPageInstruction = async (instNum) => {
         // setCurrentStep('block'+window.session);
         setCurrentStep('block'+(window.session+1));
     }
-    else if (instNum<=3) {
+    else if (instNum<=2) {
         document.querySelector('#panel').innerHTML = '<progress style="width:35%; margin: auto"></progress>';
         document.querySelector('#panel').style.display = 'flex';
         document.querySelector('#panel').innerHTML = await getInstructionPage(`src/instructions/inst_${instNum}.md`) // inst[instNum];
