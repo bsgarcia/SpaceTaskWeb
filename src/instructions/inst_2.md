@@ -2,8 +2,9 @@
 
 <br>
 
- In order to **earn points**, you will have to **learn forcefield resistance** by shooting at spaceships. You will encounter identical spaceships with **varying forcefield colors**. A forcefield can go from full <b style="color: cornflowerblue">blue</b> to full <b style="color: orangered">red</b>, with in between **blue-red proportions**. Your objective here is to **estimate the forcefield resistance** of the spaceships **indicated by color proportions**. This proportion codes for a **probability of destroying** the forcefield. Said differently, there are **color ratios** that offer (on average) more or less **resistance**. **Rewards** are fixed to **5**, so you can ignore them. Instead, focus on whether the **forcefield** was **destroyed or not** (and whether or not you got the 5 points reward), and **which color** it was. <br><br>
-  
+ In order to **earn points**, you will have to **learn forcefield resistance** by shooting at spaceships. All spaceships are **identicals**, what differs is the **resistance** of their **forcefield**. That resistance is **signaled** by the exact **color** of the forcefield. Forcefields can be weaker (or stronger) as their color vary from full <b style="color: cornflowerblue">blue</b> to full <b style="color: orangered">red</b>.
+ Said differently, the color of a forcefield **signals** its **probability** of being **destroyed** by your shot.  When you **succeed** at destroying a forcefield, you will earn **5 points** - focus on **which color** it was so that you can maximize your points.
+
 ## Ready?
 
 If you click next, the experiment will start. 
@@ -12,7 +13,7 @@ If you click next, the experiment will start.
 admonition=<div class="admonition notice" style="margin-left: 7%">
 			<p class="title">Note</p>
       <p class="content">
-      Use arrow keys to move, and space to shoot. A small tutorial will show you how to do that before starting the training.
+      Use arrow keys to move, and space to shoot. A small tutorial will show you how to do that before starting the experiment.
 	  </p>
 		</div>
 <br>
