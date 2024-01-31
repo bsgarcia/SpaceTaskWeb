@@ -5,7 +5,7 @@ Welcome to this **decision-making task**! In this task, you will engage in a **s
 
 * **Structure** - There will be **6 blocks** (~5 minutes each) of **64 trials**. Between each block you will be able to **rest a bit**. You can track your progress at anytime with the **timeline** displayed at the top of this webpage.
 
-* **Objective** -  Maximize your total score by **seeking rewards and avoiding losses**. The maximum score you can obtain is **~1100 points**.
+* **Objective** -  Maximize your total score by **seeking rewards**. The maximum score you can obtain is **~1100 points**.
 
 * **Game Interface** - You will see **2 spaceships**, protected  by **forcefields**, falling from top of the screen to bottom at a time over a **5-second period**. Your own spaceship is located at the bottom of the game window.
 
