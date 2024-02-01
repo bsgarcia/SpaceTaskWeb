@@ -279,7 +279,7 @@ window.endTrainingRL = () => {
 
 window.endTrainingPerceptual = () => {
     quitUnityGame();
-    localStorage.setItem('score', window.score);
+    localStorage.setItem('score', JSON.stringify(window.score));
     window.session++;
     localStorage.setItem('session', window.session);
     
