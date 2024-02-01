@@ -276,16 +276,12 @@ window.endTrainingRL = () => {
     hidePrevButton();
 }
 
-const saveScore = (score) => {
-    let strscore = JSON.stringify(score);
-    localStorage.setItem('score', strscore);
 }
 
 
 window.endTrainingPerceptual = () => {
     quitUnityGame();
-    // localStorage.setItem('score', window.score);
-    saveScore(window.score);
+    localStorage.setItem('score', window.score);
     window.session++;
     localStorage.setItem('session', window.session);
     
