@@ -12,7 +12,7 @@ const REST = [4, 6, 8, 10, 12, 14];
 const END = 6;
 const CONV = 0.004;
 var clickBlocked = false;
-var end = localStorage.getItem('end');
+var end = localStorage.getItem('end') == 'true';
 const clickBlockedTime = 300;
 var inst = [];
 window.subID = 'not_set';
@@ -235,7 +235,11 @@ const setPageInstruction = async (instNum) => {
 }
 
 window.endGame = () => {
-    quitUnityGame();
+    try {
+        quitUnityGame();
+    } catch {
+        console.log('quitUnityGame error: no game running');
+    }
     localStorage.setItem('end', true);
     hideButton();
     setPreviousStepDone();
@@ -247,10 +251,10 @@ window.endGame = () => {
     document.querySelector('#panel').innerHTML = `
             <div class="center-align" style="margin: auto">
             <h1 style="display: block">🚀Thank you!🚀</h1>
+            <h3>💰 You earned ${points} points = ${pounds} pounds! 💰</h3>
             <br>
             <br>
             <p>Thank you for participating in our experiment!</p>
-            <p>🪙 You earned <b>${points}</b> points = <b>${pounds} pounds! 🪙</p>
             <p>Please click the button below and answer a few questions to complete your submission.</p>
             <br>
             <button id="submit-button" class="btn btn-primary">Survey</button>
