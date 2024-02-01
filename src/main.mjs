@@ -10,6 +10,7 @@ const BLOCKS = [3, 5, 7, 9, 11, 13, 15];
 const REST = [4, 6, 8, 10, 12, 14];
 // session coding
 const END = 6;
+const CONV = 0.004;
 var clickBlocked = false;
 var end = localStorage.getItem('end');
 const clickBlockedTime = 300;
@@ -17,7 +18,14 @@ var inst = [];
 window.subID = 'not_set';
 window.session = parseInt(localStorage.getItem('session')) || 0;
 // -----------------------------//
-
+const loadScore = () => {
+    let score = localStorage.getItem('score');
+    if (score) {
+        return JSON.parse(score);
+    } else {
+        return [];
+    }
+}
 const reload = () => {
     localStorage.clear();
     window.location.reload();
@@ -64,6 +72,8 @@ const skipCurrentStep = () => {
 // }
 
 function main() {
+
+    window.score = loadScore();
     setSubID();
     
     // attach event listeners to buttons
@@ -230,6 +240,8 @@ window.endGame = () => {
     hideButton();
     setPreviousStepDone();
     setCurrentStep('end')
+    let points = (window.score.reduce((a, b) => a + b, 0)).toFixed(3);
+    let pounds = (points*CONV).toFixed(3);
     document.querySelector('#game').style.display = 'none';
     document.querySelector('#panel').style.display = 'flex';
     document.querySelector('#panel').innerHTML = `
@@ -238,6 +250,7 @@ window.endGame = () => {
             <br>
             <br>
             <p>Thank you for participating in our experiment!</p>
+            <p>🪙 You earned <b>${points}</b> points = <b>${pounds} pounds! 🪙</p>
             <p>Please click the button below and answer a few questions to complete your submission.</p>
             <br>
             <button id="submit-button" class="btn btn-primary">Survey</button>
@@ -259,8 +272,16 @@ window.endTrainingRL = () => {
     hidePrevButton();
 }
 
+const saveScore = (score) => {
+    let strscore = JSON.stringify(score);
+    localStorage.setItem('score', strscore);
+}
+
+
 window.endTrainingPerceptual = () => {
     quitUnityGame();
+    // localStorage.setItem('score', window.score);
+    saveScore(window.score);
     window.session++;
     localStorage.setItem('session', window.session);
     
