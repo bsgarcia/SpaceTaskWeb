@@ -276,8 +276,6 @@ window.endTrainingRL = () => {
     hidePrevButton();
 }
 
-}
-
 
 window.endTrainingPerceptual = () => {
     quitUnityGame();
