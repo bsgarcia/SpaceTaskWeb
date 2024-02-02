@@ -75,7 +75,12 @@ body.dark {
     /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
     /* margin: 20px; */
 }
-
+.scroll-div{
+            max-height: 400px;
+            overflow: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
 /* Styles for the text on the left */
 .card-text {
     /* flex: 1; */

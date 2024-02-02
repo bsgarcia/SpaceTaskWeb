@@ -1,4 +1,4 @@
-import { getInstructionPage, landingPage, restPage } from "./modules/html_templates.mjs";
+import { getInstructionPage, landingPage, restPage, consentPage } from "./modules/html_templates.mjs";
 import {getURLParams, createCode} from "./modules/utils.mjs";
 import {startUnityGame, quitUnityGame} from "./modules/game.mjs";
 
@@ -6,8 +6,8 @@ import {startUnityGame, quitUnityGame} from "./modules/game.mjs";
 // -----------------------------//
 var instNum = parseInt(localStorage.getItem('instNum')) || 0;
 // instNum coding
-const BLOCKS = [3, 5, 7, 9, 11, 13, 15];
-const REST = [4, 6, 8, 10, 12, 14];
+const BLOCKS = [4, 6, 8, 10, 12, 14, 16]
+const REST = [5, 7, 9, 11, 13, 15]
 // session coding
 const END = 6;
 const CONV = 0.004;
@@ -51,7 +51,7 @@ const stopLoading = () => {
 }
 
 const skipCurrentStep = () => {
-    if (instNum<=2) {
+    if (instNum<=3) {
         instNum = BLOCKS[0];
         setPageInstruction(instNum);
     } else if (BLOCKS.includes(instNum)) {
@@ -207,6 +207,23 @@ const setPageInstruction = async (instNum) => {
         document.querySelector('#panel').style.display = 'flex';
         document.querySelector('#prev-button').style.display = 'none';
         document.querySelector('#game').style.display = 'none';
+        document.querySelector('#next-button').addEventListener('click', next)
+    } else if (instNum == 1) {
+        document.querySelector('#panel').innerHTML = consentPage;
+        document.querySelector('#panel').style.display = 'block';
+        // document.querySelector('#prev-button').style.display = 'none';
+        showButton();
+        document.querySelector('#next-button').removeEventListener('click', next)
+        document.querySelector('#next-button').addEventListener('click', () => {
+
+            document.querySelectorAll('input').forEach(element => element.reportValidity());
+            // if all checked
+             if (document.querySelectorAll('input:checked').length == 4) {
+                document.querySelector('#next-button').addEventListener('click', next);
+                next()
+             }
+        })
+        document.querySelector('#game').style.display = 'none';
     } else if (BLOCKS.includes(instNum)) {
         setPreviousStepDone()
         startTrainingPerceptual();
@@ -219,10 +236,10 @@ const setPageInstruction = async (instNum) => {
         // setCurrentStep('block'+window.session);
         setCurrentStep('block'+(window.session+1));
     }
-    else if (instNum<=2) {
+    else if (instNum<=3) {
         document.querySelector('#panel').innerHTML = '<progress style="width:35%; margin: auto"></progress>';
         document.querySelector('#panel').style.display = 'flex';
-        document.querySelector('#panel').innerHTML = await getInstructionPage(`src/instructions/inst_${instNum}.md`) // inst[instNum];
+        document.querySelector('#panel').innerHTML = await getInstructionPage(`src/instructions/inst_${instNum-1}.md`) // inst[instNum];
         showButton();
         if ((instNum == 0) ||
              BLOCKS.includes(instNum-1)) {
