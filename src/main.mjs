@@ -244,7 +244,7 @@ window.endGame = () => {
     hideButton();
     setPreviousStepDone();
     setCurrentStep('end')
-    let points = (window.score.reduce((a, b) => a + b, 0));
+    let points = window.score.reduce((a, b) => a + b, 0);
     let pounds = (points*CONV).toFixed(3);
     document.querySelector('#game').style.display = 'none';
     document.querySelector('#panel').style.display = 'flex';
