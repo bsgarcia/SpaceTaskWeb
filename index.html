@@ -103,8 +103,18 @@
   <div>
     <!-- double arrow icon (skip) -->
     <!-- <button id="skip" class="center-align medium-elevate"><span style="font-size: x-large;">&#xBB;</span><span>Skip current step</span></button> -->
-    <!-- <button id="reload" class="center-align medium-elevate"><i>&#8635;</i><span>Reload</span></button> -->
+    <button id="reload" class="center-align medium-elevate"><i>&#8635;</i><span>Restart experiment</span></button>
     <!-- skip button -->
+
+      <dialog id="modal-reload">
+        <h5 id="modal-title">Restart experiment?</h5>
+        <br>
+        <div id="modal-text">🚩If you restart, you will lose all your progression!🚩</div>
+        <nav class="right-align no-space">
+        <button id="modal-cancel" class="transparent link" style="color: lightcoral !important">Cancel</button>
+        <button id="modal-confirm" class="transparent link">Confirm</button>
+        </nav>
+      </dialog>
   </div>  
 
   </nav>
@@ -150,6 +160,8 @@
    <progress style="top: 250; left: 50%; display: none" class="circle large center-align middle-align"></progress>
   </main>
   <p class="subID"></p>
+  
+
 </body>
 
 </html>
