@@ -17,8 +17,9 @@ const clickBlockedTime = 300;
 var inst = [];
 window.subID = 'not_set';
 window.session = parseInt(localStorage.getItem('session')) || 0;
-const COMP_LINK = 'aHR0cHM6Ly9nb29nbGUuY29t';
+const COMP_LINK = 'aHR0cHM6Ly9hcHAucHJvbGlmaWMuY29tL3N1Ym1pc3Npb25zL2NvbXBsZXRlP2NjPUNKRllaSlk3';
 // -----------------------------//
+//
 const loadScore = () => {
     let score = localStorage.getItem('score');
     if (score) {
@@ -28,8 +29,20 @@ const loadScore = () => {
     }
 }
 const reload = () => {
-    localStorage.clear();
-    window.location.reload();
+    // document.querySelector('#modal').style.display = 'block';
+    document.querySelector('#modal-reload').showModal();
+    // document.querySelector('body').classList.add('overlay');
+    // document.querySelector('body').classList.add('blur');
+    document.querySelector('#modal-confirm').addEventListener('click', () => {
+        localStorage.clear();
+        window.location.reload();
+    })
+    document.querySelector('#modal-cancel').addEventListener('click', () => {
+        document.querySelector('#modal-reload').close();
+        // document.querySelector('body').classList.remove('overlay blur');
+        // document.querySelector('body').classList.remove('overlay');
+        // document.querySelector('body').classList.remove('blur');
+    })
 }
 
 const loadInstructions = async () => {
@@ -83,7 +96,7 @@ function main() {
     const prevButton = document.getElementById('prev-button');
     prevButton.addEventListener('click', prev);
     document.querySelector('#reload').addEventListener('click', reload);
-    document.querySelector('#skip').addEventListener('click', skipCurrentStep);
+    // document.querySelector('#skip').addEventListener('click', skipCurrentStep);
     
     if (end) {
         window.endGame();
