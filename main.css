@@ -54,7 +54,7 @@ body.dark {
 }
 
 .video-inst video {
-    width: 100%;
+    /* width: 100%; */
     height: auto;
     margin-top: 8%;
 }

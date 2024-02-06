@@ -17,6 +17,7 @@ const clickBlockedTime = 300;
 var inst = [];
 window.subID = 'not_set';
 window.session = parseInt(localStorage.getItem('session')) || 0;
+const COMP_LINK = 'aHR0cHM6Ly9nb29nbGUuY29t';
 // -----------------------------//
 const loadScore = () => {
     let score = localStorage.getItem('score');
@@ -272,11 +273,14 @@ window.endGame = () => {
             <br>
             <br>
             <p>Thank you for participating in our experiment!</p>
-            <p>Please click the button below and answer a few questions to complete your submission.</p>
+            <p>Please click the button below to complete your submission.</p>
             <br>
-            <button id="submit-button" class="btn btn-primary">Survey</button>
+            <button id="submit-button" class="btn btn-primary">Complete</button>
             </div>
     `;
+    document.querySelector('#submit-button').addEventListener('click', () => {
+        window.location.href = atob(COMP_LINK);
+    })
 }
 
 window.endTrainingRL = () => {
