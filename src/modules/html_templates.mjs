@@ -61,6 +61,19 @@ export const getInstructionPage = async (path) => {
       </div>
       </div>`
   }
+  if (file.includes("image=")) {
+    template = template.replace('width: 85%', '')
+    let image = file.split("image=")[1].split("--->")[0]
+    let imagePath = `src/instructions/images/${image}`;
+    template = `<div class="grid"><div class="s6">` + template;
+    template += `<div class="s6">
+      <div class="video-inst">
+      <img src="${imagePath}" style="width: 80%">
+      </div>
+      </div>
+      </div>` 
+    alert(imagePath)
+  }
 
   return template;
 }
