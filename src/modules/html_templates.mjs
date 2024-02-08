@@ -72,7 +72,6 @@ export const getInstructionPage = async (path) => {
       </div>
       </div>
       </div>` 
-    alert(imagePath)
   }
 
   return template;
