@@ -28,7 +28,7 @@ const loadScore = () => {
         return [];
     }
 }
-const reload = () => {
+window.reload = () => {
     // document.querySelector('#modal').style.display = 'block';
     document.querySelector('#modal-reload').showModal();
     // document.querySelector('body').classList.add('overlay');
@@ -95,7 +95,7 @@ function main() {
     nextButton.addEventListener('click', next);
     const prevButton = document.getElementById('prev-button');
     prevButton.addEventListener('click', prev);
-    document.querySelector('#reload').addEventListener('click', reload);
+    // document.querySelector('#reload').addEventListener('click', reload);
     // document.querySelector('#skip').addEventListener('click', skipCurrentStep);
     
     if (end) {
