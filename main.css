@@ -125,3 +125,9 @@ body.dark {
 .markdown-body {
     width: 80% !important;
 }   
+
+.gradient-text {
+    background: linear-gradient(15deg, rgba(34,97,195,1) -10%, var(--primary) 55%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}

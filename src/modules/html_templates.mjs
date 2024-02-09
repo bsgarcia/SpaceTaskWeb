@@ -79,10 +79,7 @@ export const getInstructionPage = async (path) => {
 
 export const landingPage = `
   <div class="card-text">
-            <!-- <h1>Welcome to this</h1><br> -->
-            <h1>Welcome to our</h1><br><h1 style="color: var(--primary); font-weight: bolder;">experiment!</h1>
-            <!-- <h1>Welcome to this <span style = "display: block; color: var(--primary)"> experiment!</span></h1> -->
-            <!-- <h1><b style="color: var(--primary)"> experiment!</b></h1> -->
+            <h1>Welcome to our</h1><br><h1 class="gradient-text" style="font-weight: bolder;">experiment!</h1>
         </div>
             <!-- <p>Some text here</p> -->
             <div class="card-img">
