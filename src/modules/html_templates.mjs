@@ -68,7 +68,7 @@ export const getInstructionPage = async (path) => {
     template = `<div class="grid"><div class="s6">` + template;
     template += `<div class="s6">
       <div class="video-inst">
-      <img src="${imagePath}" style="width: 80%">
+      <img src="${imagePath}" style="width: 87%">
       </div>
       </div>
       </div>` 

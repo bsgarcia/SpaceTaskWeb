@@ -18,7 +18,7 @@ Welcome to this **decision-making task**! In this task, you will engage in a **s
 admonition=<div class="admonition notice" style="margin-left: 9%">
 			<p class="title">Bonus</p>
       <p class="content">
-1 point = 0.004 pounds. Maximum estimated bonus is <b>~ £5</b>.
+1 point = 0.0035 pounds. Maximum estimated bonus is <b>~ £5</b>.
 		</p><div>
 --->
 
