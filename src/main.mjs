@@ -10,7 +10,7 @@ const BLOCKS = [4, 6, 8, 10, 12, 14, 16]
 const REST = [5, 7, 9, 11, 13, 15]
 // session coding
 const END = 6;
-const CONV = 0.004;
+const CONV = 0.0035;
 var clickBlocked = false;
 var end = localStorage.getItem('end') == 'true';
 const clickBlockedTime = 300;
