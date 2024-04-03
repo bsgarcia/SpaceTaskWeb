@@ -3,7 +3,7 @@ Welcome to this **decision-making task**! In this task, you will engage in a **s
 
 # Task Overview
 
-* **Structure** - There will be **6 blocks** (~5 minutes each) of **64 trials**. Between each block you will be able to **rest a bit**. You can track your progress at anytime with the **timeline** displayed at the top of this webpage.
+* **Structure** - There will be **6 blocks** (~5 minutes each) of **72 trials**. Between each block you will be able to **rest a bit**. You can track your progress at anytime with the **timeline** displayed at the top of this webpage.
 
 * **Objective** -  Maximize your total score by **seeking rewards**. The maximum score you can obtain is **~1100 points**.
 

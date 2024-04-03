@@ -1,5 +1,5 @@
 # 🌌 Learn forcefields' resistance! 🌌
- In order to **earn points**, you will have to **learn forcefield resistance** by shooting at spaceships (see picture on the right). All spaceships are **identicals**, what differs is the **resistance** of their **forcefield**. That resistance is **signaled** by the exact **color** of the forcefield. Forcefields can be weaker (or stronger) as their color vary from full <b style="color: cornflowerblue">blue</b> to full <b style="color: yellow">yellow</b>.
+ In order to **earn points**, you will have to **learn forcefield resistance** by shooting at spaceships (see picture on the right). All spaceships are **identicals**, what differs is the **resistance** of their **forcefield**. That resistance is **signaled** by the exact **color** of the forcefield. Forcefields can be weaker (or stronger) as their color vary from full <b style="color: white">white</b> to full <b style="color: black">black</b>.
  Said differently, the color of a forcefield **signals** its **probability** of being **destroyed** by your shot.  When you **succeed** at destroying a forcefield, you will earn **5 points** - focus on **which color** it was so that you can maximize your points.
 The optimal forcefield can be equally on the left or on the right, there is no optimal side. 
 ## Ready?
@@ -23,7 +23,7 @@ admonition=<div class="admonition notice" style="">
 --->
 
 <!--- 
-image=screenshot.png
+image=screenshot2.PNG
 --->
 
 <!---
