@@ -23,7 +23,7 @@ admonition=<div class="admonition notice" style="">
 --->
 
 <!--- 
-image=screenshot2.PNG
+image=screenshot2.png
 --->
 
 <!---
