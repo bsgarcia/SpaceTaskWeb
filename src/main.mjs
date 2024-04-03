@@ -153,7 +153,7 @@ const startTrainingPerceptual = () => {
     setStepDone('introduction');
     // range from 1 to idx set done
     setPreviousStepDone();
-    startUnityGame('block');
+    startUnityGame('bw');
 }
 
 const startTrainingRL = () => {
