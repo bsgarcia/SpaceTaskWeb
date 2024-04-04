@@ -33,14 +33,14 @@
 <div class="container">
     <h2 class="center-align">Prolific Participants</h2>
     <table class="striped centered responsive-table center-table">
-        <thead>
+        <!-- <thead>
             <tr>
                 <th>Prolific ID</th>
                 <th>Session</th>
                 <th>Trial</th>
                 <th>Progress</th>
             </tr>
-        </thead>
+        </thead> -->
         <tbody id="participants-body">
             <!-- Table body content will be added dynamically using JavaScript -->
         </tbody>
@@ -81,6 +81,9 @@
                             row.id = date;
                             row.innerHTML = `<td colspan="4"><h5>${date}</h5></td>`;
                             tableBody.appendChild(row);
+                            var thead = document.createElement("thead");
+                            thead.innerHTML = `<tr><th>Prolific ID</th><th>Session</th><th>Trial</th><th>Progress</th></tr>`;
+                            tableBody.appendChild(thead);
                         }
                         
                         // if the row already exists, add the participant to that row
