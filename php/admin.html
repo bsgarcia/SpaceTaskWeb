@@ -52,7 +52,11 @@
                 if (data.length > 0) {
                     // Loop through the data and append rows to the table
                     // there is a datetime field (standard mysql format) that can be used to sort the data
-                    data.sort((a, b) => new Date(b.datetime) - new Date(a.datetime));
+                    // first convert the datetime string to a Date object and then sort
+                    data.forEach(item => {
+                        item.datetime = new Date(item.datetime);
+                    });
+                    data.sort((a, b) => b.datetime - a.datetime);
                     data.forEach(item => {
                         var row = document.createElement("tr");
                         row.innerHTML = `<td>${item.datetime}</td><td>${item.prolificID}</td><td>${item.session}</td><td>${item.t}</td><td>${createProgressBar(item.session, item.t)}</td>`;
