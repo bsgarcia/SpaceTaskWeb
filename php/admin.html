@@ -27,10 +27,9 @@
     <table class="striped centered responsive-table center-table">
         <thead>
             <tr>
-                <th>Date</th>
                 <th>Prolific ID</th>
                 <th>Session</th>
-                <th>T</th>
+                <th>Trial</th>
                 <th>Progress</th>
             </tr>
         </thead>
@@ -72,7 +71,7 @@
                         if (!document.getElementById(date)) {
                             var row = document.createElement("tr");
                             row.id = date;
-                            row.innerHTML = `<td colspan="4"><h2>${date}</h2></td>`;
+                            row.innerHTML = `<td colspan="4"><h5>${date}</h5></td>`;
                             tableBody.appendChild(row);
                         }
                         
