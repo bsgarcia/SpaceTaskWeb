@@ -1,0 +1,101 @@
+<CTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prolific Participants</title>
+<!-- Material Design CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+<style>
+    /* Center the table */
+    .center-table {
+        margin: auto;
+    }
+
+    /* Custom style for progress bar container */
+    .progress-container {
+        width: 50%;
+        margin: auto;
+        margin-bottom: 20px;
+    }
+</style>
+</head>
+
+<body>
+<div class="container">
+    <h2 class="center-align">Prolific Participants</h2>
+    <table class="striped centered responsive-table center-table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Prolific ID</th>
+                <th>Session</th>
+                <th>T</th>
+                <th>Progress</th>
+            </tr>
+        </thead>
+        <tbody id="participants-body">
+            <!-- Table body content will be added dynamically using JavaScript -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // Function to fetch data from PHP script and populate the table
+    function fetchData() {
+        fetch('admin.php')
+            .then(response => response.json())
+            .then(data => {
+                var tableBody = document.getElementById("participants-body");
+                // Clear table body
+                tableBody.innerHTML = "";
+                if (data.length > 0) {
+                    // Loop through the data and append rows to the table
+                    // there is a datetime field (standard mysql format) that can be used to sort the data
+                    data.sort((a, b) => new Date(b.datetime) - new Date(a.datetime));
+                    data.forEach(item => {
+                        var row = document.createElement("tr");
+                        row.innerHTML = `<td>${item.datetime}</td><td>${item.prolificID}</td><td>${item.session}</td><td>${item.t}</td><td>${createProgressBar(item.session, item.t)}</td>`;
+                        tableBody.appendChild(row);
+                    });
+                } else {
+                    // If no data returned, display a message
+                    var row = document.createElement("tr");
+                    row.innerHTML = '<td colspan="4">No participants found</td>';
+                    tableBody.appendChild(row);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    // Function to create progress bar
+    function createProgressBar(session, t) {
+        session = parseInt(session)
+        t = parseInt(t)
+        // Calculate progress percentage
+        var totalTrials = 6 * 72; // Total trials: 6 sessions * 72 trials each
+        var currentTrial = session * 72 + t + 1; // Current trial (starting from 1)
+        var progressPercentage = (currentTrial / totalTrials) * 100;
+
+        // Create progress bar HTML
+        var progressBarHTML = `
+    <div class="progress-container">
+      <div class="progress">
+        <div class="determinate" style="width: ${progressPercentage}%;"></div>
+      </div>
+      <span>${progressPercentage.toFixed(2)}%</span>
+    </div>
+  `;
+
+        return progressBarHTML;
+    }
+
+    // Call the fetchData function when the page loads
+    window.onload = fetchData;
+</script>
+
+<!-- Materialize JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</body>
+
+</html>
