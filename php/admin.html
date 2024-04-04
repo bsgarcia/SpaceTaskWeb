@@ -127,17 +127,17 @@
         // Calculate progress percentage
         var totalTrials = 6 * 72; // Total trials: 6 sessions * 72 trials each
         var currentTrial = session * 72 + t + 1; // Current trial (starting from 1)
-        var progressPercentage = (currentTrial / totalTrials) * 100;
+        var progressPercentage = parseInt((currentTrial / totalTrials) * 100);
 
         // Create progress bar HTML
         var progressBarHTML = `
-    <div class="progress-container">
-      <div class="progress">
-        <div class="determinate" style="width: ${progressPercentage}%;"></div>
-      </div>
-      <span>${progressPercentage.toFixed(2)}%</span>
-    </div>
-  `;
+            <div class="progress-container">
+              <div class="progress">
+                <div class="determinate" style="width: ${progressPercentage}%;"></div>
+              </div>
+              <span>${progressPercentage}%</span>
+            </div>
+        `;
 
         return progressBarHTML;
     }
