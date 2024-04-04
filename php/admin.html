@@ -49,6 +49,13 @@
 
 <script>
     // Function to fetch data from PHP script and populate the table
+    hashCode = function(s) {
+      return s.split("").reduce(function(a, b) {
+        a = ((a << 5) - a) + b.charCodeAt(0);
+        return a & a;
+      }, 0);
+    }
+ 
     function fetchData() {
         fetch('admin.php')
             .then(response => response.json())
@@ -75,14 +82,15 @@
                     data.forEach(item => {
                         // only keep the date part of the datetime string (Wed Apr 03 2024)
                         var date = item.datetime.toDateString();
+                        var hash = hashCode(date);
+                        var tableBody = document.getElementById(`tbody-${hash}`);
                         // check if a row for that date already exists
                         if (!document.getElementById(date)) {
                             // delete the table body variable if it exists
                             if (tableBody!=null && tableBody!=undefined){
                                 delete tableBody;
                             }
-                            var random = Math.floor(Math.random() * 1000);
-                            var tableBody = document.createElement(`tbody-${random}`);
+                            var tableBody = document.createElement(`tbody-${hash}`);
                             // strings contains an invalid character when creating tablebody
                             // replace the invalid character with a valid one
                             var row = document.createElement("tr");
