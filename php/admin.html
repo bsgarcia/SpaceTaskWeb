@@ -32,7 +32,7 @@
 <body>
 <div class="container">
     <h2 class="center-align">Prolific Participants</h2>
-    <table class="striped centered responsive-table center-table">
+    <table id="table" class="striped centered responsive-table center-table">
         <!-- <thead>
             <tr>
                 <th>Prolific ID</th>
@@ -81,7 +81,10 @@
                             if (tableBody!=null && tableBody!=undefined){
                                 delete tableBody;
                             }
-                            var tableBody = document.createElement(`tbody-${date}`);
+                            var random = Math.floor(Math.random() * 1000);
+                            var tableBody = document.createElement(`tbody-${random}`);
+                            // strings contains an invalid character when creating tablebody
+                            // replace the invalid character with a valid one
                             var row = document.createElement("tr");
                             row.id = date;
                             row.innerHTML = `<td colspan="4"><h5>${date}</h5></td>`;
@@ -95,6 +98,7 @@
                         var row = document.createElement("tr");
                         row.innerHTML = `<td>${item.prolificID}</td><td>${item.session}</td><td>${item.t}</td><td>${createProgressBar(item.session, item.t)}</td>`;
                         tableBody.appendChild(row);
+                        document.getElementById("table").appendChild(tableBody);
                     })
                 } else {
                     // If no data returned, display a message
