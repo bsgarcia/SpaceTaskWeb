@@ -57,11 +57,30 @@
                         item.datetime = new Date(item.datetime);
                     });
                     data.sort((a, b) => b.datetime - a.datetime);
-                    data.forEach(item => {
+                    /* data.forEach(item => {
                         var row = document.createElement("tr");
                         row.innerHTML = `<td>${item.datetime}</td><td>${item.prolificID}</td><td>${item.session}</td><td>${item.t}</td><td>${createProgressBar(item.session, item.t)}</td>`;
                         tableBody.appendChild(row);
                     });
+                     */
+                    // instead of having a column for datetime, you can also create a row displaying only the date for each particular day and then list the participants for that day
+                    // you can use the date object to get the date in a specific format
+                    data.forEach(item => {
+                        // only keep the date part of the datetime string (Wed Apr 03 2024)
+                        var date = item.datetime.toDateString();
+                        // check if a row for that date already exists
+                        if (!document.getElementById(date)) {
+                            var row = document.createElement("tr");
+                            row.id = date;
+                            row.innerHTML = `<td colspan="5"><h4>${date}</h4></td>`;
+                            tableBody.appendChild(row);
+                        }
+                        
+                        // if the row already exists, add the participant to that row
+                        var row = document.createElement("tr");
+                        row.innerHTML = `<td>${item.prolificID}</td><td>${item.session}</td><td>${item.t}</td><td>${createProgressBar(item.session, item.t)}</td>`;
+                        tableBody.appendChild(row);
+                    })
                 } else {
                     // If no data returned, display a message
                     var row = document.createElement("tr");
