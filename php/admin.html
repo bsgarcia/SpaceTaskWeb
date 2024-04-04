@@ -98,8 +98,9 @@
                             row.id = date;
                             row.innerHTML = `<td colspan="4"><h5>${date}</h5></td>`;
                             tableBody.appendChild(row);
-                            var thead = document.createElement("thead");
-                            thead.innerHTML = `<tr><th>Prolific ID</th><th>Session</th><th>Trial</th><th>Progress</th></tr>`;
+                            var thead = document.createElement("tr");
+                            thead.style.fontWeight = "bold";
+                            thead.innerHTML = `<td>Prolific ID</td><td>Session</td><td>Trial</td><td>Progress</td>`;
                             tableBody.appendChild(thead);
                         }
                         
