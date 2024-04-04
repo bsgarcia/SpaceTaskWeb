@@ -90,7 +90,8 @@
                             if (tableBody!=null && tableBody!=undefined){
                                 delete tableBody;
                             }
-                            var tableBody = document.createElement(`tbody-${hash}`);
+                            var tableBody = document.createElement(`tbody`);
+                            tableBody.id = `tbody-${hash}`;
                             // strings contains an invalid character when creating tablebody
                             // replace the invalid character with a valid one
                             var row = document.createElement("tr");
