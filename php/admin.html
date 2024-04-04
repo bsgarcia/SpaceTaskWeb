@@ -77,6 +77,11 @@
                         var date = item.datetime.toDateString();
                         // check if a row for that date already exists
                         if (!document.getElementById(date)) {
+                            // delete the table body variable if it exists
+                            if (tableBody!=null && tableBody!=undefined){
+                                delete tableBody;
+                            }
+                            var tableBody = document.createElement(`tbody-${date}`);
                             var row = document.createElement("tr");
                             row.id = date;
                             row.innerHTML = `<td colspan="4"><h5>${date}</h5></td>`;
