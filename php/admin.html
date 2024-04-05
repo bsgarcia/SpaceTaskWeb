@@ -71,12 +71,6 @@
                         item.datetime = new Date(item.datetime);
                     });
                     data.sort((a, b) => b.datetime - a.datetime);
-                    /* data.forEach(item => {
-                        var row = document.createElement("tr");
-                        row.innerHTML = `<td>${item.datetime}</td><td>${item.prolificID}</td><td>${item.session}</td><td>${item.t}</td><td>${createProgressBar(item.session, item.t)}</td>`;
-                        tableBody.appendChild(row);
-                    });
-                     */
                     // instead of having a column for datetime, you can also create a row displaying only the date for each particular day and then list the participants for that day
                     // you can use the date object to get the date in a specific format
                     data.forEach(item => {
