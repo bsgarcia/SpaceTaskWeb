@@ -73,7 +73,7 @@ const skipCurrentStep = () => {
         instNum = PERCEPTUAL_TRAINING;
         setPageInstruction(instNum);
     } else if (instNum == PERCEPTUAL_TRAINING || instNum == RL_TRAINING || instNum == FULL) {
-        alert('InstNum: '+instNum + '\n' + 'Session: '+window.session + '\n')
+        // alert('InstNum: '+instNum + '\n' + 'Session: '+window.session + '\n')
         switch (instNum) {
             case PERCEPTUAL_TRAINING:
                 window.endTrainingPerceptual();
