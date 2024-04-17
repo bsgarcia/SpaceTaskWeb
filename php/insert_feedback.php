@@ -21,7 +21,7 @@ try {
     $placeholders = ':' . implode(', :', array_keys($data));
 
     // Inserting data into the 'spaceprl' table dynamically
-    $stmt = $conn->prepare("INSERT INTO spaceprl_feeback ($columns) VALUES ($placeholders)");
+    $stmt = $conn->prepare("INSERT INTO spaceprl_feedback ($columns) VALUES ($placeholders)");
 
     // Binding parameters and executing the statement
     foreach ($data as $key => $value) {
