@@ -12,7 +12,7 @@ const PERCEPTUAL_TRAINING = 5;
 const RL_TRAINING = 7;
 const FULL = 9;
 const END = 10;
-const CONV = 0.0003;
+const CONV = 0.00028;
 
 var clickBlocked = false;
 var end = localStorage.getItem('end') == 'true';

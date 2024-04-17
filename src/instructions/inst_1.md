@@ -1,11 +1,11 @@
 # Hello!
-Welcome to this **decision-making task**! In this task, you will engage in a **space shooter game** where your goal is to **maximize your total score** by making strategic decisions. This task length is approximately **30 min**. Please **read** the instructions **carefully** before starting.
+Welcome to this **decision-making task**! In this task, you will engage in a **space shooter game** where your goal is to **maximize your total score** by making strategic decisions. This task length is approximately **40 min**. Please **read** the instructions **carefully** before starting.
 
 # Task Overview
 
 * **Structure** - There will be **3 phase** of respectively **72, 72, and  288 trials**. Between each phase you will be able to **rest a bit**. You can track your progress at anytime with the **timeline** displayed at the top of this webpage.
 
-* **Objective** -  Maximize your total score by **seeking rewards**. You can reasonably expect a score of at least **~21000 points**.
+* **Objective** -  Maximize your total score by **seeking rewards**. You can reasonably expect a score of at least **~15000 points**.
 
 * **Game Interface** - You will see **2 spaceships**, protected  by **forcefields**, falling from top to bottom of the screen  over a **3-second period**. Your own spaceship is located at the bottom of the game window. 
 
@@ -18,7 +18,7 @@ Welcome to this **decision-making task**! In this task, you will engage in a **s
 admonition=<div class="admonition notice" style="margin-left: 9%">
 			<p class="title">Bonus</p>
       <p class="content">
-1 point = 0.0002 pounds. Maximum estimated bonus is <b>~ £5</b>.
+1 point = 0.00028 pounds. Maximum estimated bonus is <b>~ £5</b>.
 		</p><div>
 --->
 
