@@ -5,12 +5,15 @@ import {startUnityGame, quitUnityGame} from "./modules/game.mjs";
 // globals
 // -----------------------------//
 var instNum = parseInt(localStorage.getItem('instNum')) || 0;
+window.instNum = instNum;
 // instNum coding
-const BLOCKS = [4, 6, 8, 10, 12, 14, 16]
-const REST = [5, 7, 9, 11, 13, 15]
-// session coding
-const END = 6;
+const REST = [6, 8]
+const PERCEPTUAL_TRAINING = 5;
+const RL_TRAINING = 7;
+const FULL = 9;
+const END = 10;
 const CONV = 0.0035;
+
 var clickBlocked = false;
 var end = localStorage.getItem('end') == 'true';
 const clickBlockedTime = 300;
@@ -18,6 +21,7 @@ var inst = [];
 window.subID = 'not_set';
 window.session = parseInt(localStorage.getItem('session')) || 0;
 const COMP_LINK = 'aHR0cHM6Ly9hcHAucHJvbGlmaWMuY29tL3N1Ym1pc3Npb25zL2NvbXBsZXRlP2NjPUNKRllaSlk3';
+const php = 'php/insert_feedback.php';
 // -----------------------------//
 //
 const loadScore = () => {
@@ -65,15 +69,29 @@ const stopLoading = () => {
 }
 
 const skipCurrentStep = () => {
-    if (instNum<=3) {
-        instNum = BLOCKS[0];
+    if (instNum<=4) {
+        instNum = PERCEPTUAL_TRAINING;
         setPageInstruction(instNum);
-    } else if (BLOCKS.includes(instNum)) {
-        // alert('InstNum: '+instNum + '\n' + 'Session: '+window.session + '\n' + 'Block: '+BLOCKS.indexOf(instNum))
-        window.endTrainingPerceptual();
+    } else if (instNum == PERCEPTUAL_TRAINING || instNum == RL_TRAINING || instNum == FULL) {
+        alert('InstNum: '+instNum + '\n' + 'Session: '+window.session + '\n')
+        switch (instNum) {
+            case PERCEPTUAL_TRAINING:
+                window.endTrainingPerceptual();
+                // alert('endTrainingPerceptual')
+                // window.startTrainingRL();
+                break;
+            case RL_TRAINING:
+                // alert('endTrainingRL')
+                window.endTrainingRL();
+                break;
+            case FULL:
+                window.endGame();
+                break;
+        }
+            
     } else if (REST.includes(instNum)) {
-        // alert('InstNum: '+instNum + '\n' + 'Session: '+window.session + '\n' + 'Block: '+BLOCKS.indexOf(instNum))
-        instNum = BLOCKS[REST.indexOf(instNum)+1]
+        // alert('InstNum: '+instNum + '\n' + 'Session: '+window.session + '\n')
+        instNum++;
         setPageInstruction(instNum);
     }
 }
@@ -95,8 +113,8 @@ function main() {
     nextButton.addEventListener('click', next);
     const prevButton = document.getElementById('prev-button');
     prevButton.addEventListener('click', prev);
-    // document.querySelector('#reload').addEventListener('click', reload);
-    // document.querySelector('#skip').addEventListener('click', skipCurrentStep);
+    document.querySelector('#reload').addEventListener('click', reload);
+    document.querySelector('#skip').addEventListener('click', skipCurrentStep);
     
     if (end) {
         window.endGame();
@@ -110,9 +128,10 @@ function main() {
 
 const setPreviousStepDone = () => {
     setStepDone('introduction');
+    let steps = ['training1', 'training2', 'full'];
     [...Array(window.session).keys()].forEach((i) => {
         try {
-            setStepDone('block'+(i+1));
+            setStepDone(steps[i]);
         } catch (e) {
             console.log(e);
         }
@@ -136,12 +155,12 @@ const startGame = () => {
     hidePanel();
     hideButton()
     // set step
-    setCurrentStep('experiment');
+    setCurrentStep('full');
     setStepDone('introduction');
-    setStepDone('training1');
     setStepDone('training2');
+    setStepDone('training1');
     document.querySelector('#game').style.display = 'block';
-    startUnityGame('main');
+    startUnityGame('full');
 }
 
 const startTrainingPerceptual = () => {
@@ -149,11 +168,11 @@ const startTrainingPerceptual = () => {
     hidePanel();
     hideButton()
     // set step
-    setCurrentStep('block'+(window.session+1));
+    setCurrentStep('training1');
     setStepDone('introduction');
     // range from 1 to idx set done
     setPreviousStepDone();
-    startUnityGame('bw');
+    startUnityGame('training1');
 }
 
 const startTrainingRL = () => {
@@ -214,15 +233,18 @@ const blockClick = () => {
 }
 
 const setPageInstruction = async (instNum) => {
+    // alert('Setting page instruction: '+instNum);
     instNum = parseInt(instNum);
     localStorage.setItem('instNum', instNum);
     if (instNum == 0) {
+        setCurrentStep('introduction');
         document.querySelector('#panel').innerHTML = landingPage;
         document.querySelector('#panel').style.display = 'flex';
         document.querySelector('#prev-button').style.display = 'none';
         document.querySelector('#game').style.display = 'none';
         document.querySelector('#next-button').addEventListener('click', next)
     } else if (instNum == 1) {
+        setCurrentStep('introduction');
         document.querySelector('#panel').innerHTML = consentPage;
         document.querySelector('#panel').style.display = 'block';
         // document.querySelector('#prev-button').style.display = 'none';
@@ -238,34 +260,48 @@ const setPageInstruction = async (instNum) => {
              }
         })
         document.querySelector('#game').style.display = 'none';
-    } else if (BLOCKS.includes(instNum)) {
+    } else if (PERCEPTUAL_TRAINING == instNum || RL_TRAINING == instNum || FULL == instNum) {
         setPreviousStepDone()
-        startTrainingPerceptual();
-    }  else if (REST.includes(instNum)) {
-        setPreviousStepDone()
-        document.querySelector('#panel').innerHTML = restPage.replace('{block_nb}', ''+(window.session));
-        document.querySelector('#panel').style.display = 'flex';
-        hidePrevButton();
-        document.querySelector('#game').style.display = 'none';
-        // setCurrentStep('block'+window.session);
-        setCurrentStep('block'+(window.session+1));
+        switch (instNum) {
+            case PERCEPTUAL_TRAINING:
+                setCurrentStep('training1');
+                // alert('startTrainingPerceptual')
+                startTrainingPerceptual();
+                break;
+            case RL_TRAINING:
+                setCurrentStep('training2');
+                // alert('startTrainingRL')
+                startTrainingRL();
+                break;
+            case FULL:
+                setCurrentStep('full');
+                // alert('startGame')
+                startGame();
+                break;
+        }
+    }  else if (instNum==END) {
+        window.endGame();
+
     }
-    else if (instNum<=3) {
+        else {
+        setPreviousStepDone()
+        document.querySelector('#game').style.display = 'none';
+        quitUnityGame();
         document.querySelector('#panel').innerHTML = '<progress style="width:35%; margin: auto"></progress>';
         document.querySelector('#panel').style.display = 'flex';
         document.querySelector('#panel').innerHTML = await getInstructionPage(`src/instructions/inst_${instNum-1}.md`) // inst[instNum];
         showButton();
-        if ((instNum == 0) ||
-             BLOCKS.includes(instNum-1)) {
+        if ((instNum == 0 ||instNum-1 == PERCEPTUAL_TRAINING || instNum-1 == RL_TRAINING || instNum-1 == FULL)) {
                 hidePrevButton();
         }
-    } else {    
-        window.endGame();
-
-    }
+        if (instNum < PERCEPTUAL_TRAINING) {
+            setCurrentStep('introduction');
+        }
+    } 
 }
 
 window.endGame = () => {
+    alert('endGame')
     try {
         quitUnityGame();
     } catch {
@@ -274,52 +310,159 @@ window.endGame = () => {
     localStorage.setItem('end', true);
     hideButton();
     setPreviousStepDone();
+    setStepDone('full');
+    setCurrentStep('end')
+    addSurvey()
+}
+
+const lastPage = () => {
+    hideButton();
+    setPreviousStepDone();
+    setStepDone('full');
     setCurrentStep('end')
     let points = window.score.reduce((a, b) => a + b, 0);
     let pounds = (points*CONV).toFixed(3);
     document.querySelector('#game').style.display = 'none';
     document.querySelector('#panel').style.display = 'flex';
     document.querySelector('#panel').innerHTML = `
-            <div class="center-align" style="margin: auto">
-            <h1 style="display: block">🚀Thank you!🚀</h1>
-            <h3>💰 You earned ${points} points = ${pounds} pounds! 💰</h3>
-            <br>
-            <br>
-            <p>Thank you for participating in our experiment!</p>
-            <p>Please click the button below to complete your submission.</p>
-            <br>
-            <button id="submit-button" class="btn btn-primary">Complete</button>
-            </div>
-    `;
+             <div class="center-align" style="margin: auto">
+             <h1 style="display: block">🚀Thank you!🚀</h1>
+             <h3>💰 You earned ${points} points = ${pounds} pounds! 💰</h3>
+             <br>
+             <br>
+             <p>Thank you for participating in our experiment!</p>
+             <p>Please click the button below to complete your submission.</p>
+             <br>
+             <button id="submit-button" class="btn btn-primary">Complete</button>
+             </div>
+     `;
     document.querySelector('#submit-button').addEventListener('click', () => {
-        window.location.href = atob(COMP_LINK);
-    })
+      window.location.href = atob(COMP_LINK);
+     })
 }
 
+
+const sendFeedback = async (data, call=0) => {
+    let response = await fetch(php, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    
+    if (response.ok) {
+        return response.json();
+    } else {
+        // try again after 500ms
+        setTimeout(() => {
+            insertFeedback(data, call+1);
+        }, 500 );
+    }
+}
+
+const addSurvey = () => {
+    document.querySelector('#game').style.display = 'none';
+    let scale = `<nav class="no-space">
+        <button id="" class="border left-round max vertical small">
+          <span>Strongly Disagree</span>
+        </button>
+        <button id="" class="border no-round max vertical small">
+          <span>Disagree<span>
+        </button>
+        <button id="" class="border no-round max vertical small">
+          <span>Neutral<span>
+        </button>
+        <button id="" class="border no-round max vertical small">
+          <span>Agree<span>
+        </button>
+        <button id="" class="border right-round max vertical small">
+          <span>Strongly Agree</span>
+        </button>
+      </nav>`;
+    
+    let question1 = `In the <b style="color: var(--primary)">training 1</b> phase it was easy to tell which forcefield was the best`;
+    let question2 = `In the <b style="color: var(--primary)">training 2</b> phase it was easy to tell which spaceship was the best`;
+    let question3 = `In the <b style="color: var(--primary)">experiment</b> phase it was easy to tell which spaceship x forcefield was the best`;
+    let questions = [question1, question2, question3];
+    
+    document.querySelector('#panel').innerHTML = '<h1>Survey</h1>';
+    document.querySelector('#panel').style.display = 'block';
+    
+    questions.forEach((question, idx) => {
+        let q = '<br><br>' + question + '<br>' + scale.replace(/id=""/g, `id="q${idx}"`) + '<br><br>';
+        document.querySelector('#panel').innerHTML += q;   
+    })
+    
+    document.querySelectorAll('nav button').forEach((button, idx) => {
+        button.addEventListener('click', () => {
+            let id = button.id;
+            // get all buttons in the same row
+            let buttons = document.querySelectorAll(`#${id}`);
+            buttons.forEach((b) => {
+                    b.classList.remove('fill-selected');
+            })
+            button.classList.add('fill-selected');
+            // show next button if all questions are answered
+            if (document.querySelectorAll('button.fill-selected').length == questions.length) {
+                showButton();
+                hidePrevButton();
+            }
+
+        })
+    })
+    
+    // showButton();
+    // hidePrevButton();
+    // 
+    document.querySelector('#next-button').removeEventListener('click', next);
+   
+    document.querySelector('#next-button').addEventListener('click', () => {
+        // get all selected buttons
+        let buttons = document.querySelectorAll('.fill-selected');
+        let data = {
+            'prolificID': window.subID,
+        }
+        
+        buttons.forEach((button) => {
+            data[button.id] = button.innerText;
+        })
+        
+        // alert(JSON.stringify(data));
+
+        sendFeedback(data);
+        lastPage();
+    })
+    
+}
+    
 window.endTrainingRL = () => {
     quitUnityGame();
-    setStepDone('introduction');    
-    setStepDone('training1');
-    setStepDone('training2');
-    setCurrentStep('experiment');
-    document.querySelector('#game').style.display = 'none';
-    document.querySelector('#panel').style.display = 'flex';
+    localStorage.setItem('score', JSON.stringify(window.score));
+    
+    setPreviousStepDone(); 
+    setCurrentStep('full');
+
+    hidePrevButton();
     showButton();
-    instNum = 7;
+    instNum = REST[window.session];
+    window.session++;
+    localStorage.setItem('session', window.session);
     setPageInstruction(instNum);
     hidePrevButton();
+
 }
 
 
 window.endTrainingPerceptual = () => {
     quitUnityGame();
     localStorage.setItem('score', JSON.stringify(window.score));
-    window.session++;
-    localStorage.setItem('session', window.session);
+    // window.session++;
     
     setPreviousStepDone(); 
+    setCurrentStep('training2');
 
-    if (window.session == END) {
+    if (instNum == END) {
         hideButton();
         window.endGame();
         return;
@@ -327,6 +470,8 @@ window.endTrainingPerceptual = () => {
     
     showButton();
     instNum = REST[window.session];
+    window.session++;
+    localStorage.setItem('session', window.session);
     setPageInstruction(instNum);
     hidePrevButton();
 }

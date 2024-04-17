@@ -28,14 +28,14 @@
   <link rel="stylesheet" href="src/game/Demo2trials/TemplateData/style.css">
 
   <!-- load custom js -->
-  <!-- <script src="src/main.mjs" type="module" crossorigin="anonymous"></script> -->
-  <!-- <script src="js/modules/utils.js" crossorigin="anonymous"></script> -->
-  <script src="dist/bundle.js" defer></script>
+  <script src="src/main.mjs" type="module" crossorigin="anonymous"></script>
+  <script src="src/modules/utils.mjs" type="module" crossorigin="anonymous"></script>
+  <!-- <script src="dist/bundle.js" defer></script> -->
 </head>
 
 <body class="dark">
   <nav class="top nav">
-    <div class="mdl-stepper-horizontal-alternative">
+    <div class="mdl-stepper-horizontal-alternative" style="";>
       <div class="mdl-stepper-step active-step" id="introduction">
         <div class="mdl-stepper-circle"><span>1</span></div>
         <div class="mdl-stepper-title">Introduction</div>
@@ -43,67 +43,44 @@
         <div class="mdl-stepper-bar-left"></div>
         <div class="mdl-stepper-bar-right"></div>
       </div>
-      <div class="mdl-stepper-step" id="block1">
+      <div class="mdl-stepper-step" id="training1">
         <div class="mdl-stepper-circle"><span>2</span></div>
-        <div class="mdl-stepper-title">Block 1</div>
+        <div class="mdl-stepper-title">Training 1</div>
         <!-- <div class="mdl-stepper-optional">Optional</div> -->
         <div class="mdl-stepper-bar-left"></div>
         <div class="mdl-stepper-bar-right"></div>
       </div>
-      <div class="mdl-stepper-step" id="block2">
+      <div class="mdl-stepper-step" id="training2">
         <div class="mdl-stepper-circle"><span>3</span></div>
-        <div class="mdl-stepper-title">Block 2</div>
+        <div class="mdl-stepper-title">Training 2</div>
         <!-- <div class="mdl-stepper-optional">Optional</div> -->
         <div class="mdl-stepper-bar-left"></div>
         <div class="mdl-stepper-bar-right"></div>
       </div>
 
-      <div class="mdl-stepper-step" id="block3">
+      <div class="mdl-stepper-step" id="full">
         <div class="mdl-stepper-circle"><span>4</span></div>
-        <div class="mdl-stepper-title">Block 3</div>
-        <!-- <div class="mdl-stepper-optional">Optional</div> -->
-        <div class="mdl-stepper-bar-left"></div>
-        <div class="mdl-stepper-bar-right"></div>
-      </div>
-      <div class="mdl-stepper-step" id="block4">
-        <div class="mdl-stepper-circle"><span>5</span></div>
-        <div class="mdl-stepper-title">Block 4</div>
-        <!-- <div class="mdl-stepper-optional">Optional</div> -->
-        <div class="mdl-stepper-bar-left"></div>
-        <div class="mdl-stepper-bar-right"></div>
-      </div>
-      
-      <div class="mdl-stepper-step" id="block5">
-        <div class="mdl-stepper-circle"><span>6</span></div>
-        <div class="mdl-stepper-title">Block 5</div>
+        <div class="mdl-stepper-title">Experiment</div>
         <!-- <div class="mdl-stepper-optional">Optional</div> -->
         <div class="mdl-stepper-bar-left"></div>
         <div class="mdl-stepper-bar-right"></div>
       </div>
     
-      <div class="mdl-stepper-step" id="block6">
-        <div class="mdl-stepper-circle"><span>7</span></div>
-        <div class="mdl-stepper-title">Block 6</div>
-        <!-- <div class="mdl-stepper-optional">Optional</div> -->
-        <div class="mdl-stepper-bar-left"></div>
-        <div class="mdl-stepper-bar-right"></div>
-      </div>
-
       <div class="mdl-stepper-step" id="end">
-        <div class="mdl-stepper-circle"><span>8</span></div>
+        <div class="mdl-stepper-circle"><span>5</span></div>
         <div class="mdl-stepper-title">End</div>
         <!-- <div class="mdl-stepper-optional">Optional</div> -->
         <div class="mdl-stepper-bar-left"></div>
         <div class="mdl-stepper-bar-right"></div>
       </div>
 
-
     </div>
 
   <div>
     <!-- double arrow icon (skip) -->
-    <!-- <button id="skip" class="center-align medium-elevate"><span style="font-size: x-large;">&#xBB;</span><span>Skip current step</span></button> -->
-    <!-- <button id="reload" class="center-align medium-elevate"><i>&#8635;</i><span>Restart experiment</span></button> -->
+    <button id="skip" class="center-align medium-elevate"><span style="font-size: x-large;">&#xBB;</span><span>Skip current step</span></button>
+    <button id="reload" class="center-align medium-elevate"><i>&#8635;</i><span>Restart experiment</span></button>
+
     <!-- skip button -->
 
       <dialog id="modal-reload">

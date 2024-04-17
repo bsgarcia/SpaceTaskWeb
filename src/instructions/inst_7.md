@@ -20,7 +20,7 @@ admonition=<div class="admonition warning">
 --->
 
 <!--- 
-video=1.mp4
+image=screenshot2.png
 --->
 
 <!---

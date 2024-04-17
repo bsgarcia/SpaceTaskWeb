@@ -51,6 +51,13 @@ body.dark {
     /* border-color: #444746; */
     display: inline-block;
     /* overflow: hidden; */
+    top: 60;
+    width: 85%;
+}
+
+.fill-selected {
+    background-color: #25b19e !important;
+    color: whitesmoke !important;
 }
 
 .video-inst video {
