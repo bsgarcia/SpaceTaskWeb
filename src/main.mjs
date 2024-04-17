@@ -394,6 +394,11 @@ const addSurvey = () => {
         document.querySelector('#panel').innerHTML += q;   
     })
     
+    document.querySelector('#panel').innerHTML += `Open feedback:<div class="field textarea border fill round">
+    <textarea id="open"></textarea>
+    <span class="helper">if you have any general remarks, put it here</span>
+  </div>`
+    
     document.querySelectorAll('nav button').forEach((button, idx) => {
         button.addEventListener('click', () => {
             let id = button.id;
@@ -422,6 +427,7 @@ const addSurvey = () => {
         let buttons = document.querySelectorAll('.fill-selected');
         let data = {
             'prolificID': window.subID,
+            'open': document.querySelector('#open').innerText
         }
         
         buttons.forEach((button) => {
