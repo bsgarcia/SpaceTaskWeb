@@ -427,7 +427,7 @@ const addSurvey = () => {
         let buttons = document.querySelectorAll('.fill-selected');
         let data = {
             'prolificID': window.subID,
-            'open': document.querySelector('#open').innerText
+            'open': document.querySelector('#open').value
         }
         
         buttons.forEach((button) => {
