@@ -12,7 +12,7 @@ const PERCEPTUAL_TRAINING = 5;
 const RL_TRAINING = 7;
 const FULL = 9;
 const END = 10;
-const CONV = 0.0035;
+const CONV = 0.0004;
 
 var clickBlocked = false;
 var end = localStorage.getItem('end') == 'true';
@@ -301,13 +301,14 @@ const setPageInstruction = async (instNum) => {
 }
 
 window.endGame = () => {
-    alert('endGame')
+    // alert('endGame')
     try {
         quitUnityGame();
     } catch {
         console.log('quitUnityGame error: no game running');
     }
     localStorage.setItem('end', true);
+    localStorage.setItem('score', JSON.stringify(window.score));
     hideButton();
     setPreviousStepDone();
     setStepDone('full');
@@ -420,10 +421,9 @@ const addSurvey = () => {
     // showButton();
     // hidePrevButton();
     // 
-    // document.querySelector('#next-button').removeEventListener('click', next);
+    document.querySelector('#next-button').removeEventListener('click', next);
    
     document.querySelector('#next-button').addEventListener('click', () => {
-        prev();
         // get all selected buttons
         let buttons = document.querySelectorAll('.fill-selected');
         let data = {
