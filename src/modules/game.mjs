@@ -100,5 +100,9 @@
  }
 
  export const quitUnityGame = () => {
-   window.unityInstance.Quit();
+   try {
+    window.unityInstance.Quit();
+   } catch (error) {
+     console.log('Error quitting game (perhaps it is not running): ', error);
+   }
  }
