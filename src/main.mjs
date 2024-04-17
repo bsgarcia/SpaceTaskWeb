@@ -420,9 +420,10 @@ const addSurvey = () => {
     // showButton();
     // hidePrevButton();
     // 
-    document.querySelector('#next-button').removeEventListener('click', next);
+    // document.querySelector('#next-button').removeEventListener('click', next);
    
     document.querySelector('#next-button').addEventListener('click', () => {
+        prev();
         // get all selected buttons
         let buttons = document.querySelectorAll('.fill-selected');
         let data = {
