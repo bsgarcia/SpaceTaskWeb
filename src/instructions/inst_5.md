@@ -1,7 +1,9 @@
-Well done! 😃 <br>
-Now let's continue with the next training.
 
 # 🚀 Spaceship reward training 🚀
+
+Well done! 😃 <br>
+Now let's continue with the next training.
+<br>
 You will encounter **unprotected** spaceships (i.e. without  forcefields). You have to focus on finding the most rewarding spaceship within each pair. Said differently, each time you shoot a spaceship, it will provide a different reward. You have to learn which spaceship provides the **highest average reward**.
 <br>
 <br>
