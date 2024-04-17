@@ -283,8 +283,10 @@ const setPageInstruction = async (instNum) => {
         window.endGame();
 
     }
-        else {
-        setPreviousStepDone()
+    else {
+        if (instNum > PERCEPTUAL_TRAINING) {
+            setPreviousStepDone()
+        }
         document.querySelector('#game').style.display = 'none';
         quitUnityGame();
         document.querySelector('#panel').innerHTML = '<progress style="width:35%; margin: auto"></progress>';
