@@ -1,5 +1,7 @@
  export const startUnityGame = (phase) => {
     
+    document.querySelector('#game').style.display = 'block';
+
     var container = document.querySelector("#unity-container");
     var canvas = document.querySelector("#unity-canvas");
     var loadingBar = document.querySelector("#unity-loading-bar");

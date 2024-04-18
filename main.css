@@ -36,6 +36,30 @@ body.dark {
     --surface-container-high:#272b2a;
     --surface-container-highest:#323534;
 }
+.arrow-icon-right {
+    display: inline-block !important;
+    width: 24px; /* Set width and height according to your SVG image */
+    height: 24px;
+    background-image: url('images/arrow-right2.svg');
+    background-size: cover; /* Adjust to fit your SVG image */
+    background-repeat: no-repeat;
+}
+
+.arrow-icon-left {
+    display: inline-block !important;
+    width: 24px; /* Set width and height according to your SVG image */
+    height: 24px;
+    background-image: url('images/arrow-right2.svg');
+    transform: rotate(180deg) translate(2%);
+    /* transform: translateX(2%); */
+    background-size: cover; /* Adjust to fit your SVG image */
+    background-repeat: no-repeat;
+}
+
+/* Hide the unicode character */
+#next-button i {
+    display: none;
+}
 
 .nav {
     background: url('https://www.unige.ch/cdn/themes/unige2016/img/unige-logo.svg') no-repeat 1% 50%;
@@ -51,7 +75,8 @@ body.dark {
     /* border-color: #444746; */
     display: inline-block;
     /* overflow: hidden; */
-    top: 60;
+    /* top: 60; */
+    margin-top:14%;
     width: 85%;
 }
 
