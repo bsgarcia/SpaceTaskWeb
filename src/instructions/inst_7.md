@@ -6,7 +6,7 @@ Now let's start the real experiment... In this task, to maximize you overall sco
 🚀 **Spaceships' average rewards:** Learn the average reward of each spaceship. Each spaceship has a different average reward. 
 <br><br>
 You will face waves of spaceship pairs. 
-In order to destroy a target, you have to press either **left or right arrow key**, and then press **space to shoot**, as demonstrated in the video on the right.  
+In order to destroy a target, you have to press either **left or right arrow key**, and then press **space to shoot**.
 <!---
 admonition=<div class="admonition warning">
 	<p class="title">Warning</p>
@@ -15,7 +15,7 @@ admonition=<div class="admonition warning">
 <br>
 <div class="admonition notice">
 	<p class="title">Notice</p>
-	<p class="content">The spaceships fall down the screen for approximately 5 seconds. If you don't shoot, they will leave the screen, and you will lose an opportunity to gain points.</p>
+	<p class="content">The spaceships fall down the screen for approximately 3 seconds. If you don't shoot, they will leave the screen, and you will lose an opportunity to gain points.</p>
 </div>
 --->
 
