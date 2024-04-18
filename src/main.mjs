@@ -360,7 +360,8 @@ const rewardPage = () => {
     setPreviousStepDone();
     setStepDone('full');
     setCurrentStep('end')
-    let points = window.score.reduce((a, b) => a + b, 0);
+    // let points = window.score.reduce((a, b) => a + b, 0);
+    let points = window.score[window.score.length-1];
     let pounds = (points*CONV).toFixed(3);
     document.querySelector('#game').style.display = 'none';
     document.querySelector('#panel').style.display = 'flex';
