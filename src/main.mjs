@@ -475,6 +475,7 @@ const surveyPage = () => {
             data[`open_${button.id}`] = document.querySelector(`#open_${button.id}`).value;
         })
         
+        alert(buttons.length)
         alert(JSON.stringify(data));
 
         sendFeedback(data);
