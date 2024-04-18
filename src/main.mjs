@@ -8,6 +8,7 @@ var instNum = parseInt(localStorage.getItem('instNum')) || 0;
 window.instNum = instNum;
 // instNum coding
 const REST = [6, 8]
+const TUTORIAL = 2;
 const PERCEPTUAL_TRAINING = 5;
 const RL_TRAINING = 7;
 const FULL = 9;
@@ -49,53 +50,6 @@ window.reload = () => {
     })
 }
 
-const loadInstructions = async () => {
-    [1, 2, 3, 4, 5, 6].forEach(async (instNum) => {
-        inst[instNum] = await getInstructionPage(`src/instructions/inst_${instNum}.md`);
-    })
-    
-}
-
-const loading = () => {
-    hideButton();
-    document.querySelector('#panel').style.display = 'none';
-    document.querySelector('#game').style.display = 'none';
-    document.querySelector('progress').style.display = 'block';
-}   
-
-const stopLoading = () => {
-    showButton();
-    document.querySelector('progress').style.display = 'none';
-}
-
-const skipCurrentStep = () => {
-    if (instNum<=4) {
-        instNum = PERCEPTUAL_TRAINING;
-        setPageInstruction(instNum);
-    } else if (instNum == PERCEPTUAL_TRAINING || instNum == RL_TRAINING || instNum == FULL) {
-        // alert('InstNum: '+instNum + '\n' + 'Session: '+window.session + '\n')
-        switch (instNum) {
-            case PERCEPTUAL_TRAINING:
-                window.endTrainingPerceptual();
-                // alert('endTrainingPerceptual')
-                // window.startTrainingRL();
-                break;
-            case RL_TRAINING:
-                // alert('endTrainingRL')
-                window.endTrainingRL();
-                break;
-            case FULL:
-                window.endGame();
-                break;
-        }
-            
-    } else if (REST.includes(instNum)) {
-        // alert('InstNum: '+instNum + '\n' + 'Session: '+window.session + '\n')
-        instNum++;
-        setPageInstruction(instNum);
-    }
-}
-
 // const start = async () => {  
     // loading()
     // await loadInstructions()
@@ -125,31 +79,7 @@ function main() {
         setPageInstruction(instNum);
     }
 }
-
-const setPreviousStepDone = () => {
-    setStepDone('introduction');
-    let steps = ['training1', 'training2', 'full'];
-    [...Array(window.session).keys()].forEach((i) => {
-        try {
-            setStepDone(steps[i]);
-        } catch (e) {
-            console.log(e);
-        }
-    })
-}
-
-const setCurrentStep = (step) => {
-    document.querySelector('#'+step).classList.add('active-step');
-}
-
-const unsetStep = (step) => {
-    document.querySelector('#'+step).classList.remove('active-step');
-}
-
-const setStepDone = (step) => {
-    document.querySelector('#'+step).classList.add('done-step');
-}
-
+// ------------------------------ Start Games  ------------------------------ //
 const startGame = () => {
     // hide instructions
     hidePanel();
@@ -159,7 +89,6 @@ const startGame = () => {
     setStepDone('introduction');
     setStepDone('training2');
     setStepDone('training1');
-    document.querySelector('#game').style.display = 'block';
     startUnityGame('full');
 }
 
@@ -187,12 +116,100 @@ const startTrainingRL = () => {
     startUnityGame('training2');
 }
 
+const startTutorial = () => {
+    hidePanel()
+    hideButton()
+    setCurrentStep('introduction');
+    startUnityGame('tutorial');
+    setCurrentStep('introduction');
+}
 
+
+// ------------------------------ Utils ------------------------------ //
 
 const setSubID = () => {
     window.subID = getURLParams('prolificID') || 'random-'+createCode(5);
     document.querySelector('.subID').innerHTML = 'id: ' + window.subID;
 }
+
+// ------------------------------ UI Managment ------------------------------ //
+const setPreviousStepDone = () => {
+    setStepDone('introduction');
+    let steps = ['training1', 'training2', 'full'];
+    [...Array(window.session).keys()].forEach((i) => {
+        try {
+            setStepDone(steps[i]);
+        } catch (e) {
+            console.log(e);
+        }
+    })
+}
+
+const setCurrentStep = (step) => {
+    document.querySelector('#'+step).classList.add('active-step');
+}
+
+const unsetStep = (step) => {
+    document.querySelector('#'+step).classList.remove('active-step');
+}
+
+const setStepDone = (step) => {
+    document.querySelector('#'+step).classList.add('done-step');
+}
+
+
+
+const loadInstructions = async () => {
+    [1, 2, 3, 4, 5, 6].forEach(async (instNum) => {
+        inst[instNum] = await getInstructionPage(`src/instructions/inst_${instNum}.md`);
+    })
+    
+}
+
+const loading = () => {
+    hideButton();
+    document.querySelector('#panel').style.display = 'none';
+    document.querySelector('#game').style.display = 'none';
+    document.querySelector('progress').style.display = 'block';
+}   
+
+const stopLoading = () => {
+    showButton();
+    document.querySelector('progress').style.display = 'none';
+}
+
+const skipCurrentStep = () => {
+    if (instNum<=4) {
+        instNum = PERCEPTUAL_TRAINING;
+        setPageInstruction(instNum);
+    } else if (instNum == PERCEPTUAL_TRAINING || instNum == RL_TRAINING || instNum == FULL) {
+        // alert('InstNum: '+instNum + '\n' + 'Session: '+window.session + '\n')
+        switch (instNum) {
+            case TUTORIAL:
+                window.endTutorial();
+                break;
+            case PERCEPTUAL_TRAINING:
+                window.endTrainingPerceptual();
+                // alert('endTrainingPerceptual')
+                // window.startTrainingRL();
+                break;
+            case RL_TRAINING:
+                // alert('endTrainingRL')
+                window.endTrainingRL();
+                break;
+            case FULL:
+                window.endGame();
+                break;
+        }
+            
+    } else if (REST.includes(instNum)) {
+        // alert('InstNum: '+instNum + '\n' + 'Session: '+window.session + '\n')
+        instNum++;
+        setPageInstruction(instNum);
+    }
+}
+
+
 
 const hidePanel = () => {
     document.querySelector('#panel').style.display = 'none';
@@ -260,9 +277,18 @@ const setPageInstruction = async (instNum) => {
              }
         })
         document.querySelector('#game').style.display = 'none';
-    } else if (PERCEPTUAL_TRAINING == instNum || RL_TRAINING == instNum || FULL == instNum) {
+    } else if (TUTORIAL == instNum ||
+         PERCEPTUAL_TRAINING == instNum ||
+         RL_TRAINING == instNum ||
+         FULL == instNum) {
+
         setPreviousStepDone()
         switch (instNum) {
+            case TUTORIAL:
+                // alert('tutorial')
+                setCurrentStep('introduction');
+                startTutorial();
+                break;
             case PERCEPTUAL_TRAINING:
                 setCurrentStep('training1');
                 // alert('startTrainingPerceptual')
@@ -302,36 +328,20 @@ const setPageInstruction = async (instNum) => {
     } 
 }
 
-window.endGame = () => {
-    // alert('endGame')
-    try {
-        quitUnityGame();
-    } catch {
-        console.log('quitUnityGame error: no game running');
-    }
-    localStorage.setItem('end', true);
-    localStorage.setItem('score', JSON.stringify(window.score));
-    hideButton();
-    setPreviousStepDone();
-    setStepDone('full');
-    setCurrentStep('end')
-    addSurvey()
-}
-
+// ------------------------------ END ------------------------------ //
 const lastPage = () => {
     hideButton();
     setPreviousStepDone();
     setStepDone('full');
     setCurrentStep('end')
-    let points = window.score.reduce((a, b) => a + b, 0);
+    // let points = window.score.reduce((a, b) => a + b, 0);
+    let points = window.score[window.score.length-1];
     let pounds = (points*CONV).toFixed(3);
     document.querySelector('#game').style.display = 'none';
     document.querySelector('#panel').style.display = 'flex';
     document.querySelector('#panel').innerHTML = `
              <div class="center-align" style="margin: auto">
              <h1 style="display: block">🚀Thank you!🚀</h1>
-             <h3>💰 You earned ${points} points = ${pounds} pounds! 💰</h3>
-             <br>
              <br>
              <p>Thank you for participating in our experiment!</p>
              <p>Please click the button below to complete your submission.</p>
@@ -342,6 +352,29 @@ const lastPage = () => {
     document.querySelector('#submit-button').addEventListener('click', () => {
       window.location.href = atob(COMP_LINK);
      })
+}
+
+const rewardPage = () => {
+    showButton();
+    hidePrevButton()
+    setPreviousStepDone();
+    setStepDone('full');
+    setCurrentStep('end')
+    let points = window.score.reduce((a, b) => a + b, 0);
+    let pounds = (points*CONV).toFixed(3);
+    document.querySelector('#game').style.display = 'none';
+    document.querySelector('#panel').style.display = 'flex';
+    document.querySelector('#panel').innerHTML = `
+             <div class="center-align" style="margin: auto">
+             <h1 style="display: block">🚀Congrats! 🚀</h1>
+             <h3>💰 You earned ${points} points = ${pounds} pounds! 💰</h3>
+             <br>
+             <br>
+             <p>Please click the next button and answer a short survey to complete your submission.</p>
+             </div>
+     `;
+    document.querySelector('#next-button').removeEventListener('click', next);
+    document.querySelector('#next-button').addEventListener('click', surveyPage);
 }
 
 
@@ -364,7 +397,9 @@ const sendFeedback = async (data, call=0) => {
     }
 }
 
-const addSurvey = () => {
+
+const surveyPage = () => {
+    hideButton();
     document.querySelector('#game').style.display = 'none';
     let scale = `<nav class="no-space">
         <button id="" class="border left-round max vertical small">
@@ -384,23 +419,25 @@ const addSurvey = () => {
         </button>
       </nav>`;
     
-    let question1 = `In the <b style="color: var(--primary)">training 1</b> phase it was easy to tell which forcefield was the best`;
-    let question2 = `In the <b style="color: var(--primary)">training 2</b> phase it was easy to tell which spaceship was the best`;
-    let question3 = `In the <b style="color: var(--primary)">experiment</b> phase it was easy to tell which spaceship x forcefield was the best`;
+    let question1 = `In the <b style="color: var(--primary)">game 1</b> phase it was easy to tell which <b style="color: var(--primary)">forcefield</b> was the best`;
+    let question2 = `In the <b style="color: var(--primary)">game 2</b> phase it was easy to tell which <b style="color: var(--primary)">spaceship</b> was the best`;
+    let question3 = `In the <b style="color: var(--primary)">game 3</b> phase it was easy to tell which <b style="color: var(--primary)">spaceship x forcefield</b> was the best`;
     let questions = [question1, question2, question3];
     
     document.querySelector('#panel').innerHTML = '<h1>Survey</h1>';
     document.querySelector('#panel').style.display = 'block';
     
     questions.forEach((question, idx) => {
-        let q = '<br><br>' + question + '<br>' + scale.replace(/id=""/g, `id="q${idx}"`) + '<br><br>';
-        document.querySelector('#panel').innerHTML += q;   
-    })
+        let box = '<div style="margin-top:1.5%; padding:.5%">'
+        let q = box + question + '<br>' + scale.replace(/id=""/g, `id="q${idx}"`) + '';
+        // document.querySelector('#panel').innerHTML += q;   
+        document.querySelector('#panel').innerHTML += q+`<div class="field textarea border fill round" style="height: 5%">
+                                                        <textarea id="open_q${idx}"></textarea>
+                                                        <span class="helper">if you have any remarks on game ${idx+1}, put it in the field above</span>
+                                                        </div>`
     
-    document.querySelector('#panel').innerHTML += `Open feedback:<div class="field textarea border fill round">
-    <textarea id="open"></textarea>
-    <span class="helper">if you have any general remarks, put it here</span>
-  </div>`
+
+    })
     
     document.querySelectorAll('nav button').forEach((button, idx) => {
         button.addEventListener('click', () => {
@@ -430,11 +467,11 @@ const addSurvey = () => {
         let buttons = document.querySelectorAll('.fill-selected');
         let data = {
             'prolificID': window.subID,
-            'open': document.querySelector('#open').value
         }
         
         buttons.forEach((button) => {
             data[button.id] = button.innerText;
+            data[`open_${button.id}`] = document.querySelector(`#open_${button.id}`).value;
         })
         
         // alert(JSON.stringify(data));
@@ -445,6 +482,16 @@ const addSurvey = () => {
     
 }
     
+window.endTutorial = () => {
+    quitUnityGame();
+    instNum = 4;
+    setPageInstruction(instNum);
+    showButton();
+    hidePrevButton();
+
+
+}
+
 window.endTrainingRL = () => {
     quitUnityGame();
     localStorage.setItem('score', JSON.stringify(window.score));
@@ -461,6 +508,22 @@ window.endTrainingRL = () => {
     hidePrevButton();
 
 }
+
+window.endGame = () => {
+    // alert('endGame')
+    try {
+        quitUnityGame();
+    } catch {
+        console.log('quitUnityGame error: no game running');
+    }
+    localStorage.setItem('end', true);
+    localStorage.setItem('score', JSON.stringify(window.score));
+    setPreviousStepDone();
+    setStepDone('full');
+    setCurrentStep('end')
+    rewardPage();
+}
+
 
 
 window.endTrainingPerceptual = () => {

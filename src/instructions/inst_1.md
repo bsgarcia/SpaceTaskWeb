@@ -1,27 +1,24 @@
 # Hello!
-Welcome to this **decision-making task**! In this task, you will engage in a **space shooter game** where your goal is to **maximize your total score** by making strategic decisions. This task length is approximately **40 min**. Please **read** the instructions **carefully** before starting.
+Welcome to this **decision-making task**! In this task, you will engage in a **space shooter game** where your goal is to **maximize your total score** by making strategic decisions. This task length is approximately **40 min**, including instructions and short survey at the end. Please **read** the instructions **carefully** before starting.
 
 # Task Overview
 
-* **Structure** - There will be **3 phase** of respectively **72, 72, and  288 trials**. Between each phase you will be able to **rest a bit**. You can track your progress at anytime with the **timeline** displayed at the top of this webpage.
-
-* **Objective** -  Maximize your total score by **seeking rewards**. You can reasonably expect a score of at least **~15000 points**.
-
-* **Game Interface** - You will see **2 spaceships**, protected  by **forcefields**, falling from top to bottom of the screen  over a **3-second period**. Your own spaceship is located at the bottom of the game window. 
-
-* **Controls** - You can **move** your own spaceship using **left-right arrow keys**.  You have to choose, among the two spaceship you see, which one to blast, which enemy spaceship to blast. You can **shoot**, using **space key**, only one enemy spaceship at each trial.
-
-* **Outcome** - If the targeted enemy is **destroyed**, **reward points** will be displayed. 
+* **Structure** - There will be **3 phases** of respectively ~5min, ~5min, ~20min. You can track your progress at anytime with the **timeline** displayed at the top of this webpage.
 
 
-<!---
-admonition=<div class="admonition notice" style="margin-left: 9%">
-			<p class="title">Bonus</p>
-      <p class="content">
-1 point = 0.00028 pounds. Maximum estimated bonus is <b>~ £5</b>.
-		</p><div>
---->
+* **Game Interface** - You will see **2 enemy spaceships**, protected  by **forcefields**, falling from top to bottom of the screen  over a **3-second period**. Your task if to shoot one of them.
+
+* **Controls** - Your own spaceship is located at the bottom of the game window. You can **move** your own spaceship using **left-right arrow keys**.  You have to choose, among the two spaceship you see, which one to blast, which enemy spaceship to blast. Use **space key**, to shoot an enemy. 
+
+* **Outcome** - If the targeted enemy is **destroyed**, **reward points** will be displayed. Destroy spaceships that you think provide the most points.
 
 <!---
 display=block
+--->
+<!---
+admonition=<div class="admonition notice" style="margin-left: 9%">
+			<p class="title">Note</p>
+      <p class="content">
+      Next page will be a short tutorial to teach you the controls.
+		</div>
 --->

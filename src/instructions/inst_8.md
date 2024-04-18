@@ -8,3 +8,12 @@ admonition=<div class="admonition notice">
 </div>
 --->
 <!--- display=block --->
+
+<!---
+admonition=<div class="admonition Warning" style="margin: auto">
+			<p class="title">Warning</p>
+      <p class="content">
+	  There is no tutorial this time, controls remain the same: arrow keys to move, space to shoot.
+		</div>
+<br>
+--->
