@@ -8,7 +8,7 @@ var instNum = parseInt(localStorage.getItem('instNum')) || 0;
 window.instNum = instNum;
 // instNum coding
 const REST = [6, 8]
-const TUTORIAL = 2;
+const TUTORIAL = 3;
 const PERCEPTUAL_TRAINING = 5;
 const RL_TRAINING = 7;
 const FULL = 9;
