@@ -3,14 +3,14 @@ Welcome to this **decision-making task**! In this task, you will engage in a **s
 
 # Task Overview
 
-* **Structure** - There will be **3 game phases** (game 1, 2 and 3) of respectively ~5min, ~5min, ~20min. You can track your progress at anytime with the **timeline** displayed at the top of this webpage.
+* **Structure** - There will be **4 game phases** (game 1, 2, 3 and 4) of respectively ~5min, ~5min, ~10min and ~10min. You can track your progress at anytime with the **timeline** displayed at the top of this webpage.
 
 
-* **Game Interface** - You will see **2 enemy spaceships**, protected  by **forcefields**, falling from top to bottom of the screen  over a **3-second period**. Your task if to shoot one of them.
+* **Game Interface** - You will see **2 enemy spaceships**, protected  by **forcefields**, falling from top to bottom of the screen  over a **3-second period**. Your task is to choose which spaceship you should shoot at to maximize your points - you can only shoot at one of the 2 enemy spaceships.
 
-* **Controls** - Your own spaceship is located at the bottom of the game window. You can **move** your own spaceship using **left-right arrow keys**.  You have to choose, among the two spaceship you see, which one to blast. Use **space key**, to shoot an enemy. 
+* **Controls** - Your own spaceship is located at the bottom of the game window. You can **move** your own spaceship using **left-right arrow keys**.  You have to choose, among the two spaceship you see, which one you want to try to blast. Use **space key** to shoot. 
 
-* **Outcome** - If the targeted enemy is **destroyed**, **reward points** will be displayed. Destroy spaceships that you think **provide the most points**.
+* **Outcome** -  If your shot destroys the chosen enemy spaceship, **reward points** will be displayed. Destroy the spaceships that you think will **provide you the most points**.
 
 <!---
 display=block
