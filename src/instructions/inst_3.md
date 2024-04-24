@@ -8,10 +8,11 @@ The optimal forcefield can be equally on the left or on the right, there is no o
 If you click next, the first game will start. 
 
 <!---
-admonition=<div class="admonition notice" style="">
+admonition=
+<div class="admonition notice" style="">
 			<p class="title">Note</p>
       <p class="content">
-      Use arrow keys to move your spaceship. Use space bar to shoot. Run the game in fullscreen, clicking the blue button located at the bottom right of the game window.
+	  1 pound = 3200 points
 	  </p>
 		</div>
 <br>

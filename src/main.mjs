@@ -1,28 +1,32 @@
-import { getInstructionPage, landingPage, restPage, consentPage } from "./modules/html_templates.mjs";
+import {getInstructionPage, landingPage, restPage, consentPage} from "./modules/html_templates.mjs";
 import {getURLParams, createCode} from "./modules/utils.mjs";
 import {startUnityGame, quitUnityGame} from "./modules/game.mjs";
 
 // globals
 // -----------------------------//
-var instNum = parseInt(localStorage.getItem('instNum')) || 0;
-window.instNum = instNum;
-// instNum coding
-const REST = [6, 8]
+// constants
+const REST = [6, 8, 10]
 const TUTORIAL = 3;
 const PERCEPTUAL_TRAINING = 5;
 const RL_TRAINING = 7;
 const FULL = 9;
-const END = 10;
-const CONV = 0.0003;
-
-var clickBlocked = false;
-var end = localStorage.getItem('end') == 'true';
-const clickBlockedTime = 300;
-var inst = [];
-window.subID = 'not_set';
-window.session = parseInt(localStorage.getItem('session')) || 0;
+const FULL2 = 11
+const END = 12;
+const CONV = 0.00031;
 const COMP_LINK = 'aHR0cHM6Ly9hcHAucHJvbGlmaWMuY29tL3N1Ym1pc3Npb25zL2NvbXBsZXRlP2NjPUNKRllaSlk3';
-const php = 'php/insert_feedback.php';
+const clickBlockedTime = 300;
+const PHP = 'php/insert_feedback.php';
+
+// global variables mutable
+var clickBlocked = false;
+var inst = [];
+var end = localStorage.getItem('end') == 'true';
+var instNum = parseInt(localStorage.getItem('instNum')) || 0;
+
+// window variables
+window.instNum = instNum;
+window.session = parseInt(localStorage.getItem('session')) || 0;
+window.subID = 'not_set';
 // -----------------------------//
 //
 const loadScore = () => {
@@ -33,29 +37,18 @@ const loadScore = () => {
         return [];
     }
 }
+
 window.reload = () => {
-    // document.querySelector('#modal').style.display = 'block';
     document.querySelector('#modal-reload').showModal();
-    // document.querySelector('body').classList.add('overlay');
-    // document.querySelector('body').classList.add('blur');
     document.querySelector('#modal-confirm').addEventListener('click', () => {
         localStorage.clear();
         window.location.reload();
     })
     document.querySelector('#modal-cancel').addEventListener('click', () => {
         document.querySelector('#modal-reload').close();
-        // document.querySelector('body').classList.remove('overlay blur');
-        // document.querySelector('body').classList.remove('overlay');
-        // document.querySelector('body').classList.remove('blur');
     })
 }
 
-// const start = async () => {  
-    // loading()
-    // await loadInstructions()
-    // stopLoading()
-    // main()
-// }
 
 function main() {
 
@@ -71,7 +64,7 @@ function main() {
     document.querySelector('#skip').addEventListener('click', skipCurrentStep);
     
     if (end) {
-        window.endGame();
+        window.endFull();
         return;
     }
 
@@ -80,7 +73,7 @@ function main() {
     }
 }
 // ------------------------------ Start Games  ------------------------------ //
-const startGame = () => {
+const startFull = () => {
     // hide instructions
     hidePanel();
     hideButton()
@@ -90,6 +83,19 @@ const startGame = () => {
     setStepDone('training2');
     setStepDone('training1');
     startUnityGame('full');
+}
+
+const startFull2 = () => {
+    // hide instructions
+    hidePanel();
+    hideButton()
+    // set step
+    setCurrentStep('full2');
+    setStepDone('introduction');
+    setStepDone('training2');
+    setStepDone('training1');
+    setStepDone('full');
+    startUnityGame('full2');
 }
 
 const startTrainingPerceptual = () => {
@@ -157,8 +163,6 @@ const setStepDone = (step) => {
     document.querySelector('#'+step).classList.add('done-step');
 }
 
-
-
 const loadInstructions = async () => {
     [1, 2, 3, 4, 5, 6].forEach(async (instNum) => {
         inst[instNum] = await getInstructionPage(`src/instructions/inst_${instNum}.md`);
@@ -182,7 +186,7 @@ const skipCurrentStep = () => {
     if (instNum<=4) {
         instNum = PERCEPTUAL_TRAINING;
         setPageInstruction(instNum);
-    } else if (instNum == PERCEPTUAL_TRAINING || instNum == RL_TRAINING || instNum == FULL) {
+    } else if (instNum == PERCEPTUAL_TRAINING || instNum == RL_TRAINING || instNum == FULL || instNum == FULL2) {
         // alert('InstNum: '+instNum + '\n' + 'Session: '+window.session + '\n')
         switch (instNum) {
             case TUTORIAL:
@@ -198,7 +202,10 @@ const skipCurrentStep = () => {
                 window.endTrainingRL();
                 break;
             case FULL:
-                window.endGame();
+                window.endFull();
+                break;
+            case FULL2:
+                window.endFull2();
                 break;
         }
             
@@ -280,7 +287,7 @@ const setPageInstruction = async (instNum) => {
     } else if (TUTORIAL == instNum ||
          PERCEPTUAL_TRAINING == instNum ||
          RL_TRAINING == instNum ||
-         FULL == instNum) {
+         FULL == instNum || FULL2 == instNum) {
 
         setPreviousStepDone()
         switch (instNum) {
@@ -302,11 +309,16 @@ const setPageInstruction = async (instNum) => {
             case FULL:
                 setCurrentStep('full');
                 // alert('startGame')
-                startGame();
+                startFull();
+                break;
+            case FULL2:
+                setCurrentStep('full2');
+                // alert('startGame')
+                startFull2();
                 break;
         }
     }  else if (instNum==END) {
-        window.endGame();
+        window.endFull();
 
     }
     else {
@@ -319,7 +331,7 @@ const setPageInstruction = async (instNum) => {
         document.querySelector('#panel').style.display = 'flex';
         document.querySelector('#panel').innerHTML = await getInstructionPage(`src/instructions/inst_${instNum-1}.md`) // inst[instNum];
         showButton();
-        if ((instNum == 0 ||instNum-1 == PERCEPTUAL_TRAINING || instNum-1 == RL_TRAINING || instNum-1 == FULL)) {
+        if ((instNum == 0 ||instNum-1 == PERCEPTUAL_TRAINING || instNum-1 == RL_TRAINING || instNum-1 == FULL || instNum-1 == FULL2)) {
                 hidePrevButton();
         }
         if (instNum < PERCEPTUAL_TRAINING) {
@@ -334,8 +346,8 @@ const lastPage = () => {
     setPreviousStepDone();
     setStepDone('full');
     setCurrentStep('end')
-    // let points = window.score.reduce((a, b) => a + b, 0);
-    let points = window.score[window.score.length-1];
+    let points = window.score.reduce((a, b) => a + b, 0);
+    // let points = window.score[window.score.length-1];
     let pounds = (points*CONV).toFixed(3);
     document.querySelector('#game').style.display = 'none';
     document.querySelector('#panel').style.display = 'flex';
@@ -360,8 +372,8 @@ const rewardPage = () => {
     setPreviousStepDone();
     setStepDone('full');
     setCurrentStep('end')
-    // let points = window.score.reduce((a, b) => a + b, 0);
-    let points = window.score[window.score.length-1];
+    let points = window.score.reduce((a, b) => a + b, 0);
+    // let points = window.score[window.score.length-1];
     let pounds = (points*CONV).toFixed(3);
     document.querySelector('#game').style.display = 'none';
     document.querySelector('#panel').style.display = 'flex';
@@ -380,7 +392,7 @@ const rewardPage = () => {
 
 
 const sendFeedback = async (data, call=0) => {
-    let response = await fetch(php, {
+    let response = await fetch(PHP, {
         method: 'POST',
         body: JSON.stringify(data),
         headers: {
@@ -391,53 +403,77 @@ const sendFeedback = async (data, call=0) => {
     if (response.ok) {
         return response.json();
     } else {
+        if (call > 3) {
+            console.log('Failed to send feedback');
+            return;
+        }
         // try again after 500ms
         setTimeout(() => {
-            insertFeedback(data, call+1);
+            sendFeedback(data, call+1);
         }, 500 );
     }
 }
 
 
+const getSelectedScaleAnswers = () => {
+    let buttons = document.querySelectorAll('button.fill-selected');
+    return buttons;
+}
+
 const surveyPage = () => {
     hideButton();
     document.querySelector('#game').style.display = 'none';
     let scale = `<nav class="no-space">
-        <button id="" class="border left-round max vertical small">
+        <button id="" class="scale border left-round max vertical small">
           <span>Strongly Disagree</span>
         </button>
-        <button id="" class="border no-round max vertical small">
+        <button id="" class="scale border no-round max vertical small">
           <span>Disagree<span>
         </button>
-        <button id="" class="border no-round max vertical small">
+        <button id="" class="scale border no-round max vertical small">
           <span>Neutral<span>
         </button>
-        <button id="" class="border no-round max vertical small">
+        <button id="" class="scale border no-round max vertical small">
           <span>Agree<span>
         </button>
-        <button id="" class="border right-round max vertical small">
+        <button id="" class="scale border right-round max vertical small">
           <span>Strongly Agree</span>
         </button>
       </nav>`;
     
-    let question1 = `In the <b style="color: var(--primary)">game 1</b> phase it was easy to tell which <b style="color: var(--primary)">forcefield</b> was the best`;
-    let question2 = `In the <b style="color: var(--primary)">game 2</b> phase it was easy to tell which <b style="color: var(--primary)">spaceship</b> was the best`;
-    let question3 = `In the <b style="color: var(--primary)">game 3</b> phase it was easy to tell which <b style="color: var(--primary)">spaceship x forcefield</b> was the best`;
-    let questions = [question1, question2, question3];
+    let question1 = `In the <b style="color: var(--primary)">game 1</b>
+     phase it was easy to tell which <b style="color: var(--primary)">forcefield</b> was the best`;
+    let question2 = `In the <b style="color: var(--primary)">game 2</b>
+     phase it was easy to tell which <b style="color: var(--primary)">spaceship</b> was the best`;
+    let question3 = `In the <b style="color: var(--primary)">game 3</b>
+     phase it was easy to tell which <b style="color: var(--primary)">spaceship x forcefield</b> was the best`;
+    let question4 = `In the <b style="color: var(--primary)">game 4</b>
+     phase it was easy to tell which <b style="color: var(--primary)">spaceship x forcefield</b> was the best`;
+    let questions = [question1, question2, question3, question4];
     
-    document.querySelector('#panel').innerHTML = '<h1>Survey</h1>';
+    let content = '<h2>Survey</h2><div class="scroll-div" style="max-height: 60%">';
+    // document.querySelector('#panel').innerHTML = '<h2>Survey</h2><div class="scroll-div">'
     document.querySelector('#panel').style.display = 'block';
     
     questions.forEach((question, idx) => {
-        let box = '<div style="margin-top:1.5%; padding:.5%">'
+        let box = '<div style="margin-top:2.5%; padding:.5%">'
         let q = box + question + '<br>' + scale.replace(/id=""/g, `id="q${idx}"`) + '';
         // document.querySelector('#panel').innerHTML += q;   
-        document.querySelector('#panel').innerHTML += q+`<div class="field textarea border fill round" style="height: 5%">
-                                                        <textarea id="open_q${idx}"></textarea>
-                                                        <span class="helper">if you have any remarks on game ${idx+1}, put it in the field above</span>
-                                                        </div>`
+        content += q+`<div class="field textarea label border" style="height: 5%">
+                                                        <textarea class="open" id="open_q${idx}"></textarea>
+                                                        <label>Open feedback on game ${idx+1}</label>
+                                                        </div></div>`
+    })
     
-
+    content += '</div>';
+    document.querySelector('#panel').innerHTML = content;
+    
+    let dataToSend = {'prolificID': window.subID};
+    
+    document.querySelectorAll('.open').forEach((open, idx) => {
+        open.addEventListener('input', () => {
+            dataToSend[open.id] = open.value;
+        })
     })
     
     document.querySelectorAll('nav button').forEach((button, idx) => {
@@ -449,6 +485,9 @@ const surveyPage = () => {
                     b.classList.remove('fill-selected');
             })
             button.classList.add('fill-selected');
+            
+            dataToSend[id] = button.innerText;
+            
             // show next button if all questions are answered
             if (document.querySelectorAll('button.fill-selected').length == questions.length) {
                 showButton();
@@ -458,27 +497,16 @@ const surveyPage = () => {
         })
     })
     
-    // showButton();
-    // hidePrevButton();
-    // 
     document.querySelector('#next-button').removeEventListener('click', next);
-   
+    
     document.querySelector('#next-button').addEventListener('click', () => {
-        // get all selected buttons
-        let buttons = document.querySelectorAll('.fill-selected');
-        let data = {
-            'prolificID': window.subID,
-        }
         
-        buttons.forEach((button) => {
-            data[button.id] = button.innerText;
-            data[`open_${button.id}`] = document.querySelector(`#open_${button.id}`).value;
-        })
         
-        alert(buttons.length)
-        alert(JSON.stringify(data));
+        // questions.forEach((q, id) => {
+            // dataToSend['open_'+id] = document.querySelector(`#open_${id}`).value;
+        // })
 
-        sendFeedback(data);
+        sendFeedback(dataToSend);
         lastPage();
     })
     
@@ -511,6 +539,19 @@ window.endTrainingRL = () => {
 
 }
 
+window.endFull = () => {
+    window.endGame();
+}
+
+window.endFull2 = () => {
+    localStorage.setItem('end', true);
+    localStorage.setItem('score', JSON.stringify(window.score));
+    setPreviousStepDone();
+    setStepDone('full2');
+    setCurrentStep('end')
+    rewardPage();
+}
+
 window.endGame = () => {
     // alert('endGame')
     try {
@@ -518,12 +559,12 @@ window.endGame = () => {
     } catch {
         console.log('quitUnityGame error: no game running');
     }
-    localStorage.setItem('end', true);
     localStorage.setItem('score', JSON.stringify(window.score));
     setPreviousStepDone();
     setStepDone('full');
-    setCurrentStep('end')
-    rewardPage();
+    setCurrentStep('full2')
+    instNum = REST[REST.length-1];
+    setPageInstruction(instNum);
 }
 
 
@@ -538,7 +579,7 @@ window.endTrainingPerceptual = () => {
 
     if (instNum == END) {
         hideButton();
-        window.endGame();
+        window.endFull();
         return;
     }
     

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Material Design Dialog Box</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <button id="openDialogBtn">Open Dialog</button>
+    <div class="dialog-container" id="dialogContainer">
+      <div class="dialog">
+        <div class="dialog-header">
+          <button id="closeDialogBtn">&times;</button>
+        </div>
+        <div class="dialog-content">
+          <!-- Dialog content goes here -->
+          This is a Material Design dialog box with an arrow pointing to the element.
+        </div>
+      </div>
+      <div class="arrow"></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+<style>
+.container {
+  position: relative;
+  margin-top: 50px;
+}
+
+.dialog-container {
+  position: absolute;
+  display: none;
+  background-color: #fff;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  padding: 20px;
+  z-index: 999;
+}
+
+.dialog {
+  max-width: 300px;
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.dialog-content {
+  margin-top: 10px;
+}
+
+.arrow {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-color: #fff;
+  border-top: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  transform: rotate(45deg);
+  z-index: 998;
+}
+
+#closeDialogBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  color: #999;
+}
+
+#openDialogBtn {
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#openDialogBtn:hover {
+  background-color: #0056b3;
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
+<script>
+  document.getElementById('openDialogBtn').addEventListener('click', function() {
+  var dialogContainer = document.getElementById('dialogContainer');
+  dialogContainer.style.display = 'block';
+
+  // Get the position of the button
+  var btnPosition = document.getElementById('openDialogBtn').getBoundingClientRect();
+
+  // Position the dialog container
+  dialogContainer.style.top = btnPosition.bottom + 'px';
+  dialogContainer.style.left = btnPosition.left + 'px';
+
+  // Position the arrow
+  var arrow = document.querySelector('.arrow');
+  arrow.style.top = '-10px';
+  arrow.style.left = 'calc(50% - 10px)';
+
+  // Anime.js animation for popping effect
+  anime({
+    targets: '.dialog-container',
+    scale: [0.5, 1],
+    opacity: [0, 1],
+    duration: 500,
+    easing: 'easeOutQuint'
+  });
+});
+
+document.getElementById('closeDialogBtn').addEventListener('click', function() {
+  // Anime.js animation for hiding the dialog
+  anime({
+    targets: '.dialog-container',
+    scale: [1, 0.5],
+    opacity: [1, 0],
+    duration: 500,
+    easing: 'easeOutQuint',
+    complete: function(anim) {
+      document.getElementById('dialogContainer').style.display = 'none';
+    }
+  });
+});
+
+
+</script>
