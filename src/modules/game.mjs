@@ -104,6 +104,10 @@
  export const quitUnityGame = () => {
    try {
     window.unityInstance.Quit();
+     // exit fullscreen mode
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      }
    } catch (error) {
      console.log('Error quitting game (perhaps it is not running): ', error);
    }

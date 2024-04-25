@@ -13,6 +13,7 @@
   <script type="module" src="https://cdn.jsdelivr.net/npm/beercss@3.4.9/dist/cdn/beer.min.js"></script>
   <script type="module"
     src="https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.0/dist/cdn/material-dynamic-colors.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
   <!-- Lightweight client-side loader that feature-detects and load polyfills only when necessary -->
   <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs@2/webcomponents-loader.min.js"></script>
   <!-- Load the element definition -->
@@ -25,7 +26,7 @@
   <link rel="stylesheet" href="lib/css/admonition.css">
 
   <!--unity css -->
-  <link rel="stylesheet" href="src/game/Demo2trials/TemplateData/style.css">
+  <link rel="stylesheet" href="src/game/cssplaceholder/TemplateData/style.css">
 
   <!-- load custom js -->
   <!-- <script src="src/main.mjs" type="module" crossorigin="anonymous"></script> -->
@@ -139,6 +140,21 @@
           <div id="unity-webgl-logo" style="background-color: var(--primary); border-radius: .6rem;"></div>
           <div id="unity-fullscreen-button"></div>
           <div id="unity-build-title">fullscreen</div>
+          <div class="main-container">
+            <!-- <button id="openDialogBtn">Open Dialog</button> -->
+            <div class="dialog-container" id="dialogContainer">
+              <div class="dialog">
+                <div class="dialog-header">
+                  <button id="closeDialogBtn">&times;</button>
+                </div>
+                <div class="dialog-content">
+                  <!-- Dialog content goes here -->
+                  Please run the game in fullscreen mode by clicking the blue button above.
+                </div>
+              </div>
+              <div class="arrow"></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -146,7 +162,79 @@
   </main>
   <p class="subID"></p>
   
-
 </body>
 
+<script>
+  // script to open dialog box
+
+  // document.getElementById('openDialogBtn').addEventListener('click', function() {
+  // var dialogContainer = document.getElementById('dialogContainer');
+  // dialogContainer.style.display = 'block';
+
+  // Get the position of the button
+  // var btnPosition = document.getElementById('openDialogBtn').getBoundingClientRect();
+
+  // Position the dialog container
+  // dialogContainer.style.top = btnPosition.bottom + 'px';
+  // dialogContainer.style.left =
+
+  // Select the target element
+const targetElement = document.querySelector('#game');
+
+// Create a new MutationObserver
+const observer = new MutationObserver((mutationsList, observer) => {
+  // Loop through all mutations
+  for(const mutation of mutationsList) {
+    // Check if the display property was changed
+    if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+      const displayValue = targetElement.style.display;
+      // Check if the display property is now set to "block"
+      if (displayValue === 'block') {
+        var dialogContainer = document.getElementById('dialogContainer');
+            dialogContainer.style.display = 'block';
+            // Get the position of the button
+            // var btnPosition = document.getElementById('openDialogBtn').getBoundingClientRect();
+            // Position the dialog container
+            // dialogContainer.style.top = btnPosition.bottom + 'px';
+            // dialogContainer.style.left = btnPosition.left + 'px';
+          // Position the arrow
+          var arrow = document.querySelector('.arrow');
+          arrow.style.top = '-10px';
+          arrow.style.left = 'calc(50% - 10px)';
+
+          // Anime.js animation for popping effect
+          anime({
+            targets: '.dialog-container',
+            scale: [0.5, 1],
+            opacity: [0, 1],
+            duration: 500,
+            easing: 'easeOutQuint'
+          });
+                
+              // Run your function here
+          console.log('Display property changed to "block"');
+        }
+    }
+  }
+});
+  
+// Start observing the target element for attribute changes
+observer.observe(targetElement, { attributes: true });
+    
+// });
+document.getElementById('closeDialogBtn').addEventListener('click', function() {
+  // Anime.js animation for hiding the dialog
+  anime({
+    targets: '.dialog-container',
+    scale: [1, 0.5],
+    opacity: [1, 0],
+    duration: 500,
+    easing: 'easeOutQuint',
+    complete: function(anim) {
+      document.getElementById('dialogContainer').style.display = 'none';
+    }
+  });
+});
+
+</script>
 </html>

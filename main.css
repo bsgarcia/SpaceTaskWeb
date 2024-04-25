@@ -163,3 +163,72 @@ body.dark {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
+
+/* Dialog box fullscreens*/
+.main-container {
+    position: relative;
+    /* margin-top: 50px; */
+    top: 60;
+  }
+  
+  .dialog-container {
+    position: absolute;
+    display: none;
+    background-color: #fff;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    padding: 20px;
+    left: 90%;
+    z-index: 999;
+  }
+
+  /* .dialog-container:hover { */
+    /* background-color: lightgray; */
+    /* transition: linear all 0.5s; */
+  /* } */
+  
+  .dialog {
+    max-width: 300px;
+  }
+  
+  .dialog-header {
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  .dialog-content {
+    margin-top: 10px;
+    color: black;
+  }
+  
+  .arrow {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: #fff;
+    /* border-top: 1px solid #ddd; */
+    /* border-right: 1px solid #ddd; */
+    transform: rotate(45deg);
+    z-index: 998;
+  }
+  
+  #closeDialogBtn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 30px;
+    color: #899390;
+  }
+  
+  #openDialogBtn {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  #openDialogBtn:hover {
+    background-color: #0056b3;
+  }
