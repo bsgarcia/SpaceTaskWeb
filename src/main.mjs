@@ -64,7 +64,7 @@ function main() {
     document.querySelector('#skip').addEventListener('click', skipCurrentStep);
     
     if (end) {
-        window.endFull();
+        window.endFull2();
         return;
     }
 
@@ -202,7 +202,7 @@ const skipCurrentStep = () => {
                 window.endTrainingRL();
                 break;
             case FULL:
-                window.endFull();
+                window.endFull(session=2);
                 break;
             case FULL2:
                 window.endFull2();
@@ -318,7 +318,7 @@ const setPageInstruction = async (instNum) => {
                 break;
         }
     }  else if (instNum==END) {
-        window.endFull();
+        window.endFull2();
 
     }
     else {
@@ -539,8 +539,14 @@ window.endTrainingRL = () => {
 
 }
 
-window.endFull = () => {
-    window.endGame();
+window.endFull = (session) => {
+    alert('session='+session);
+    if (session==2) {
+        window.endGame();
+    } else {
+        window.endFull2();
+    }
+    
 }
 
 window.endFull2 = () => {
