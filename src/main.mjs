@@ -540,7 +540,7 @@ window.endTrainingRL = () => {
 }
 
 window.endFull = (session) => {
-    alert('session='+session);
+    // alert('session='+session);
     if (session==2) {
         window.endGame();
     } else {
