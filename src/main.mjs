@@ -1,6 +1,6 @@
-import {getInstructionPage, landingPage, restPage, consentPage} from "./modules/html_templates.mjs";
-import {getURLParams, createCode} from "./modules/utils.mjs";
-import {startUnityGame, quitUnityGame} from "./modules/game.mjs";
+import { getInstructionPage, landingPage, restPage, consentPage } from "./modules/html_templates.mjs";
+import { getURLParams, createCode } from "./modules/utils.mjs";
+import { startUnityGame, quitUnityGame } from "./modules/game.mjs";
 
 // globals
 // -----------------------------//
@@ -54,7 +54,7 @@ function main() {
 
     window.score = loadScore();
     setSubID();
-    
+
     // attach event listeners to buttons
     const nextButton = document.getElementById('next-button');
     nextButton.addEventListener('click', next);
@@ -62,7 +62,7 @@ function main() {
     prevButton.addEventListener('click', prev);
     document.querySelector('#reload').addEventListener('click', reload);
     document.querySelector('#skip').addEventListener('click', skipCurrentStep);
-    
+
     if (end) {
         window.endFull2();
         return;
@@ -134,7 +134,7 @@ const startTutorial = () => {
 // ------------------------------ Utils ------------------------------ //
 
 const setSubID = () => {
-    window.subID = getURLParams('prolificID') || 'random-'+createCode(5);
+    window.subID = getURLParams('prolificID') || 'random-' + createCode(5);
     document.querySelector('.subID').innerHTML = 'id: ' + window.subID;
 }
 
@@ -152,22 +152,22 @@ const setPreviousStepDone = () => {
 }
 
 const setCurrentStep = (step) => {
-    document.querySelector('#'+step).classList.add('active-step');
+    document.querySelector('#' + step).classList.add('active-step');
 }
 
 const unsetStep = (step) => {
-    document.querySelector('#'+step).classList.remove('active-step');
+    document.querySelector('#' + step).classList.remove('active-step');
 }
 
 const setStepDone = (step) => {
-    document.querySelector('#'+step).classList.add('done-step');
+    document.querySelector('#' + step).classList.add('done-step');
 }
 
 const loadInstructions = async () => {
     [1, 2, 3, 4, 5, 6].forEach(async (instNum) => {
         inst[instNum] = await getInstructionPage(`src/instructions/inst_${instNum}.md`);
     })
-    
+
 }
 
 const loading = () => {
@@ -175,7 +175,7 @@ const loading = () => {
     document.querySelector('#panel').style.display = 'none';
     document.querySelector('#game').style.display = 'none';
     document.querySelector('progress').style.display = 'block';
-}   
+}
 
 const stopLoading = () => {
     showButton();
@@ -183,7 +183,7 @@ const stopLoading = () => {
 }
 
 const skipCurrentStep = () => {
-    if (instNum<=4) {
+    if (instNum <= 4) {
         instNum = PERCEPTUAL_TRAINING;
         setPageInstruction(instNum);
     } else if (instNum == PERCEPTUAL_TRAINING || instNum == RL_TRAINING || instNum == FULL || instNum == FULL2) {
@@ -202,13 +202,13 @@ const skipCurrentStep = () => {
                 window.endTrainingRL();
                 break;
             case FULL:
-                window.endFull(session=2);
+                window.endFull(session = 2);
                 break;
             case FULL2:
                 window.endFull2();
                 break;
         }
-            
+
     } else if (REST.includes(instNum)) {
         // alert('InstNum: '+instNum + '\n' + 'Session: '+window.session + '\n')
         instNum++;
@@ -253,7 +253,7 @@ const hidePrevButton = () => {
 
 const blockClick = () => {
     clickBlocked = true;
-    setTimeout(() => {clickBlocked = false}, clickBlockedTime);
+    setTimeout(() => { clickBlocked = false }, clickBlockedTime);
 }
 
 const setPageInstruction = async (instNum) => {
@@ -278,16 +278,16 @@ const setPageInstruction = async (instNum) => {
 
             document.querySelectorAll('input').forEach(element => element.reportValidity());
             // if all checked
-             if (document.querySelectorAll('input:checked').length == 4) {
+            if (document.querySelectorAll('input:checked').length == 4) {
                 document.querySelector('#next-button').addEventListener('click', next);
                 next()
-             }
+            }
         })
         document.querySelector('#game').style.display = 'none';
     } else if (TUTORIAL == instNum ||
-         PERCEPTUAL_TRAINING == instNum ||
-         RL_TRAINING == instNum ||
-         FULL == instNum || FULL2 == instNum) {
+        PERCEPTUAL_TRAINING == instNum ||
+        RL_TRAINING == instNum ||
+        FULL == instNum || FULL2 == instNum) {
 
         setPreviousStepDone()
         switch (instNum) {
@@ -317,7 +317,7 @@ const setPageInstruction = async (instNum) => {
                 startFull2();
                 break;
         }
-    }  else if (instNum==END) {
+    } else if (instNum == END) {
         window.endFull2();
 
     }
@@ -329,15 +329,15 @@ const setPageInstruction = async (instNum) => {
         quitUnityGame();
         document.querySelector('#panel').innerHTML = '<progress style="width:35%; margin: auto"></progress>';
         document.querySelector('#panel').style.display = 'flex';
-        document.querySelector('#panel').innerHTML = await getInstructionPage(`src/instructions/inst_${instNum-1}.md`) // inst[instNum];
+        document.querySelector('#panel').innerHTML = await getInstructionPage(`src/instructions/inst_${instNum - 1}.md`) // inst[instNum];
         showButton();
-        if ((instNum == 0 ||instNum-1 == PERCEPTUAL_TRAINING || instNum-1 == RL_TRAINING || instNum-1 == FULL || instNum-1 == FULL2)) {
-                hidePrevButton();
+        if ((instNum == 0 || instNum - 1 == PERCEPTUAL_TRAINING || instNum - 1 == RL_TRAINING || instNum - 1 == FULL || instNum - 1 == FULL2)) {
+            hidePrevButton();
         }
         if (instNum < PERCEPTUAL_TRAINING) {
             setCurrentStep('introduction');
         }
-    } 
+    }
 }
 
 // ------------------------------ END ------------------------------ //
@@ -348,7 +348,7 @@ const lastPage = () => {
     setCurrentStep('end')
     let points = window.score.reduce((a, b) => a + b, 0);
     // let points = window.score[window.score.length-1];
-    let pounds = (points*CONV).toFixed(3);
+    let pounds = (points * CONV).toFixed(3);
     document.querySelector('#game').style.display = 'none';
     document.querySelector('#panel').style.display = 'flex';
     document.querySelector('#panel').innerHTML = `
@@ -362,8 +362,8 @@ const lastPage = () => {
              </div>
      `;
     document.querySelector('#submit-button').addEventListener('click', () => {
-      window.location.href = atob(COMP_LINK);
-     })
+        window.location.href = atob(COMP_LINK);
+    })
 }
 
 const rewardPage = () => {
@@ -374,7 +374,7 @@ const rewardPage = () => {
     setCurrentStep('end')
     let points = window.score.reduce((a, b) => a + b, 0);
     // let points = window.score[window.score.length-1];
-    let pounds = (points*CONV).toFixed(3);
+    let pounds = (points * CONV).toFixed(3);
     document.querySelector('#game').style.display = 'none';
     document.querySelector('#panel').style.display = 'flex';
     document.querySelector('#panel').innerHTML = `
@@ -391,7 +391,7 @@ const rewardPage = () => {
 }
 
 
-const sendFeedback = async (data, call=0) => {
+const sendFeedback = async (data, call = 0) => {
     let response = await fetch(PHP, {
         method: 'POST',
         body: JSON.stringify(data),
@@ -399,7 +399,7 @@ const sendFeedback = async (data, call=0) => {
             'Content-Type': 'application/json'
         }
     });
-    
+
     if (response.ok) {
         return response.json();
     } else {
@@ -409,8 +409,8 @@ const sendFeedback = async (data, call=0) => {
         }
         // try again after 500ms
         setTimeout(() => {
-            sendFeedback(data, call+1);
-        }, 500 );
+            sendFeedback(data, call + 1);
+        }, 500);
     }
 }
 
@@ -440,7 +440,7 @@ const surveyPage = () => {
           <span>Strongly Agree</span>
         </button>
       </nav>`;
-    
+
     let question1 = `In the <b style="color: var(--primary)">game 1</b>
      phase it was easy to tell which <b style="color: var(--primary)">forcefield</b> was the best`;
     let question2 = `In the <b style="color: var(--primary)">game 2</b>
@@ -450,71 +450,73 @@ const surveyPage = () => {
     let question4 = `In the <b style="color: var(--primary)">game 4</b>
      phase it was easy to tell which <b style="color: var(--primary)">spaceship x forcefield</b> was the best`;
     let questions = [question1, question2, question3, question4];
-    
+
     let content = '<h2>Survey</h2><div class="scroll-div" style="max-height: 60%">';
     // document.querySelector('#panel').innerHTML = '<h2>Survey</h2><div class="scroll-div">'
     document.querySelector('#panel').style.display = 'block';
-    
+
     questions.forEach((question, idx) => {
         let box = '<div style="margin-top:2.5%; padding:.5%">'
         let q = box + question + '<br>' + scale.replace(/id=""/g, `id="q${idx}"`) + '';
         // document.querySelector('#panel').innerHTML += q;   
-        content += q+`<div class="field textarea label border" style="height: 5%">
+        content += q + `<div class="field textarea label border" style="height: 5%">
                                                         <textarea class="open" id="open_q${idx}"></textarea>
-                                                        <label>Open feedback on game ${idx+1}</label>
+                                                        <label>Open feedback on game ${idx + 1}</label>
                                                         </div></div>`
     })
-    
+
     content += '</div>';
     document.querySelector('#panel').innerHTML = content;
-    
-    let dataToSend = {'prolificID': window.subID};
-    
+
+    let dataToSend = { 'prolificID': window.subID };
+
     // wait first for dom to be updated
     document.addEventListener('DOMContentLoaded', () => {
+
         document.querySelectorAll('.open').forEach((open, idx) => {
             open.addEventListener('input', () => {
                 dataToSend[open.id] = open.value;
             })
         })
-    })
-    
-    document.querySelectorAll('nav button').forEach((button, idx) => {
-        button.addEventListener('click', () => {
-            let id = button.id;
-            // get all buttons in the same row
-            let buttons = document.querySelectorAll(`#${id}`);
-            buttons.forEach((b) => {
+
+        document.querySelectorAll('.scale').forEach((button, idx) => {
+            button.addEventListener('click', () => {
+                let id = button.id;
+                // get all buttons in the same row
+                let buttons = document.querySelectorAll(`#${id}`);
+                buttons.forEach((b) => {
                     b.classList.remove('fill-selected');
+                })
+                button.classList.add('fill-selected');
+
+                dataToSend[id] = button.innerText;
+
+                // show next button if all questions are answered
+                if (document.querySelectorAll('button.fill-selected').length == questions.length) {
+                    showButton();
+                    hidePrevButton();
+                }
+
             })
-            button.classList.add('fill-selected');
-            
-            dataToSend[id] = button.innerText;
-            
-            // show next button if all questions are answered
-            if (document.querySelectorAll('button.fill-selected').length == questions.length) {
-                showButton();
-                hidePrevButton();
-            }
-
         })
-    })
-    
-    document.querySelector('#next-button').removeEventListener('click', next);
-    
-    document.querySelector('#next-button').addEventListener('click', () => {
-        
-        
-        // questions.forEach((q, id) => {
-            // dataToSend['open_'+id] = document.querySelector(`#open_${id}`).value;
-        // })
 
-        sendFeedback(dataToSend);
-        lastPage();
+        document.querySelector('#next-button').removeEventListener('click', next);
+
+        document.querySelector('#next-button').addEventListener('click', () => {
+
+
+            // questions.forEach((q, id) => {
+            // dataToSend['open_'+id] = document.querySelector(`#open_${id}`).value;
+            // })
+
+            sendFeedback(dataToSend);
+            lastPage();
+        })
+
     })
-    
+
 }
-    
+
 window.endTutorial = () => {
     quitUnityGame();
     instNum = 4;
@@ -528,8 +530,8 @@ window.endTutorial = () => {
 window.endTrainingRL = () => {
     quitUnityGame();
     localStorage.setItem('score', JSON.stringify(window.score));
-    
-    setPreviousStepDone(); 
+
+    setPreviousStepDone();
     setCurrentStep('full');
 
     hidePrevButton();
@@ -544,7 +546,7 @@ window.endTrainingRL = () => {
 
 window.endFull = (session) => {
     // alert('session='+session);
-    if (session==2) {
+    if (session == 2) {
         window.endGame();
     } else {
         window.endFull2();
@@ -571,7 +573,7 @@ window.endGame = () => {
     setPreviousStepDone();
     setStepDone('full');
     setCurrentStep('full2')
-    instNum = REST[REST.length-1];
+    instNum = REST[REST.length - 1];
     setPageInstruction(instNum);
 }
 
@@ -581,8 +583,8 @@ window.endTrainingPerceptual = () => {
     quitUnityGame();
     localStorage.setItem('score', JSON.stringify(window.score));
     // window.session++;
-    
-    setPreviousStepDone(); 
+
+    setPreviousStepDone();
     setCurrentStep('training2');
 
     if (instNum == END) {
@@ -590,7 +592,7 @@ window.endTrainingPerceptual = () => {
         window.endFull();
         return;
     }
-    
+
     showButton();
     instNum = REST[window.session];
     window.session++;
