@@ -546,7 +546,6 @@ window.endFull = (session) => {
     } else {
         window.endFull2();
     }
-    
 }
 
 window.endFull2 = () => {
