@@ -470,8 +470,8 @@ const surveyPage = () => {
 
     let dataToSend = { 'prolificID': window.subID };
 
-    // wait first for dom to be updated
-    document.addEventListener('DOMContentLoaded', () => {
+    // wait .5s first for dom to be updated
+    setTimeout(() => {
 
         document.querySelectorAll('.open').forEach((open, idx) => {
             open.addEventListener('input', () => {
@@ -513,7 +513,7 @@ const surveyPage = () => {
             lastPage();
         })
 
-    })
+    } , 500);
 
 }
 
