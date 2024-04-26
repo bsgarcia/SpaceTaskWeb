@@ -554,6 +554,7 @@ window.endFull = (session) => {
 }
 
 window.endFull2 = () => {
+    quitUnityGame();
     localStorage.setItem('end', true);
     localStorage.setItem('score', JSON.stringify(window.score));
     setPreviousStepDone();
