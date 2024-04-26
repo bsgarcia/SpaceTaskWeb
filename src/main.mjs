@@ -470,9 +470,12 @@ const surveyPage = () => {
     
     let dataToSend = {'prolificID': window.subID};
     
-    document.querySelectorAll('.open').forEach((open, idx) => {
-        open.addEventListener('input', () => {
-            dataToSend[open.id] = open.value;
+    // wait first for dom to be updated
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.open').forEach((open, idx) => {
+            open.addEventListener('input', () => {
+                dataToSend[open.id] = open.value;
+            })
         })
     })
     
