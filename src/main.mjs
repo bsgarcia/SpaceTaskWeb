@@ -59,9 +59,12 @@ function main() {
     const nextButton = document.getElementById('next-button');
     nextButton.addEventListener('click', next);
     const prevButton = document.getElementById('prev-button');
-    prevButton.addEventListener('click', prev);
-    document.querySelector('#reload').addEventListener('click', reload);
-    document.querySelector('#skip').addEventListener('click', skipCurrentStep);
+    prevButton.addEventListener('click', prev); 
+    // if buttons exist 
+    if (document.querySelector('#reload'))
+        document.querySelector('#reload').addEventListener('click', reload);
+    if (document.querySelector('#skip'))
+        document.querySelector('#skip').addEventListener('click', skipCurrentStep);
 
     if (end) {
         window.endFull2();
