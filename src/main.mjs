@@ -219,6 +219,7 @@ const skipCurrentStep = () => {
     }
 }
 
+window.skip = skipCurrentStep;
 
 
 const hidePanel = () => {
