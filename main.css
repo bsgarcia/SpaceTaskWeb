@@ -36,6 +36,10 @@ body.dark {
     --surface-container-high:#272b2a;
     --surface-container-highest:#323534;
 }
+
+.mdl-stepper-horizontal-alternative {
+  width: 60% !important;
+}
 .arrow-icon-right {
     display: inline-block !important;
     width: 24px; /* Set width and height according to your SVG image */
