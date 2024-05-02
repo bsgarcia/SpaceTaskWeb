@@ -260,6 +260,16 @@ const blockClick = () => {
     setTimeout(() => { clickBlocked = false }, clickBlockedTime);
 }
 
+const checkConsent = () => {
+    document.querySelectorAll('input').forEach(element => element.reportValidity());
+    // if all checked
+    if (document.querySelectorAll('input:checked').length == 4) {
+        document.querySelector('#next-button').addEventListener('click', next);
+        document.querySelector('#next-button').removeEventListener('click', checkConsent)
+        next()
+    }
+}
+
 const setPageInstruction = async (instNum) => {
     // alert('Setting page instruction: '+instNum);
     instNum = parseInt(instNum);
@@ -278,15 +288,7 @@ const setPageInstruction = async (instNum) => {
         // document.querySelector('#prev-button').style.display = 'none';
         showButton();
         document.querySelector('#next-button').removeEventListener('click', next)
-        document.querySelector('#next-button').addEventListener('click', () => {
-
-            document.querySelectorAll('input').forEach(element => element.reportValidity());
-            // if all checked
-            if (document.querySelectorAll('input:checked').length == 4) {
-                document.querySelector('#next-button').addEventListener('click', next);
-                next()
-            }
-        })
+        document.querySelector('#next-button').addEventListener('click', checkConsent)
         document.querySelector('#game').style.display = 'none';
     } else if (TUTORIAL == instNum ||
         PERCEPTUAL_TRAINING == instNum ||
@@ -419,9 +421,10 @@ const sendFeedback = async (data, call = 0) => {
 }
 
 
-const getSelectedScaleAnswers = () => {
-    let buttons = document.querySelectorAll('button.fill-selected');
-    return buttons;
+const checkSurvey = () => {
+    document.querySelectorAll('input').forEach(element => element.reportValidity());
+    return document.querySelectorAll('input:valid').length == 4 &&
+        document.querySelectorAll('button.fill-selected').length == 4;
 }
 
 const surveyPage = () => {
@@ -455,7 +458,7 @@ const surveyPage = () => {
      phase it was easy to tell which <b style="color: var(--primary)">spaceship x forcefield</b> was the best`;
     let questions = [question1, question2, question3, question4];
 
-    let content = '<h2>Survey</h2><div class="scroll-div" style="max-height: 60%">';
+    let content = '<h2>Survey</h2><div class="scroll-div" style="">';
     // document.querySelector('#panel').innerHTML = '<h2>Survey</h2><div class="scroll-div">'
     document.querySelector('#panel').style.display = 'block';
 
@@ -463,8 +466,8 @@ const surveyPage = () => {
         let box = '<div style="margin-top:2.5%; padding:.5%">'
         let q = box + question + '<br>' + scale.replace(/id=""/g, `id="q${idx}"`) + '';
         // document.querySelector('#panel').innerHTML += q;   
-        content += q + `<div class="field textarea label border" style="height: 5%">
-                                                        <textarea class="open" id="open_q${idx}"></textarea>
+        content += q + `<div class="field input label border" style="height: 5%">
+                                                        <input minlength="10" class="open" id="open_q${idx}" required></input>
                                                         <label>Open feedback on game ${idx + 1}</label>
                                                         </div></div>`
     })
@@ -475,49 +478,46 @@ const surveyPage = () => {
     let dataToSend = { 'prolificID': window.subID };
 
     // wait .5s first for dom to be updated
-    setTimeout(() => {
 
-        document.querySelectorAll('.open').forEach((open, idx) => {
-            open.addEventListener('input', () => {
-                dataToSend[open.id] = open.value;
-            })
+    document.querySelectorAll('.open').forEach((open, idx) => {
+        open.addEventListener('input', () => {
+            dataToSend[open.id] = open.value;
         })
+    })
 
-        document.querySelectorAll('.scale').forEach((button, idx) => {
-            button.addEventListener('click', () => {
-                let id = button.id;
-                // get all buttons in the same row
-                let buttons = document.querySelectorAll(`#${id}`);
-                buttons.forEach((b) => {
-                    b.classList.remove('fill-selected');
-                })
-                button.classList.add('fill-selected');
-
-                dataToSend[id] = button.innerText;
-
-                // show next button if all questions are answered
-                if (document.querySelectorAll('button.fill-selected').length == questions.length) {
-                    showButton();
-                    hidePrevButton();
-                }
-
+    document.querySelectorAll('.scale').forEach((button, idx) => {
+        button.addEventListener('click', () => {
+            let id = button.id;
+            // get all buttons in the same row
+            let buttons = document.querySelectorAll(`#${id}`);
+            buttons.forEach((b) => {
+                b.classList.remove('fill-selected');
             })
+            button.classList.add('fill-selected');
+
+            dataToSend[id] = button.innerText;
+
+            // show next button if all questions are answered
+            // if (document.querySelectorAll('button.fill-selected').length == questions.length) {
+                // showButton();
+                // hidePrevButton();
+            // }
+
         })
+    })
 
-        document.querySelector('#next-button').removeEventListener('click', next);
+    showButton();
+    hidePrevButton();
 
-        document.querySelector('#next-button').addEventListener('click', () => {
-
-
-            // questions.forEach((q, id) => {
-            // dataToSend['open_'+id] = document.querySelector(`#open_${id}`).value;
-            // })
-
+    document.querySelector('#next-button').removeEventListener('click', surveyPage);
+    document.querySelector('#next-button').removeEventListener('click', next)
+    document.querySelector('#next-button').addEventListener('click', () => {
+        if (checkSurvey()) {
+            document.querySelector('#next-button').removeEventListener('click', checkSurvey);
             sendFeedback(dataToSend);
             lastPage();
-        })
-
-    } , 500);
+        }
+    });
 
 }
 

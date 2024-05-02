@@ -112,7 +112,7 @@ body.dark {
     /* margin: 20px; */
 }
 .scroll-div{
-            max-height: 400px;
+            max-height: 550px;
             overflow: auto;
             border: 1px solid #ccc;
             padding: 10px;
