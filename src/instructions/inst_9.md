@@ -3,7 +3,7 @@
 Well done! 🥳
 <br>
 
-Now let's continue with **game 4**. Game 4 consists in the exact same task as game 3, except that you will see **new spaceships** with **new** average spaceship **reward**. Again maximize you overall score! ! You can reasonably expect a score of at least **~4000 points**. This phase lasts around ~10min. <br><br>
+Now let's continue with **game 4**. Game 4 consists in the exact same task as game 3, except that you will see **new spaceships** with **new** average spaceship **reward**. Again maximize you overall score! ! You can reasonably expect a score of at least **~3000 points**. This phase lasts around ~10min. <br><br>
 
 You will face waves of spaceship pairs. 
 In order to destroy a target, you have to press either **left or right arrow key**, and then press **space to shoot**.
