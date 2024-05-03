@@ -458,7 +458,7 @@ const surveyPage = () => {
      phase it was easy to tell which <b style="color: var(--primary)">spaceship x forcefield</b> was the best`;
     let questions = [question1, question2, question3, question4];
 
-    let content = '<h2>Survey</h2><div class="scroll-div" style="">';
+    let content = '<h2>Survey</h2><div class="scroll-div-survey" style="">';
     // document.querySelector('#panel').innerHTML = '<h2>Survey</h2><div class="scroll-div">'
     document.querySelector('#panel').style.display = 'block';
 
