@@ -203,3 +203,34 @@ export const consentPage = `
     </label>
 </div>
 `
+
+export const gameDiv = `   <div id="unity-container" class="unity-desktop">
+<canvas id="unity-canvas" style="width: 980px; height: 600px; border-radius: .8rem;"></canvas>
+<div id="unity-loading-bar">
+  <div id="unity-logo"></div>
+  <div id="unity-progress-bar-empty">
+    <div id="unity-progress-bar-full"></div>
+  </div>
+</div>
+<div id="unity-warning"> </div>
+<div id="unity-footer" style="background-color: whitesmoke;">
+  <div id="unity-webgl-logo" style="background-color: var(--primary); border-radius: .6rem;"></div>
+  <div id="unity-fullscreen-button"></div>
+  <div id="unity-build-title">fullscreen</div>
+  <div class="main-container">
+    <!-- <button id="openDialogBtn">Open Dialog</button> -->
+    <div class="dialog-container" id="dialogContainer">
+      <div class="dialog">
+        <div class="dialog-header">
+          <button id="closeDialogBtn">&times;</button>
+        </div>
+        <div class="dialog-content">
+          <!-- Dialog content goes here -->
+          Please run the game in fullscreen mode by clicking the blue button above.
+        </div>
+      </div>
+      <div class="arrow"></div>
+    </div>
+  </div>
+</div>
+</div>`
