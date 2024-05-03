@@ -186,8 +186,8 @@ const stopLoading = () => {
 }
 
 const skipCurrentStep = () => {
-    if (instNum <= 4) {
-        instNum = PERCEPTUAL_TRAINING;
+    if (instNum <= 2) {
+        instNum = TUTORIAL;
         setPageInstruction(instNum);
     } else if (instNum==TUTORIAL || 
         instNum == PERCEPTUAL_TRAINING ||
