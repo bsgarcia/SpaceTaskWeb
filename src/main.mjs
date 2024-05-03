@@ -526,7 +526,6 @@ const surveyPage = () => {
 }
 
 window.endTutorial = () => {
-    alert('endTutorial')
     quitUnityGame();
     instNum = 4;
     setPageInstruction(instNum);
