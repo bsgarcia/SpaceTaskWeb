@@ -110,7 +110,7 @@ export const restPage = `
 export const consentPage = `
 
 <h2>Title of the study: BrainPlay</h2>
-<div class="scroll-div">
+<div class="scroll-div-consent">
     <h3>Information to the Participants</h3>
 
     <p><strong>Procedure:</strong> For the purpose of our research, we will ask you for demographic
