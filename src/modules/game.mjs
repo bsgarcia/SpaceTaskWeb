@@ -1,5 +1,7 @@
+ import { gameDiv } from "./html_templates.mjs";
+
  export const startUnityGame = (phase) => {
-    
+    document.querySelector('#game').innerHTML = gameDiv; 
     document.querySelector('#game').style.display = 'block';
 
     var container = document.querySelector("#unity-container");
@@ -104,6 +106,7 @@
  export const quitUnityGame = () => {
    try {
     window.unityInstance.Quit();
+    document.querySelector('#game').innerHTML = '';
      // exit fullscreen mode
       if (document.fullscreenElement) {
         document.exitFullscreen();

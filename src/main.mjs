@@ -12,7 +12,7 @@ const RL_TRAINING = 7;
 const FULL = 9;
 const FULL2 = 11
 const END = 12;
-const CONV = 0.00031;
+const CONV = 0.00029;
 const COMP_LINK = 'aHR0cHM6Ly9hcHAucHJvbGlmaWMuY29tL3N1Ym1pc3Npb25zL2NvbXBsZXRlP2NjPUNKRllaSlk3';
 const clickBlockedTime = 300;
 const PHP = 'php/insert_feedback.php';
@@ -189,7 +189,9 @@ const skipCurrentStep = () => {
     if (instNum <= 4) {
         instNum = PERCEPTUAL_TRAINING;
         setPageInstruction(instNum);
-    } else if (instNum == PERCEPTUAL_TRAINING || instNum == RL_TRAINING || instNum == FULL || instNum == FULL2) {
+    } else if (instNum==TUTORIAL || 
+        instNum == PERCEPTUAL_TRAINING ||
+         instNum == RL_TRAINING || instNum == FULL || instNum == FULL2) {
         // alert('InstNum: '+instNum + '\n' + 'Session: '+window.session + '\n')
         switch (instNum) {
             case TUTORIAL:
@@ -479,7 +481,9 @@ const surveyPage = () => {
 
     // wait .5s first for dom to be updated
 
+    // remove event listeners on keypress that were put by unity
     document.querySelectorAll('.open').forEach((open, idx) => {
+
         open.addEventListener('input', () => {
             dataToSend[open.id] = open.value;
         })
@@ -522,6 +526,7 @@ const surveyPage = () => {
 }
 
 window.endTutorial = () => {
+    alert('endTutorial')
     quitUnityGame();
     instNum = 4;
     setPageInstruction(instNum);
