@@ -18,7 +18,7 @@ If you click on next, the **third game** will start!
 admonition=<div class="admonition notice" style="">
 			<p class="title">Bonus</p>
       <p class="content">
-	  1 pound = 3500 points
+	  1 pound = 5000 points
 	  </p>
 		</div>
 <br>
