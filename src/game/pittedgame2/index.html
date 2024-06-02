@@ -25,6 +25,8 @@
     </div>
     <script>
 
+      window.subID = 'pittedgame2';
+      window.score = [];
       var container = document.querySelector("#unity-container");
       var canvas = document.querySelector("#unity-canvas");
       var loadingBar = document.querySelector("#unity-loading-bar");
@@ -94,8 +96,8 @@
       } else {
         // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
 
-        canvas.style.width = "700px";
-        canvas.style.height = "900px";
+        canvas.style.width = "1200px";
+        canvas.style.height = "700px";
       }
 
       loadingBar.style.display = "block";
