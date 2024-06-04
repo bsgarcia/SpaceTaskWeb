@@ -10,7 +10,7 @@ Welcome to this **decision-making task**! In this task, you will engage in a **s
 
 * **Controls** - Your own spaceship is located at the bottom of the game window. You can **move** your own spaceship using **left-right arrow keys**.  You have to choose, among the two spaceship you see, which one you want to try to blast. Use **space key** to shoot. 
 
-* **Outcome** -  If your shot destroys the chosen enemy spaceship, **reward points** will be displayed. If **not destroyed**, you'll get **half of the inital reward**. Destroy the spaceships that you think will **provide you the most points**.
+* **Outcome** -  If your shot destroys the chosen enemy spaceship, **reward points** will be displayed. Destroy the spaceships that you think will **provide you the most points**.
 
 <!---
 display=block
