@@ -13,7 +13,7 @@ admonition=
 <div class="admonition notice" style="">
 			<p class="title">Note</p>
       <p class="content">
-	  1 pound = 6000 points
+	  1 pound = 5000 points
 	  </p>
 		</div>
 <br>
