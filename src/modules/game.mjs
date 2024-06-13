@@ -103,15 +103,15 @@
 
  }
 
- export const quitUnityGame = () => {
-   try {
-    window.unityInstance.Quit();
-    document.querySelector('#game').innerHTML = '';
-     // exit fullscreen mode
+export const quitUnityGame = () => {
+  try {
+      window.unityInstance.Quit();
+      document.querySelector('#game').innerHTML = '';
+      // exit fullscreen mode
       if (document.fullscreenElement) {
-        document.exitFullscreen();
+          document.exitFullscreen();
       }
-   } catch (error) {
-     console.log('Error quitting game (perhaps it is not running): ', error);
-   }
- }
+  } catch (error) {
+      console.log('Error quitting game (perhaps it is not running): ', error);
+  }
+}

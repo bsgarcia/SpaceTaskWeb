@@ -7,8 +7,8 @@ import { startUnityGame, quitUnityGame } from "./modules/game.mjs";
 // constants
 const REST = [6, 8, 10]
 const TUTORIAL = 3;
-const PERCEPTUAL_TRAINING = 5;
-const RL_TRAINING = 7;
+const PERCEPTUAL_TRAINING = 7;
+const RL_TRAINING = 5;
 const FULL = 9;
 const FULL2 = 11
 const END = 12;
@@ -105,12 +105,14 @@ const startTrainingPerceptual = () => {
     // hide instructions
     hidePanel();
     hideButton()
+    startUnityGame('training1');
     // set step
-    setCurrentStep('training1');
+    setStepDone('training1');
     setStepDone('introduction');
     // range from 1 to idx set done
-    setPreviousStepDone();
-    startUnityGame('training1');
+    // setPreviousStepDone();
+    setCurrentStep('training2');
+
 }
 
 const startTrainingRL = () => {
@@ -119,16 +121,17 @@ const startTrainingRL = () => {
     hideButton()
     // insert progress circle beer css
     // set step
-    setCurrentStep('training2');
-    setStepDone('training1');
-    setStepDone('introduction');
     startUnityGame('training2');
+
+    // set step
+    setStepDone('introduction');
+    setCurrentStep('training1');
 }
 
 const startTutorial = () => {
     hidePanel()
     hideButton()
-    setCurrentStep('introduction');
+    // setCurrentStep('introduction');
     startUnityGame('tutorial');
     setCurrentStep('introduction');
 }
@@ -155,16 +158,23 @@ const setPreviousStepDone = () => {
 }
 
 const setCurrentStep = (step) => {
+    document.querySelector('#' + step).classList.remove('done-step');
     document.querySelector('#' + step).classList.add('active-step');
 }
+
+window.setCurrentStep = setCurrentStep;
+
 
 const unsetStep = (step) => {
     document.querySelector('#' + step).classList.remove('active-step');
 }
 
 const setStepDone = (step) => {
+    document.querySelector('#' + step).classList.remove('active-step');
     document.querySelector('#' + step).classList.add('done-step');
 }
+
+window.setStepDone = setStepDone;
 
 const loadInstructions = async () => {
     [1, 2, 3, 4, 5, 6].forEach(async (instNum) => {
@@ -297,30 +307,30 @@ const setPageInstruction = async (instNum) => {
         RL_TRAINING == instNum ||
         FULL == instNum || FULL2 == instNum) {
 
-        setPreviousStepDone()
+        // setPreviousStepDone()
         switch (instNum) {
             case TUTORIAL:
                 // alert('tutorial')
-                setCurrentStep('introduction');
+                // setCurrentStep('introduction');
                 startTutorial();
                 break;
             case PERCEPTUAL_TRAINING:
-                setCurrentStep('training1');
+                // setCurrentStep('training1');
                 // alert('startTrainingPerceptual')
                 startTrainingPerceptual();
                 break;
             case RL_TRAINING:
-                setCurrentStep('training2');
+                // setCurrentStep('training2');
                 // alert('startTrainingRL')
                 startTrainingRL();
                 break;
             case FULL:
-                setCurrentStep('full');
+                // setCurrentStep('full');
                 // alert('startGame')
                 startFull();
                 break;
             case FULL2:
-                setCurrentStep('full2');
+                // setCurrentStep('full2');
                 // alert('startGame')
                 startFull2();
                 break;
@@ -339,11 +349,20 @@ const setPageInstruction = async (instNum) => {
         document.querySelector('#panel').style.display = 'flex';
         document.querySelector('#panel').innerHTML = await getInstructionPage(`src/instructions/inst_${instNum - 1}.md`) // inst[instNum];
         showButton();
-        if ((instNum == 0 || instNum - 1 == PERCEPTUAL_TRAINING || instNum - 1 == RL_TRAINING || instNum - 1 == FULL || instNum - 1 == FULL2)) {
+        if ((instNum == 0 || instNum - 1 == PERCEPTUAL_TRAINING ||
+             instNum - 1 == RL_TRAINING || instNum - 1 == FULL || instNum - 1 == FULL2)) {
             hidePrevButton();
         }
-        if (instNum < PERCEPTUAL_TRAINING) {
+        if (instNum < (PERCEPTUAL_TRAINING-1)) {
             setCurrentStep('introduction');
+        }
+        if (instNum == (PERCEPTUAL_TRAINING-1)) {
+            setStepDone('introduction');
+            setCurrentStep('training1');
+        }
+        if (instNum == PERCEPTUAL_TRAINING) {
+            setStepDone('introduction');
+            setCurrentStep('training1');
         }
     }
 }
@@ -531,16 +550,16 @@ window.endTutorial = () => {
     setPageInstruction(instNum);
     showButton();
     hidePrevButton();
-
-
+    setStepDone('introduction');
+    setCurrentStep('training1');
 }
 
 window.endTrainingRL = () => {
     quitUnityGame();
     localStorage.setItem('score', JSON.stringify(window.score));
 
-    setPreviousStepDone();
-    setCurrentStep('full');
+    // setPreviousStepDone();
+    // setCurrentStep('full');
 
     hidePrevButton();
     showButton();
@@ -549,6 +568,10 @@ window.endTrainingRL = () => {
     localStorage.setItem('session', window.session);
     setPageInstruction(instNum);
     hidePrevButton();
+    
+    setStepDone('introduction');
+    setStepDone('training1');
+    setCurrentStep('training2');
 
 }
 
@@ -593,8 +616,8 @@ window.endTrainingPerceptual = () => {
     localStorage.setItem('score', JSON.stringify(window.score));
     // window.session++;
 
-    setPreviousStepDone();
-    setCurrentStep('training2');
+    // setPreviousStepDone();
+    // setCurrentStep('training2');
 
     if (instNum == END) {
         hideButton();
@@ -608,6 +631,11 @@ window.endTrainingPerceptual = () => {
     localStorage.setItem('session', window.session);
     setPageInstruction(instNum);
     hidePrevButton();
+    
+    setStepDone('introduction');
+    setStepDone('training1');
+    setStepDone('training2');
+    setCurrentStep('full');
 }
 
 // ------------------------------ RUN ------------------------------ //
