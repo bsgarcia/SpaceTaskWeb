@@ -23,7 +23,7 @@ If you click next, the **first game** will start.
 <div class="admonition notice" style="">
 			<p class="title">Note</p>
       <p class="content">
-	  1 pound = 5000 points
+	  1 pound = 6000 points
 	  </p>
 		</div>
 <br>
