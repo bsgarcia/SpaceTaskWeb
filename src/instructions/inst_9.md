@@ -1,9 +1,9 @@
 # Game 4
 <br>
-Well done! 🥳
+Perfect! 🥳
 <br>
 
-Now let's continue with **game 4**. Game 4 consists in the exact same task as game 3, except that you will see **new spaceships** with **new** average spaceship **reward**. Again maximize you overall score! ! You can reasonably expect a score of at least **~3000 points**. This phase lasts around ~10min. <br><br>
+Now let's start with **game 4**! In this phase, to maximize you overall score (displayed at the top left of the screen), you need to decide on both forcefields resistance and average spaceship rewards! You will encounter the **same spaceships** as in previous game, i.e., game 2. You can reasonably expect a score of at least **~3000 points**. This phase lasts around ~10min. <br><br>
 
 You will face waves of spaceship pairs. 
 In order to destroy a target, you have to press either **left or right arrow key**, and then press **space to shoot**.
@@ -32,7 +32,7 @@ admonition=<div class="admonition notice" style="">
 
 
 <!--- 
-image=screenshot_game4.png
+image=screenshot3.png
 --->
 
 <!---
