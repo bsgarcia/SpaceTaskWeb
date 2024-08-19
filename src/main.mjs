@@ -5,13 +5,14 @@ import { startUnityGame, quitUnityGame } from "./modules/game.mjs";
 // globals
 // -----------------------------//
 // constants
-const REST = [6, 8, 10]
+const REST = [6, 8, 10, 12]
 const TUTORIAL = 3;
-const PERCEPTUAL_TRAINING = 5;
-const RL_TRAINING = 7;
-const FULL = 9;
-const FULL2 = 11
-const END = 12;
+const RL_TRAINING_1 = 5
+const PERCEPTUAL_TRAINING = 7
+const RL_TRAINING_2 = 9
+const FULL = 11
+const FULL2 = 13
+const END = 14
 const CONV = 0.0002;
 const COMP_LINK = 'aHR0cHM6Ly9hcHAucHJvbGlmaWMuY29tL3N1Ym1pc3Npb25zL2NvbXBsZXRlP2NjPUNKRllaSlk3';
 const clickBlockedTime = 300;
@@ -107,23 +108,24 @@ const startTrainingPerceptual = () => {
     hidePanel();
     hideButton()
     // set step
-    setCurrentStep('training1');
+    setCurrentStep('training2');
     setStepDone('introduction');
     // range from 1 to idx set done
     setPreviousStepDone();
-    startUnityGame('training1');
+    startUnityGame('training2');
 }
 
-const startTrainingRL = () => {
+const startTrainingRL = (sess) => {
     // hide instructions
     hidePanel();
     hideButton()
     // insert progress circle beer css
     // set step
-    setCurrentStep('training2');
-    setStepDone('training1');
+    setCurrentStep('training'+sess);
+    if (sess > 1)
+        setStepDone('training'+sess-1);
     setStepDone('introduction');
-    startUnityGame('training2');
+    startUnityGame('training'+sess);
 }
 
 const startTutorial = () => {
@@ -190,11 +192,9 @@ const skipCurrentStep = () => {
     if (instNum <= 2) {
         instNum = TUTORIAL;
         setPageInstruction(instNum);
-    } else if (instNum==TUTORIAL || 
-        instNum == PERCEPTUAL_TRAINING ||
-         instNum == RL_TRAINING || instNum == FULL || instNum == FULL2) {
-        // alert('InstNum: '+instNum + '\n' + 'Session: '+window.session + '\n')
-        switch (instNum) {
+    } else if ([TUTORIAL, PERCEPTUAL_TRAINING, RL_TRAINING_1, RL_TRAINING_2,
+         FULL, FULL2].includes(instNum)) {
+            switch (instNum) {
             case TUTORIAL:
                 window.endTutorial();
                 break;
@@ -203,12 +203,15 @@ const skipCurrentStep = () => {
                 // alert('endTrainingPerceptual')
                 // window.startTrainingRL();
                 break;
-            case RL_TRAINING:
+            case RL_TRAINING_1:
                 // alert('endTrainingRL')
-                window.endTrainingRL();
+                window.endTrainingRL(0);
                 break;
+            case RL_TRAINING_2:
+                window.endTrainingRL(2);
+                break;  
             case FULL:
-                window.endFull(session = 2);
+                window.endFull(3);
                 break;
             case FULL2:
                 window.endFull2();
@@ -295,7 +298,7 @@ const setPageInstruction = async (instNum) => {
         document.querySelector('#game').style.display = 'none';
     } else if (TUTORIAL == instNum ||
         PERCEPTUAL_TRAINING == instNum ||
-        RL_TRAINING == instNum ||
+        RL_TRAINING_1 == instNum || RL_TRAINING_2 == instNum ||
         FULL == instNum || FULL2 == instNum) {
 
         setPreviousStepDone()
@@ -306,14 +309,18 @@ const setPageInstruction = async (instNum) => {
                 startTutorial();
                 break;
             case PERCEPTUAL_TRAINING:
-                setCurrentStep('training1');
+                setCurrentStep('training2');
                 // alert('startTrainingPerceptual')
                 startTrainingPerceptual();
                 break;
-            case RL_TRAINING:
-                setCurrentStep('training2');
+            case RL_TRAINING_1:
+                setCurrentStep('training1');
                 // alert('startTrainingRL')
-                startTrainingRL();
+                startTrainingRL(1);
+                break;
+            case RL_TRAINING_2:
+                setCurrentStep('training3');
+                startTrainingRL(3);
                 break;
             case FULL:
                 setCurrentStep('full');
@@ -331,7 +338,7 @@ const setPageInstruction = async (instNum) => {
 
     }
     else {
-        if (instNum > PERCEPTUAL_TRAINING) {
+        if (instNum > RL_TRAINING_1) {
             setPreviousStepDone()
         }
         document.querySelector('#game').style.display = 'none';
@@ -340,10 +347,10 @@ const setPageInstruction = async (instNum) => {
         document.querySelector('#panel').style.display = 'flex';
         document.querySelector('#panel').innerHTML = await getInstructionPage(`src/instructions/inst_${instNum - 1}.md`) // inst[instNum];
         showButton();
-        if ((instNum == 0 || instNum - 1 == PERCEPTUAL_TRAINING || instNum - 1 == RL_TRAINING || instNum - 1 == FULL || instNum - 1 == FULL2)) {
+        if ([PERCEPTUAL_TRAINING, RL_TRAINING_1, RL_TRAINING_2, FULL, FULL2].includes(instNum - 1)) {
             hidePrevButton();
         }
-        if (instNum < PERCEPTUAL_TRAINING) {
+        if (instNum < RL_TRAINING_1) {
             setCurrentStep('introduction');
         }
     }
@@ -536,12 +543,18 @@ window.endTutorial = () => {
 
 }
 
-window.endTrainingRL = () => {
+window.endTrainingRL = (sess) => {
+    console.log('endTrainingRL, session='+sess);
     quitUnityGame();
     localStorage.setItem('score', JSON.stringify(window.score));
 
     setPreviousStepDone();
-    setCurrentStep('full');
+
+    if (sess == 2) {
+        setCurrentStep('full');
+    } else {
+        setCurrentStep('training2');
+    }
 
     hidePrevButton();
     showButton();
@@ -553,9 +566,9 @@ window.endTrainingRL = () => {
 
 }
 
-window.endFull = (session) => {
+window.endFull = (sess) => {
     // alert('session='+session);
-    if (session == 2) {
+    if (sess == 3) {
         window.endGame();
     } else {
         window.endFull2();
@@ -589,13 +602,15 @@ window.endGame = () => {
 
 
 
-window.endTrainingPerceptual = () => {
+window.endTrainingPerceptual = (sess) => {
+    // alert('endTrainingPerceptual, session='+sess);
+    console.log('endTrainingPerceptual, session='+sess);
     quitUnityGame();
     localStorage.setItem('score', JSON.stringify(window.score));
     // window.session++;
 
     setPreviousStepDone();
-    setCurrentStep('training2');
+    setCurrentStep('training3');
 
     if (instNum == END) {
         hideButton();

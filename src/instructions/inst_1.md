@@ -3,7 +3,7 @@ Welcome to this **decision-making task**! In this task, you will engage in a **s
 
 # Task Overview
 
-* **Structure** - There will be **4 game phases** (game 1, 2, 3 and 4) of respectively ~5min, ~5min, ~10min and ~10min. You can track your progress at anytime with the **timeline** displayed at the top of this webpage.
+* **Structure** - There will be **5 game phases** (game 1, 2, 3, 4 and 5) of respectively ~3min, ~3min, ~3min, ~10min and ~10min. You can track your progress at anytime with the **timeline** displayed at the top of this webpage.
 
 
 * **Game Interface** - You will see **2 enemy spaceships**, protected  by **forcefields**, falling from top to bottom of the screen  over a **3-second period**. Your task is to choose which spaceship you should shoot at to maximize your points - you can only shoot at one of the 2 enemy spaceships.

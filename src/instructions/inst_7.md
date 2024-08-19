@@ -1,22 +1,27 @@
-# Game 3
+
+<!-- <br> -->
+<!-- <br> -->
+<!-- <br> -->
+# 🚀 Game 3 🚀
+
+Well done! 😃 <br>
+Now let's continue with <b>game 3</b>.
 <br>
-Perfect! 🥳
+
+
+You will encounter **unprotected** spaceships (i.e. without  forcefields). You have to focus on finding the most rewarding spaceship within each pair. Be aware that a given spaceship will not always provide the exact same reward, but each spaceship is associated to an average reward. Please shoot the spaceship providing the **highest average reward**.
+<br>
 <br>
 
-Now let's start with **game 3**! In this phase, to maximize you overall score (displayed at the top left of the screen), you need to decide on both forcefields resistance and average spaceship rewards! You will encounter the **same spaceships** as in previous game, i.e., game 2. You can reasonably expect a score of at least **~3000 points**. This phase lasts around ~10min. <br><br>
+You will face waves of spaceship pairs. In order to destroy a target, you have to **press** either **left** or **right arrow** key, and then **press space** to **shoot**.
 
-You will face waves of spaceship pairs. 
-In order to destroy a target, you have to press either **left or right arrow key**, and then press **space to shoot**.
-
-## Ready? 
-
-If you click on next, the **third game** will start!
+## Ready?
+Click on next to continue to the **third game**!
 
 
-
-<!---
-admonition=<div class="admonition notice" style="">
-			<p class="title">Bonus</p>
+<!--- admonition= 
+<div class="admonition notice" style="">
+			<p class="title">Note</p>
       <p class="content">
 	  1 pound = 5000 points
 	  </p>
@@ -31,10 +36,6 @@ admonition=<div class="admonition notice" style="">
 --->
 
 
-<!--- 
-image=screenshot3.png
---->
+<!--- display=flex --->
 
-<!---
-display=flex
---->
+<!--- image=screenshot4.png --->
