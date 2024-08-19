@@ -23,6 +23,7 @@ var inst = [];
 var end = localStorage.getItem('end') == 'true';
 var instNum = parseInt(localStorage.getItem('instNum')) || 0;
 
+
 // window variables
 window.instNum = instNum;
 window.session = parseInt(localStorage.getItem('session')) || 0;
