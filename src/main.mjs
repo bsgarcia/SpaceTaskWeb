@@ -123,7 +123,7 @@ const startTrainingRL = (sess) => {
     // set step
     setCurrentStep('training'+sess);
     if (sess > 1)
-        setStepDone('training'+sess-1);
+        setStepDone('training'+sess);
     setStepDone('introduction');
     startUnityGame('training'+sess);
 }
@@ -459,14 +459,16 @@ const surveyPage = () => {
       </nav>`;
 
     let question1 = `In the <b style="color: var(--primary)">game 1</b>
-     phase it was easy to tell which <b style="color: var(--primary)">forcefield</b> was the best`;
-    let question2 = `In the <b style="color: var(--primary)">game 2</b>
      phase it was easy to tell which <b style="color: var(--primary)">spaceship</b> was the best`;
+    let question2 = `In the <b style="color: var(--primary)">game 2</b>
+     phase it was easy to tell which <b style="color: var(--primary)">forcefield</b> was the best`;
     let question3 = `In the <b style="color: var(--primary)">game 3</b>
-     phase it was easy to tell which <b style="color: var(--primary)">spaceship x forcefield</b> was the best`;
+     phase it was easy to tell which <b style="color: var(--primary)">spaceship</b> was the best`;
     let question4 = `In the <b style="color: var(--primary)">game 4</b>
      phase it was easy to tell which <b style="color: var(--primary)">spaceship x forcefield</b> was the best`;
-    let questions = [question1, question2, question3, question4];
+     let question5 = `In the <b style="color: var(--primary)">game 5</b>
+     phase it was easy to tell which <b style="color: var(--primary)">spaceship x forcefield</b> was the best`;
+    let questions = [question1, question2, question3, question4, question5];
 
     let content = '<h2>Survey</h2><div class="scroll-div-survey" style="">';
     // document.querySelector('#panel').innerHTML = '<h2>Survey</h2><div class="scroll-div">'

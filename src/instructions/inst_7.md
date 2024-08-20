@@ -5,11 +5,11 @@
 # 🚀 Game 3 🚀
 
 Well done! 😃 <br>
-Now let's continue with <b>game 3</b>.
+Now let's continue with <b>game 3</b>. This game is similar to game 1.
 <br>
 
 
-You will encounter **unprotected** spaceships (i.e. without  forcefields). You have to focus on finding the most rewarding spaceship within each pair. Be aware that a given spaceship will not always provide the exact same reward, but each spaceship is associated to an average reward. Please shoot the spaceship providing the **highest average reward**.
+You will encounter **unprotected** spaceships again (i.e. without  forcefields). You have to focus on finding the most rewarding spaceship within each pair. Be aware that a given spaceship will not always provide the exact same reward, but each spaceship is associated to an average reward. Please shoot the spaceship providing the **highest average reward**.
 <br>
 <br>
 
