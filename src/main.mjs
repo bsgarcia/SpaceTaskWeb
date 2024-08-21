@@ -14,7 +14,10 @@ const FULL = 11
 const FULL2 = 13
 const END = 14
 const CONV = 0.0002;
+const GAME_NUMBER = 5;
+
 const COMP_LINK = 'aHR0cHM6Ly9hcHAucHJvbGlmaWMuY29tL3N1Ym1pc3Npb25zL2NvbXBsZXRlP2NjPUNKRllaSlk3';
+
 const clickBlockedTime = 300;
 const PHP = 'php/insert_feedback.php';
 
@@ -386,7 +389,7 @@ const rewardPage = () => {
     showButton();
     hidePrevButton()
     setPreviousStepDone();
-    setStepDone('full');
+    setStepDone('full2');
     setCurrentStep('end')
     let points = window.score.reduce((a, b) => a + b, 0);
     // let points = window.score[window.score.length-1];
@@ -433,8 +436,8 @@ const sendFeedback = async (data, call = 0) => {
 
 const checkSurvey = () => {
     document.querySelectorAll('input').forEach(element => element.reportValidity());
-    return document.querySelectorAll('input:valid').length == 4 &&
-        document.querySelectorAll('button.fill-selected').length == 4;
+    return document.querySelectorAll('input:valid').length == GAME_NUMBER &&
+        document.querySelectorAll('button.fill-selected').length == GAME_NUMBER;
 }
 
 const surveyPage = () => {
@@ -523,6 +526,7 @@ const surveyPage = () => {
     showButton();
     hidePrevButton();
 
+    
     document.querySelector('#next-button').removeEventListener('click', surveyPage);
     document.querySelector('#next-button').removeEventListener('click', next)
     document.querySelector('#next-button').addEventListener('click', () => {
