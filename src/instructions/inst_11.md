@@ -25,7 +25,7 @@ admonition=<div class="admonition notice" style="">
 <div class="admonition warning" style="">
 			<p class="title">Warning</p>
       <p class="content">
-	  You can only shoot one spaceship at a time! If you do not shoot, you won't gain any points for the current trial.
+	  You can only shoot one spaceship at a time! If you do not shoot, you will lose 50 points.
 		</p>
 		</div>
 --->
