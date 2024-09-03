@@ -86,10 +86,11 @@ const startFull = () => {
     hidePanel();
     hideButton()
     // set step
-    setCurrentStep('full');
     setStepDone('introduction');
     setStepDone('training2');
     setStepDone('training1');
+    setStepDone('training3');
+    setCurrentStep('full');
     startUnityGame('full');
 }
 
@@ -98,11 +99,11 @@ const startFull2 = () => {
     hidePanel();
     hideButton()
     // set step
-    setCurrentStep('full2');
     setStepDone('introduction');
     setStepDone('training2');
     setStepDone('training1');
     setStepDone('full');
+    setCurrentStep('full2');
     startUnityGame('full2');
 }
 
@@ -111,10 +112,10 @@ const startTrainingPerceptual = () => {
     hidePanel();
     hideButton()
     // set step
-    setCurrentStep('training2');
     setStepDone('introduction');
     // range from 1 to idx set done
     setPreviousStepDone();
+    setCurrentStep('training2');
     startUnityGame('training2');
 }
 
@@ -124,10 +125,10 @@ const startTrainingRL = (sess) => {
     hideButton()
     // insert progress circle beer css
     // set step
-    setCurrentStep('training'+sess);
     if (sess > 1)
         setStepDone('training'+sess);
     setStepDone('introduction');
+    setCurrentStep('training'+sess);
     startUnityGame('training'+sess);
 }
 
@@ -136,7 +137,6 @@ const startTutorial = () => {
     hideButton()
     setCurrentStep('introduction');
     startUnityGame('tutorial');
-    setCurrentStep('introduction');
 }
 
 
@@ -161,14 +161,23 @@ const setPreviousStepDone = () => {
 }
 
 const setCurrentStep = (step) => {
+    // check if step is already active
+    if (document.querySelector('#' + step).classList.contains('active-step')) return;
+    if (document.querySelector('#' + step).classList.contains('done-step')) 
+        unsetStep(step);
     document.querySelector('#' + step).classList.add('active-step');
 }
 
 const unsetStep = (step) => {
     document.querySelector('#' + step).classList.remove('active-step');
+    document.querySelector('#' + step).classList.remove('done-step');
 }
 
+
 const setStepDone = (step) => {
+    if (document.querySelector('#' + step).classList.contains('done-step')) return;
+    if (document.querySelector('#' + step).classList.contains('active-step')) 
+        unsetStep(step);
     document.querySelector('#' + step).classList.add('done-step');
 }
 
