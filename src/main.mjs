@@ -13,7 +13,7 @@ const RL_TRAINING_2 = 9
 const FULL = 11
 const FULL2 = 13
 const END = 14
-const CONV = 0.0002;
+const CONV = 0.00002;
 const GAME_NUMBER = 5;
 
 const COMP_LINK = 'aHR0cHM6Ly9hcHAucHJvbGlmaWMuY29tL3N1Ym1pc3Npb25zL2NvbXBsZXRlP2NjPUNKRllaSlk3';
@@ -161,16 +161,26 @@ const setPreviousStepDone = () => {
 }
 
 const setCurrentStep = (step) => {
+    // check if step is already active
+    if (document.querySelector('#' + step).classList.contains('active-step')) return;
+    if (document.querySelector('#' + step).classList.contains('done-step')) 
+        unsetStep(step);
     document.querySelector('#' + step).classList.add('active-step');
 }
 
 const unsetStep = (step) => {
     document.querySelector('#' + step).classList.remove('active-step');
+    document.querySelector('#' + step).classList.remove('done-step');
 }
 
+
 const setStepDone = (step) => {
+    if (document.querySelector('#' + step).classList.contains('done-step')) return;
+    if (document.querySelector('#' + step).classList.contains('active-step')) 
+        unsetStep(step);
     document.querySelector('#' + step).classList.add('done-step');
 }
+
 
 const loadInstructions = async () => {
     [1, 2, 3, 4, 5, 6].forEach(async (instNum) => {
