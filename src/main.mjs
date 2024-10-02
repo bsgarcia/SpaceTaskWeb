@@ -13,7 +13,7 @@ const RL_TRAINING_2 = 9
 const FULL = 11
 const FULL2 = 13
 const END = 14
-const CONV = 0.00002;
+const CONV = 0.0000175;
 const GAME_NUMBER = 5;
 
 const COMP_LINK = 'aHR0cHM6Ly9hcHAucHJvbGlmaWMuY29tL3N1Ym1pc3Npb25zL2NvbXBsZXRlP2NjPUNKRllaSlk3';

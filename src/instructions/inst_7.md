@@ -23,7 +23,7 @@ Click on next to continue to the **third game**!
 <div class="admonition notice" style="">
 			<p class="title">Note</p>
       <p class="content">
-	  1 pound = 50000 points
+	  1 pound = 60000 points
 	  </p>
 		</div>
 <br>
