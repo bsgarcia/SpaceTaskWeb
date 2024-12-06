@@ -37,6 +37,10 @@ body.dark {
     --surface-container-highest:#323534;
 }
 
+main {
+  scrollbar-width: none;
+}
+
 .mdl-stepper-horizontal-alternative {
   width: 60% !important;
 }
