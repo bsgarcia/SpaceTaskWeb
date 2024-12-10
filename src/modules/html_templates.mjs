@@ -113,8 +113,7 @@ export const consentPage = `
 <div class="scroll-div-consent">
     <h3>Information to the Participants</h3>
 
-    <p><strong>Procedure:</strong> For the purpose of our research, we will ask you for demographic
-        information as well as to complete some psychometric questionnaires and computer-based cognitive tasks.
+    <p><strong>Procedure:</strong> For the purpose of our research, we will ask you to complete some computer-based cognitive tasks and psychometric questionnaires.
         Once you have consented, you will be guided through the study in a step-by-step manner, indicating the mean
         duration of each task and its pay rate. </p>
 
