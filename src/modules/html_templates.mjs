@@ -116,8 +116,7 @@ export const consentPage = `
     <p><strong>Procedure:</strong> For the purpose of our research, we will ask you for demographic
         information as well as to complete some psychometric questionnaires and computer-based cognitive tasks.
         Once you have consented, you will be guided through the study in a step-by-step manner, indicating the mean
-        duration of each task and its pay rate. You will then have the possibility of logging in and out as many times
-        as you wish to complete all tasks, as long as you do so within a period of 10 days since initial consent.</p>
+        duration of each task and its pay rate. </p>
 
     <p>If you don’t follow the rules of conduct listed below, this will lead to your exclusion from the study. You will
         still be paid for the part of the experiment you participated in.</p>
