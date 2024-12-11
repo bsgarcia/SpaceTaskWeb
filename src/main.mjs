@@ -421,7 +421,7 @@ const rewardPage = () => {
 
 
 const sendFeedback = async (data, call = 0) => {
-    alert('Sending feedback with data: '+JSON.stringify(data));
+    // alert('Sending feedback with data: '+JSON.stringify(data));
     let response = await fetch(PHP, {
         method: 'POST',
         body: JSON.stringify(data),
