@@ -254,6 +254,8 @@ const next = () => {
     setPageInstruction(instNum);
 }
 
+window.next = next;
+
 const prev = () => {
     if (clickBlocked) return;
     blockClick();
