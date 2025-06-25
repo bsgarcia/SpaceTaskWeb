@@ -60,6 +60,14 @@ function main() {
     window.score = loadScore();
     setSubID();
 
+    // Check for direct access via URL parameters
+    const gotoParam = getURLParams('goto');
+    if (gotoParam === 'risk') {
+        // Direct access to risk assessment
+        riskAssessmentPage();
+        return;
+    }
+
     // attach event listeners to buttons
     const nextButton = document.getElementById('next-button');
     nextButton.addEventListener('click', next);
@@ -370,6 +378,176 @@ const setPageInstruction = async (instNum) => {
 }
 
 // ------------------------------ END ------------------------------ //
+const riskAssessmentPage = () => {
+    hideButton();
+    document.querySelector('#game').style.display = 'none';
+    document.querySelector('#panel').style.display = 'block';
+    
+    // Holt and Laury 2002 risk assessment data (scaled to 10x for better visibility)
+    const lotteries = [
+        { probHigh: 1, optionA: { high: 20, low: 16 }, optionB: { high: 38.5, low: 1 } },
+        { probHigh: 2, optionA: { high: 20, low: 16 }, optionB: { high: 38.5, low: 1 } },
+        { probHigh: 3, optionA: { high: 20, low: 16 }, optionB: { high: 38.5, low: 1 } },
+        { probHigh: 4, optionA: { high: 20, low: 16 }, optionB: { high: 38.5, low: 1 } },
+        { probHigh: 5, optionA: { high: 20, low: 16 }, optionB: { high: 38.5, low: 1 } },
+        { probHigh: 6, optionA: { high: 20, low: 16 }, optionB: { high: 38.5, low: 1 } },
+        { probHigh: 7, optionA: { high: 20, low: 16 }, optionB: { high: 38.5, low: 1 } },
+        { probHigh: 8, optionA: { high: 20, low: 16 }, optionB: { high: 38.5, low: 1 } },
+        { probHigh: 9, optionA: { high: 20, low: 16 }, optionB: { high: 38.5, low: 1 } },
+        { probHigh: 10, optionA: { high: 20, low: 16 }, optionB: { high: 38.5, low: 1 } }
+    ];
+
+    let content = `
+        <div style="max-width: 900px; margin: auto;">
+            <h2>Risk Assessment Task</h2>
+            <p>Please make choices between the following lottery pairs. For each row, choose either Option A or Option B. 
+            The colored bars show the probability of winning each amount.</p>
+            <p>
+            After you complete the 10 lottery pairs, one row will be randomly selected and played 
+            for real money. A 10-sided die will determine which row is selected, and then
+             another die roll will determine your actual winnings based on your
+              choice for that row. 
+            </p>
+            <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+                <div style="display: flex; align-items: center; margin-right: 20px;">
+                    <div style="width: 20px; height: 15px; background-color: #4CAF50; margin-right: 5px;"></div>
+                    <span>Probability of higher amount</span>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <div style="width: 20px; height: 15px; background-color: #f44336; margin-right: 5px;"></div>
+                    <span>Probability of lower amount</span>
+                </div>
+            </div>
+                         <div class="scroll-div-survey" style="max-height: 400px; overflow-y: auto;">
+                
+                 <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                     <thead>
+                         <tr style="background-color: #191c1b;">
+                             <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">Number</th>
+                             <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">Option A</th>
+                             <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">Option B</th>
+                         </tr>
+                     </thead>
+                     <tbody>`;
+
+    lotteries.forEach((lottery, idx) => {
+        const probLow = 10 - lottery.probHigh;
+        const probHighPercent = (lottery.probHigh / 10) * 100;
+        const probLowPercent = (probLow / 10) * 100;
+
+                 content += `
+             <tr style="border-bottom: 1px solid #ddd;">
+                 <td style="padding: 15px; text-align: center; font-weight: bold;">${idx + 1}</td>
+                 <td class="lottery-option" data-choice="${idx}" data-option="A" style="padding: 15px; text-align: center;">
+                     <div style="margin-bottom: 10px;">
+                         <div style="font-weight: bold; margin-bottom: 5px; color: #2196F3;">
+                             Option A: ${lottery.probHigh}/10 of $${lottery.optionA.high}, ${probLow}/10 of $${lottery.optionA.low}
+                         </div>
+                         <div style="display: flex; width: 100%; height: 30px; border: 1px solid #ccc; border-radius:0em;">
+                             <div style="background-color: #4CAF50; width: ${probHighPercent}%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px;">
+                                 ${probHighPercent > 0 ? '$' + lottery.optionA.high : ''}
+                            </div>
+                             <div style="background-color: #f44336; width: ${probLowPercent}%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px;">
+                                 ${probLowPercent > 0 ? '$' + lottery.optionA.low : ''}
+                             </div>
+                         </div>
+                     </div>
+                 </td>
+                 <td class="lottery-option" data-choice="${idx}" data-option="B" style="padding: 15px; text-align: center;">
+                     <div style="margin-bottom: 10px;">
+                         <div style="font-weight: bold; margin-bottom: 5px; color: #FF9800;">
+                             Option B: ${lottery.probHigh}/10 of $${lottery.optionB.high}, ${probLow}/10 of $${lottery.optionB.low}
+                         </div>
+                         <div style="display: flex; width: 100%; height: 30px; border: 1px solid #ccc; border-radius:0em;">
+                             <div style="background-color: #4CAF50; width: ${probHighPercent}%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px;">
+                                 ${probHighPercent > 0 ? '$' + lottery.optionB.high : ''}
+                             </div>
+                             <div style="background-color: #f44336; width: ${probLowPercent}%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px;">
+                                 ${probLowPercent > 0 ? '$' + lottery.optionB.low : ''}
+                             </div>
+                         </div>
+                     </div>
+                 </td>
+             </tr>`;
+    });
+
+    content += `
+                    </tbody>
+                </table>
+            </div>
+     
+        </div>`;
+
+    document.querySelector('#panel').innerHTML = content;
+
+    let riskData = { 'prolificID': window.subID, 'risk_assessment': {} };
+
+    // Add event listeners for clickable lottery options
+    document.querySelectorAll('.lottery-option').forEach(option => {
+        option.addEventListener('click', () => {
+            const choiceIndex = option.getAttribute('data-choice');
+            const selectedOption = option.getAttribute('data-option');
+            
+            // Remove selected class from all options in this row
+            document.querySelectorAll(`[data-choice="${choiceIndex}"]`).forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked option
+            option.classList.add('selected');
+            
+            // Store the choice
+            riskData.risk_assessment[`choice_${choiceIndex}`] = selectedOption;
+            
+            // Check if all choices are made
+            const totalChoices = lotteries.length;
+            const madeChoices = Object.keys(riskData.risk_assessment).length;
+            
+            if (madeChoices === totalChoices) {
+                showButton();
+                hidePrevButton();
+
+            }
+        });
+    });
+
+    hidePrevButton();
+
+    // document.querySelector('#next-button').removeEventListener('click', surveyPage);
+    // document.querySelector('#next-button').removeEventListener('click', next);
+    // document.querySelector('#next-button').addEventListener('click', () => {
+    //     const totalChoices = lotteries.length;
+    //     const madeChoices = Object.keys(riskData.risk_assessment).length;
+        
+    //     if (madeChoices === totalChoices) {
+    //         // Send risk assessment data
+    //         sendFeedback(riskData);
+            
+    //         // Check if this is direct access via URL parameter
+    //         const gotoParam = getURLParams('goto');
+    //         if (gotoParam === 'risk') {
+    //             // For direct access, show a completion message instead of going to lastPage
+    //             document.querySelector('#panel').innerHTML = `
+    //                 <div class="center-align" style="margin: auto">
+    //                     <h1 style="display: block">✅ Risk Assessment Complete!</h1>
+    //                     <br>
+    //                     <p>Thank you for completing the risk assessment task.</p>
+    //                     <p>Your responses have been recorded.</p>
+    //                     <br>
+    //                     <button onclick="window.location.reload()" class="btn btn-primary">Start Over</button>
+    //                     <button onclick="window.location.href = window.location.pathname" class="btn btn-secondary" style="margin-left: 10px;">Return to Main</button>
+    //                 </div>
+    //             `;
+    //             hideButton();
+    //         } else {
+    //             lastPage();
+    //         }
+    //     } else {
+    //         alert('Please make a choice for all lottery pairs before continuing.');
+    //     }
+    // });
+};
+
 const lastPage = () => {
     hideButton();
     setPreviousStepDone();
@@ -412,7 +590,7 @@ const rewardPage = () => {
              <h3>💰 You earned ${points} points = ${pounds} pounds! 💰</h3>
              <br>
              <br>
-             <p>Please click the next button and answer a short survey to complete your submission.</p>
+             <p>Please click the next button and complete a short survey and risk assessment to finish your submission.</p>
              </div>
      `;
     document.querySelector('#next-button').removeEventListener('click', next);
@@ -543,7 +721,7 @@ const surveyPage = () => {
         if (checkSurvey()) {
             document.querySelector('#next-button').removeEventListener('click', checkSurvey);
             sendFeedback(dataToSend);
-            lastPage();
+            riskAssessmentPage();
         }
     });
 

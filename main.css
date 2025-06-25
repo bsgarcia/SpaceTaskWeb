@@ -36,6 +36,25 @@ body.dark {
     --surface-container-high:#272b2a;
     --surface-container-highest:#323534;
 }
+/*lottery table*/
+.lottery-option {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+}
+.lottery-option:hover {
+  background-color: var(--surface-bright) !important;
+  transform: translateY(-1px);
+  border-radius: .5em;
+
+}
+.lottery-option.selected {
+  border: 2px solid #4CAF50 !important;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  transform: translateY(-2px);
+  background-color: var(--surface-bright) !important;
+  border-radius: .5em;
+}
 
 .mdl-stepper-horizontal-alternative {
   width: 60% !important;
