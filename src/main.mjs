@@ -414,7 +414,7 @@ const riskAssessmentPage = () => {
                     <span>Probability of higher amount</span>
                 </div>
                 <div style="display: flex; align-items: center;">
-                    <div style="width: 20px; height: 15px; background-color: #f44336; margin-right: 5px;"></div>
+                    <div style="width: 20px; height: 15px; background-color:rgb(144, 62, 227); margin-right: 5px;"></div>
                     <span>Probability of lower amount</span>
                 </div>
             </div>
@@ -447,7 +447,7 @@ const riskAssessmentPage = () => {
                              <div style="background-color: #4CAF50; width: ${probHighPercent}%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px;">
                                  ${probHighPercent > 0 ? '$' + lottery.optionA.high : ''}
                             </div>
-                             <div style="background-color: #f44336; width: ${probLowPercent}%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px;">
+                             <div style="background-color: rgb(144, 62, 227); width: ${probLowPercent}%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px;">
                                  ${probLowPercent > 0 ? '$' + lottery.optionA.low : ''}
                              </div>
                          </div>
@@ -462,7 +462,7 @@ const riskAssessmentPage = () => {
                              <div style="background-color: #4CAF50; width: ${probHighPercent}%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px;">
                                  ${probHighPercent > 0 ? '$' + lottery.optionB.high : ''}
                              </div>
-                             <div style="background-color: #f44336; width: ${probLowPercent}%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px;">
+                             <div style="background-color: rgb(144, 62, 227); width: ${probLowPercent}%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px;">
                                  ${probLowPercent > 0 ? '$' + lottery.optionB.low : ''}
                              </div>
                          </div>
