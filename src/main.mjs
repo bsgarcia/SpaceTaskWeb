@@ -19,7 +19,8 @@ const GAME_NUMBER = 5;
 const COMP_LINK = 'aHR0cHM6Ly9hcHAucHJvbGlmaWMuY29tL3N1Ym1pc3Npb25zL2NvbXBsZXRlP2NjPUNKRllaSlk3';
 
 const clickBlockedTime = 300;
-const PHP = 'php/insert_feedback.php';
+const SURVEY_PHP = 'php/insert_feedback.php';
+const RISK_PHP = 'php/insert_risk.php';
 
 // global variables mutable
 var clickBlocked = false;
@@ -383,18 +384,18 @@ const riskAssessmentPage = () => {
     document.querySelector('#game').style.display = 'none';
     document.querySelector('#panel').style.display = 'block';
     
-    // Holt and Laury 2002 risk assessment data (scaled to 10x for better visibility)
+    // Holt and Laury 2002 risk assessment data 
     const lotteries = [
-        { probHigh: 1, optionA: { high: 20, low: 16 }, optionB: { high: 38.5, low: 1 } },
-        { probHigh: 2, optionA: { high: 20, low: 16 }, optionB: { high: 38.5, low: 1 } },
-        { probHigh: 3, optionA: { high: 20, low: 16 }, optionB: { high: 38.5, low: 1 } },
-        { probHigh: 4, optionA: { high: 20, low: 16 }, optionB: { high: 38.5, low: 1 } },
-        { probHigh: 5, optionA: { high: 20, low: 16 }, optionB: { high: 38.5, low: 1 } },
-        { probHigh: 6, optionA: { high: 20, low: 16 }, optionB: { high: 38.5, low: 1 } },
-        { probHigh: 7, optionA: { high: 20, low: 16 }, optionB: { high: 38.5, low: 1 } },
-        { probHigh: 8, optionA: { high: 20, low: 16 }, optionB: { high: 38.5, low: 1 } },
-        { probHigh: 9, optionA: { high: 20, low: 16 }, optionB: { high: 38.5, low: 1 } },
-        { probHigh: 10, optionA: { high: 20, low: 16 }, optionB: { high: 38.5, low: 1 } }
+        { probHigh: 1, optionA: { high: 1.46, low: 1.17 }, optionB: { high: 2.81, low: 0.07 } },
+        { probHigh: 2, optionA: { high: 1.46, low: 1.17 }, optionB: { high: 2.81, low: 0.07 } },
+        { probHigh: 3, optionA: { high: 1.46, low: 1.17 }, optionB: { high: 2.81, low: 0.07 } },
+        { probHigh: 4, optionA: { high: 1.46, low: 1.17 }, optionB: { high: 2.81, low: 0.07 } },
+        { probHigh: 5, optionA: { high: 1.46, low: 1.17 }, optionB: { high: 2.81, low: 0.07 } },
+        { probHigh: 6, optionA: { high: 1.46, low: 1.17 }, optionB: { high: 2.81, low: 0.07 } },
+        { probHigh: 7, optionA: { high: 1.46, low: 1.17 }, optionB: { high: 2.81, low: 0.07 } },
+        { probHigh: 8, optionA: { high: 1.46, low: 1.17 }, optionB: { high: 2.81, low: 0.07 } },
+        { probHigh: 9, optionA: { high: 1.46, low: 1.17 }, optionB: { high: 2.81, low: 0.07 } },
+        { probHigh: 10, optionA: { high: 1.46, low: 1.17 }, optionB: { high: 2.81, low: 0.07 } }
     ];
 
     let content = `
@@ -404,17 +405,18 @@ const riskAssessmentPage = () => {
             The colored bars show the probability of winning each amount.</p>
             <p>
             After you complete the 10 lottery pairs, one row will be randomly selected and played 
-            for real money. A 10-sided die will determine which row is selected, and then
-             another die roll will determine your actual winnings based on your
-              choice for that row. 
+            for real money. A 10-sided die will determine which choice is selected, and then
+             another die roll will determine your actual winnings based on your the amounts and probabilities of the selected lottery.
             </p>
             <div style="display: flex; justify-content: center; margin-bottom: 20px;">
                 <div style="display: flex; align-items: center; margin-right: 20px;">
-                    <div style="width: 20px; height: 15px; background-color: #4CAF50; margin-right: 5px;"></div>
+                    <div style="width: 20px; height: 15px; background-color: #1c1616; margin-right: 5px;
+                    border: 1px solid white"></div>
                     <span>Probability of higher amount</span>
                 </div>
                 <div style="display: flex; align-items: center;">
-                    <div style="width: 20px; height: 15px; background-color:rgb(144, 62, 227); margin-right: 5px;"></div>
+                    <div style="width: 20px; height: 15px; background-color: #908997; margin-right: 5px;
+                    border: 1px solid white"></div>
                     <span>Probability of lower amount</span>
                 </div>
             </div>
@@ -444,11 +446,11 @@ const riskAssessmentPage = () => {
                              Option A: ${lottery.probHigh}/10 of $${lottery.optionA.high}, ${probLow}/10 of $${lottery.optionA.low}
                          </div>
                          <div style="display: flex; width: 100%; height: 30px; border: 1px solid #ccc; border-radius:0em;">
-                             <div style="background-color: #4CAF50; width: ${probHighPercent}%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px;">
-                                 ${probHighPercent > 0 ? '$' + lottery.optionA.high : ''}
+                             <div style="background-color: #1c1616; width: ${probHighPercent}%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px;">
+                                 ${probHighPercent > 0 ? '£' + lottery.optionA.high : ''}
                             </div>
-                             <div style="background-color: rgb(144, 62, 227); width: ${probLowPercent}%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px;">
-                                 ${probLowPercent > 0 ? '$' + lottery.optionA.low : ''}
+                             <div style="background-color: #908997; width: ${probLowPercent}%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px;">
+                                 ${probLowPercent > 0 ? '£' + lottery.optionA.low : ''}
                              </div>
                          </div>
                      </div>
@@ -459,11 +461,11 @@ const riskAssessmentPage = () => {
                              Option B: ${lottery.probHigh}/10 of $${lottery.optionB.high}, ${probLow}/10 of $${lottery.optionB.low}
                          </div>
                          <div style="display: flex; width: 100%; height: 30px; border: 1px solid #ccc; border-radius:0em;">
-                             <div style="background-color: #4CAF50; width: ${probHighPercent}%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px;">
-                                 ${probHighPercent > 0 ? '$' + lottery.optionB.high : ''}
+                             <div style="background-color: #1c1616; width: ${probHighPercent}%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px;">
+                                 ${probHighPercent > 0 ? '£' + lottery.optionB.high : ''}
                              </div>
-                             <div style="background-color: rgb(144, 62, 227); width: ${probLowPercent}%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px;">
-                                 ${probLowPercent > 0 ? '$' + lottery.optionB.low : ''}
+                             <div style="background-color: #908997; width: ${probLowPercent}%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px;">
+                                 ${probLowPercent > 0 ? '£' + lottery.optionB.low : ''}
                              </div>
                          </div>
                      </div>
@@ -481,6 +483,7 @@ const riskAssessmentPage = () => {
     document.querySelector('#panel').innerHTML = content;
 
     let riskData = { 'prolificID': window.subID, 'risk_assessment': {} };
+    // riskData must be global
 
     // Add event listeners for clickable lottery options
     document.querySelectorAll('.lottery-option').forEach(option => {
@@ -496,8 +499,8 @@ const riskAssessmentPage = () => {
             // Add selected class to clicked option
             option.classList.add('selected');
             
-            // Store the choice
-            riskData.risk_assessment[`choice_${choiceIndex}`] = selectedOption;
+            // Store the choice (A=0, B=1)
+            riskData.risk_assessment[`choice_${choiceIndex}`] = selectedOption === 'A' ? 0 : 1;
             
             // Check if all choices are made
             const totalChoices = lotteries.length;
@@ -513,39 +516,59 @@ const riskAssessmentPage = () => {
 
     hidePrevButton();
 
-    // document.querySelector('#next-button').removeEventListener('click', surveyPage);
-    // document.querySelector('#next-button').removeEventListener('click', next);
-    // document.querySelector('#next-button').addEventListener('click', () => {
-    //     const totalChoices = lotteries.length;
-    //     const madeChoices = Object.keys(riskData.risk_assessment).length;
+    document.querySelector('#next-button').removeEventListener('click', surveyPage);
+    document.querySelector('#next-button').removeEventListener('click', next);
+    document.querySelector('#next-button').addEventListener('click', () => {
+        const totalChoices = lotteries.length;
+        const madeChoices = Object.keys(riskData.risk_assessment).length;
         
-    //     if (madeChoices === totalChoices) {
-    //         // Send risk assessment data
-    //         sendFeedback(riskData);
+        if (madeChoices === totalChoices) {
+            // Add experiment name to risk data
+            riskData.expName = 'FullPilot12_2';
             
-    //         // Check if this is direct access via URL parameter
-    //         const gotoParam = getURLParams('goto');
-    //         if (gotoParam === 'risk') {
-    //             // For direct access, show a completion message instead of going to lastPage
-    //             document.querySelector('#panel').innerHTML = `
-    //                 <div class="center-align" style="margin: auto">
-    //                     <h1 style="display: block">✅ Risk Assessment Complete!</h1>
-    //                     <br>
-    //                     <p>Thank you for completing the risk assessment task.</p>
-    //                     <p>Your responses have been recorded.</p>
-    //                     <br>
-    //                     <button onclick="window.location.reload()" class="btn btn-primary">Start Over</button>
-    //                     <button onclick="window.location.href = window.location.pathname" class="btn btn-secondary" style="margin-left: 10px;">Return to Main</button>
-    //                 </div>
-    //             `;
-    //             hideButton();
-    //         } else {
-    //             lastPage();
-    //         }
-    //     } else {
-    //         alert('Please make a choice for all lottery pairs before continuing.');
-    //     }
-    // });
+            // Implement compensation algorithm
+            // Step 1: Randomly select one of the 10 lottery pairs (0-9)
+            const selectedLottery = Math.floor(Math.random() * 10);
+            riskData.selected = selectedLottery;
+            
+            // Step 2: Get participant's choice for the selected lottery
+            const participantChoice = riskData.risk_assessment[`choice_${selectedLottery}`]; // 0=A, 1=B
+            
+            // Step 3: Get lottery parameters for the selected lottery
+            const selectedLotteryData = lotteries[selectedLottery];
+            const probHigh = selectedLotteryData.probHigh / 10; // Convert to decimal probability
+            
+            // Step 4: Determine payoff based on choice and random draw
+            let payoff;
+            const randomDraw = Math.random(); // Random number between 0 and 1
+            
+            if (participantChoice === 0) { // Chose Option A
+                if (randomDraw < probHigh) {
+                    payoff = selectedLotteryData.optionA.high; // £1.46
+                } else {
+                    payoff = selectedLotteryData.optionA.low;  // £1.17
+                }
+            } else { // Chose Option B
+                if (randomDraw < probHigh) {
+                    payoff = selectedLotteryData.optionB.high; // £2.81
+                } else {
+                    payoff = selectedLotteryData.optionB.low;  // £0.07
+                }
+            }
+            
+            riskData.amount = payoff;
+            window.riskData = riskData;
+
+            // Send risk assessment data to dedicated endpoint
+            sendRiskData(riskData);
+            lastPage();
+            
+        } else {
+            alert('Please make a choice for all lottery pairs before continuing.');
+            //use modal to show message
+            
+        }
+    });
 };
 
 const lastPage = () => {
@@ -556,12 +579,17 @@ const lastPage = () => {
     let points = window.score.reduce((a, b) => a + b, 0);
     // let points = window.score[window.score.length-1];
     let pounds = (points * CONV).toFixed(3);
+    // now add the compensation amount to the points
+    let total = pounds + window.riskData.amount;
     document.querySelector('#game').style.display = 'none';
     document.querySelector('#panel').style.display = 'flex';
     document.querySelector('#panel').innerHTML = `
              <div class="center-align" style="margin: auto">
              <h1 style="display: block">🚀Thank you!🚀</h1>
              <br>
+             <h3>💰 You earned ${pounds} pounds from the spaceshooter!💰</h3>
+             <h3>💰 You also earned ${window.riskData.amount} pounds from the risk assessment! 💰</h3>
+             <h3>💰 You earned ${total} pounds in total! 💰</h3>
              <p>Thank you for participating in our experiment!</p>
              <p>Please click the button below to complete your submission.</p>
              <br>
@@ -582,6 +610,7 @@ const rewardPage = () => {
     let points = window.score.reduce((a, b) => a + b, 0);
     // let points = window.score[window.score.length-1];
     let pounds = (points * CONV).toFixed(3);
+    // now add the compensation amount to the points
     document.querySelector('#game').style.display = 'none';
     document.querySelector('#panel').style.display = 'flex';
     document.querySelector('#panel').innerHTML = `
@@ -599,7 +628,7 @@ const rewardPage = () => {
 
 
 const sendFeedback = async (data, call = 0) => {
-    let response = await fetch(PHP, {
+    let response = await fetch(SURVEY_PHP, {
         method: 'POST',
         body: JSON.stringify(data),
         headers: {
@@ -617,6 +646,30 @@ const sendFeedback = async (data, call = 0) => {
         // try again after 500ms
         setTimeout(() => {
             sendFeedback(data, call + 1);
+        }, 500);
+    }
+}
+
+const sendRiskData = async (data, call = 0) => {
+    let response = await fetch(RISK_PHP, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+
+    if (response.ok) {
+        console.log('Risk assessment data sent successfully');
+        return response.json();
+    } else {
+        if (call > 3) {
+            console.log('Failed to send risk assessment data');
+            return;
+        }
+        // try again after 500ms
+        setTimeout(() => {
+            sendRiskData(data, call + 1);
         }, 500);
     }
 }
