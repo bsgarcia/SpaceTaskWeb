@@ -65,6 +65,10 @@ function main() {
     const gotoParam = getURLParams('goto');
     if (gotoParam === 'risk') {
         // Direct access to risk assessment
+        // set all steps done
+        setCurrentStep('end');
+        setPreviousStepDone();
+      
         riskAssessmentPage();
         return;
     }
@@ -158,23 +162,40 @@ const setSubID = () => {
 
 // ------------------------------ UI Managment ------------------------------ //
 const setPreviousStepDone = () => {
-    setStepDone('introduction');
-    let steps = ['training1', 'training2', 'full'];
-    [...Array(window.session).keys()].forEach((i) => {
-        try {
-            setStepDone(steps[i]);
-        } catch (e) {
-            console.log(e);
+    let steps = ['introduction', 'training1', 'training2', 'training3', 'full', 'full2', 'end'];
+    // get current step
+    let currentStep = getCurrentStep();
+    console.log(currentStep);
+    // set all steps before current step done
+    steps.forEach((step) => {
+        // check idx of step in steps
+        let idx = steps.indexOf(step);
+        console.log(idx, steps.indexOf(currentStep));
+        if (idx < steps.indexOf(currentStep)) {
+            setStepDone(step);
         }
     })
 }
 
+const getCurrentStep = () => {
+    return document.querySelector('.active-step').id;
+}
+
 const setCurrentStep = (step) => {
+    unsetAllSteps();
     // check if step is already active
     if (document.querySelector('#' + step).classList.contains('active-step')) return;
     if (document.querySelector('#' + step).classList.contains('done-step')) 
         unsetStep(step);
     document.querySelector('#' + step).classList.add('active-step');
+    setPreviousStepDone();
+}
+// unset all steps
+const unsetAllSteps = () => {
+    let steps = ['introduction', 'training1', 'training2', 'training3', 'full', 'full2', 'end'];
+    steps.forEach((step) => {
+        unsetStep(step);
+    })
 }
 
 const unsetStep = (step) => {
