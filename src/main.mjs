@@ -443,7 +443,7 @@ const riskAssessmentPage = () => {
                  <td class="lottery-option" data-choice="${idx}" data-option="A" style="padding: 15px; text-align: center;">
                      <div style="margin-bottom: 10px;">
                          <div style="font-weight: bold; margin-bottom: 5px; color: #2196F3;">
-                             Option A: ${lottery.probHigh}/10 of $${lottery.optionA.high}, ${probLow}/10 of $${lottery.optionA.low}
+                             Option A: ${lottery.probHigh}/10 of £${lottery.optionA.high}, ${probLow}/10 of £${lottery.optionA.low}
                          </div>
                          <div style="display: flex; width: 100%; height: 30px; border: 1px solid #ccc; border-radius:0em;">
                              <div style="background-color: #1c1616; width: ${probHighPercent}%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px;">
@@ -458,7 +458,7 @@ const riskAssessmentPage = () => {
                  <td class="lottery-option" data-choice="${idx}" data-option="B" style="padding: 15px; text-align: center;">
                      <div style="margin-bottom: 10px;">
                          <div style="font-weight: bold; margin-bottom: 5px; color: #FF9800;">
-                             Option B: ${lottery.probHigh}/10 of $${lottery.optionB.high}, ${probLow}/10 of $${lottery.optionB.low}
+                             Option B: ${lottery.probHigh}/10 of £${lottery.optionB.high}, ${probLow}/10 of £${lottery.optionB.low}
                          </div>
                          <div style="display: flex; width: 100%; height: 30px; border: 1px solid #ccc; border-radius:0em;">
                              <div style="background-color: #1c1616; width: ${probHighPercent}%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px;">
@@ -580,18 +580,24 @@ const lastPage = () => {
     // let points = window.score[window.score.length-1];
     let pounds = (points * CONV).toFixed(3);
     // now add the compensation amount to the points
-    let total = pounds + window.riskData.amount;
+    // convert both to float
+    let total = parseFloat(pounds) + parseFloat(window.riskData.amount);
+    // round to 2 decimal places
+    total = total.toFixed(2);
+
+
     document.querySelector('#game').style.display = 'none';
     document.querySelector('#panel').style.display = 'flex';
     document.querySelector('#panel').innerHTML = `
              <div class="center-align" style="margin: auto">
              <h1 style="display: block">🚀Thank you!🚀</h1>
              <br>
-             <h3>💰 You earned ${pounds} pounds from the spaceshooter!💰</h3>
+             <h3>💰 You earned ${pounds} pounds from the space shooter game!💰</h3>
              <h3>💰 You also earned ${window.riskData.amount} pounds from the risk assessment! 💰</h3>
              <h3>💰 You earned ${total} pounds in total! 💰</h3>
-             <p>Thank you for participating in our experiment!</p>
-             <p>Please click the button below to complete your submission.</p>
+             <br>
+             <h4>Thank you for participating in our experiment!</h4>
+             <h4>Please click the button below to complete your submission.</h4>
              <br>
              <button id="submit-button" class="btn btn-primary">Complete</button>
              </div>
