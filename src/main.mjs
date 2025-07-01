@@ -405,19 +405,18 @@ const riskAssessmentPage = () => {
     document.querySelector('#game').style.display = 'none';
     document.querySelector('#panel').style.display = 'block';
     
-    // Holt and Laury 2002 risk assessment data 
     const lotteries = [
-        { probHigh: 1, optionA: { high: 1.46, low: 1.17 }, optionB: { high: 2.81, low: 0.07 } },
-        { probHigh: 2, optionA: { high: 1.46, low: 1.17 }, optionB: { high: 2.81, low: 0.07 } },
-        { probHigh: 3, optionA: { high: 1.46, low: 1.17 }, optionB: { high: 2.81, low: 0.07 } },
-        { probHigh: 4, optionA: { high: 1.46, low: 1.17 }, optionB: { high: 2.81, low: 0.07 } },
-        { probHigh: 5, optionA: { high: 1.46, low: 1.17 }, optionB: { high: 2.81, low: 0.07 } },
-        { probHigh: 6, optionA: { high: 1.46, low: 1.17 }, optionB: { high: 2.81, low: 0.07 } },
-        { probHigh: 7, optionA: { high: 1.46, low: 1.17 }, optionB: { high: 2.81, low: 0.07 } },
-        { probHigh: 8, optionA: { high: 1.46, low: 1.17 }, optionB: { high: 2.81, low: 0.07 } },
-        { probHigh: 9, optionA: { high: 1.46, low: 1.17 }, optionB: { high: 2.81, low: 0.07 } },
-        { probHigh: 10, optionA: { high: 1.46, low: 1.17 }, optionB: { high: 2.81, low: 0.07 } }
-    ];
+        { probHigh: 1, optionA: { high: 2.61, low: 2.09 }, optionB: { high: 5.02, low: 0.13 } },
+        { probHigh: 2, optionA: { high: 2.61, low: 2.09 }, optionB: { high: 5.02, low: 0.13 } },
+        { probHigh: 3, optionA: { high: 2.61, low: 2.09 }, optionB: { high: 5.02, low: 0.13 } },
+        { probHigh: 4, optionA: { high: 2.61, low: 2.09 }, optionB: { high: 5.02, low: 0.13 } },
+        { probHigh: 5, optionA: { high: 2.61, low: 2.09 }, optionB: { high: 5.02, low: 0.13 } },
+        { probHigh: 6, optionA: { high: 2.61, low: 2.09 }, optionB: { high: 5.02, low: 0.13 } },
+        { probHigh: 7, optionA: { high: 2.61, low: 2.09 }, optionB: { high: 5.02, low: 0.13 } },
+        { probHigh: 8, optionA: { high: 2.61, low: 2.09 }, optionB: { high: 5.02, low: 0.13 } },
+        { probHigh: 9, optionA: { high: 2.61, low: 2.09 }, optionB: { high: 5.02, low: 0.13 } },
+        { probHigh: 10, optionA: { high: 2.61, low: 2.09 }, optionB: { high: 5.02, low: 0.13 } }
+    ];    // Holt and Laury 2002 risk assessment data 
 
     let content = `
         <div style="max-width: 900px; margin: auto;">
@@ -425,9 +424,7 @@ const riskAssessmentPage = () => {
             <p>Please make choices between the following lottery pairs. For each row, choose either Option A or Option B. 
             The colored bars show the probability of winning each amount.</p>
             <p>
-            After you complete the 10 lottery pairs, one row will be randomly selected and played 
-            for real money. A 10-sided die will determine which choice is selected, and then
-             another die roll will determine your actual winnings based on your the amounts and probabilities of the selected lottery.
+         
             </p>
             <div style="display: flex; justify-content: center; margin-bottom: 20px;">
                 <div style="display: flex; align-items: center; margin-right: 20px;">
