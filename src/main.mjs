@@ -166,6 +166,13 @@ const setPreviousStepDone = () => {
     // get current step
     let currentStep = getCurrentStep();
     console.log(currentStep);
+    
+    // If no current step is found, don't proceed
+    if (!currentStep) {
+        console.log('No active step found, skipping setPreviousStepDone');
+        return;
+    }
+    
     // set all steps before current step done
     steps.forEach((step) => {
         // check idx of step in steps
@@ -178,16 +185,23 @@ const setPreviousStepDone = () => {
 }
 
 const getCurrentStep = () => {
-    return document.querySelector('.active-step').id;
+    const activeStep = document.querySelector('.active-step');
+    return activeStep ? activeStep.id : null;
 }
 
 const setCurrentStep = (step) => {
+    const stepElement = document.querySelector('#' + step);
+    if (!stepElement) {
+        console.log(`Step element #${step} not found, skipping setCurrentStep`);
+        return;
+    }
+    
     unsetAllSteps();
     // check if step is already active
-    if (document.querySelector('#' + step).classList.contains('active-step')) return;
-    if (document.querySelector('#' + step).classList.contains('done-step')) 
+    if (stepElement.classList.contains('active-step')) return;
+    if (stepElement.classList.contains('done-step')) 
         unsetStep(step);
-    document.querySelector('#' + step).classList.add('active-step');
+    stepElement.classList.add('active-step');
     setPreviousStepDone();
 }
 // unset all steps
@@ -199,16 +213,22 @@ const unsetAllSteps = () => {
 }
 
 const unsetStep = (step) => {
-    document.querySelector('#' + step).classList.remove('active-step');
-    document.querySelector('#' + step).classList.remove('done-step');
+    const stepElement = document.querySelector('#' + step);
+    if (stepElement) {
+        stepElement.classList.remove('active-step');
+        stepElement.classList.remove('done-step');
+    }
 }
 
 
 const setStepDone = (step) => {
-    if (document.querySelector('#' + step).classList.contains('done-step')) return;
-    if (document.querySelector('#' + step).classList.contains('active-step')) 
+    const stepElement = document.querySelector('#' + step);
+    if (!stepElement) return;
+    
+    if (stepElement.classList.contains('done-step')) return;
+    if (stepElement.classList.contains('active-step')) 
         unsetStep(step);
-    document.querySelector('#' + step).classList.add('done-step');
+    stepElement.classList.add('done-step');
 }
 
 
@@ -424,7 +444,9 @@ const riskAssessmentPage = () => {
             <p>Please make choices between the following lottery pairs. For each row, choose either Option A or Option B. 
             The colored bars show the probability of winning each amount.</p>
             <p>
-         
+            After you complete the 10 lottery pairs, one row will be randomly selected and played 
+            for real money. A 10-sided die will determine which choice is selected, and then
+             another die roll will determine your actual winnings based on your the amounts and probabilities of the selected lottery.
             </p>
             <div style="display: flex; justify-content: center; margin-bottom: 20px;">
                 <div style="display: flex; align-items: center; margin-right: 20px;">
@@ -450,42 +472,73 @@ const riskAssessmentPage = () => {
                      </thead>
                      <tbody>`;
 
+    function describePieSlice(cx, cy, r, startAngle, endAngle) {
+        // Convert angles to radians
+        const start = (Math.PI / 180) * startAngle;
+        const end = (Math.PI / 180) * endAngle;
+        // Start and end points
+        const x1 = cx + r * Math.cos(start);
+        const y1 = cy + r * Math.sin(start);
+        const x2 = cx + r * Math.cos(end);
+        const y2 = cy + r * Math.sin(end);
+        // Large arc flag
+        const largeArc = endAngle - startAngle > 180 ? 1 : 0;
+        
+        // Calculate center point of the slice for text positioning
+        const middleAngle = (start + end) / 2;
+        const textRadius = r * 0.6; // Position text at 60% of radius from center
+        const textX = cx + textRadius * Math.cos(middleAngle);
+        const textY = cy + textRadius * Math.sin(middleAngle);
+        
+        // Path
+        const path = [
+            `M ${cx} ${cy}`,
+            `L ${x1} ${y1}`,
+            `A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2}`,
+            'Z'
+        ].join(' ');
+        
+        return {
+            path: path,
+            textX: textX,
+            textY: textY
+        };
+    }
+
     lotteries.forEach((lottery, idx) => {
         const probLow = 10 - lottery.probHigh;
         const probHighPercent = (lottery.probHigh / 10) * 100;
         const probLowPercent = (probLow / 10) * 100;
 
-                 content += `
+        const highAngle = (lottery.probHigh / 10) * 360;
+        const lowAngle = 360 - highAngle;
+
+        const highSlice = describePieSlice(40, 40, 35, 0, highAngle);
+        const lowSlice = describePieSlice(40, 40, 35, highAngle, 360);
+
+        content += `
              <tr style="border-bottom: 1px solid #ddd;">
                  <td style="padding: 15px; text-align: center; font-weight: bold;">${idx + 1}</td>
                  <td class="lottery-option" data-choice="${idx}" data-option="A" style="padding: 15px; text-align: center;">
-                     <div style="margin-bottom: 10px;">
-                         <div style="font-weight: bold; margin-bottom: 5px; color: #2196F3;">
-                             Option A: ${lottery.probHigh}/10 of £${lottery.optionA.high}, ${probLow}/10 of £${lottery.optionA.low}
-                         </div>
-                         <div style="display: flex; width: 100%; height: 30px; border: 1px solid #ccc; border-radius:0em;">
-                             <div style="background-color: #1c1616; width: ${probHighPercent}%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px;">
-                                 ${probHighPercent > 0 ? '£' + lottery.optionA.high : ''}
-                            </div>
-                             <div style="background-color: #908997; width: ${probLowPercent}%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px;">
-                                 ${probLowPercent > 0 ? '£' + lottery.optionA.low : ''}
-                             </div>
-                         </div>
-                     </div>
+                                 <div style="position: relative; width: 120px; height: 120px; margin: 0 auto;">
+                <svg width="120" height="120" viewBox="0 0 120 120">
+                    <circle cx="60" cy="60" r="55" fill="none" stroke="white" stroke-width="2"></circle>
+                    <path d="${describePieSlice(60, 60, 55, 0, highAngle).path}" fill="#1c1616"></path>
+                    <path d="${describePieSlice(60, 60, 55, highAngle, 360).path}" fill="#908997"></path>
+                                                 ${lottery.probHigh > 0 ? `<text x="${describePieSlice(60, 60, 55, 0, highAngle).textX}" y="${describePieSlice(60, 60, 55, 0, highAngle).textY}" text-anchor="middle" dominant-baseline="central" fill="white" font-size="12" font-weight="bold">£${lottery.optionA.high}</text>` : ''}
+                             ${probLow > 0 ? `<text x="${describePieSlice(60, 60, 55, highAngle, 360).textX}" y="${describePieSlice(60, 60, 55, highAngle, 360).textY}" text-anchor="middle" dominant-baseline="central" fill="white" font-size="12" font-weight="bold">£${lottery.optionA.low}</text>` : ''}
+                </svg>
+            </div>
                  </td>
                  <td class="lottery-option" data-choice="${idx}" data-option="B" style="padding: 15px; text-align: center;">
-                     <div style="margin-bottom: 10px;">
-                         <div style="font-weight: bold; margin-bottom: 5px; color: #FF9800;">
-                             Option B: ${lottery.probHigh}/10 of £${lottery.optionB.high}, ${probLow}/10 of £${lottery.optionB.low}
-                         </div>
-                         <div style="display: flex; width: 100%; height: 30px; border: 1px solid #ccc; border-radius:0em;">
-                             <div style="background-color: #1c1616; width: ${probHighPercent}%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px;">
-                                 ${probHighPercent > 0 ? '£' + lottery.optionB.high : ''}
-                             </div>
-                             <div style="background-color: #908997; width: ${probLowPercent}%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px;">
-                                 ${probLowPercent > 0 ? '£' + lottery.optionB.low : ''}
-                             </div>
-                         </div>
+                     <div style="position: relative; width: 120px; height: 120px; margin: 0 auto;">
+                         <svg width="120" height="120" viewBox="0 0 120 120">
+                             <circle cx="60" cy="60" r="55" fill="none" stroke="white" stroke-width="2"></circle>
+                             <path d="${describePieSlice(60, 60, 55, 0, highAngle).path}" fill="#1c1616"></path>
+                             <path d="${describePieSlice(60, 60, 55, highAngle, 360).path}" fill="#908997"></path>
+                                                           ${lottery.probHigh > 0 ? `<text x="${describePieSlice(60, 60, 55, 0, highAngle).textX}" y="${describePieSlice(60, 60, 55, 0, highAngle).textY}" text-anchor="middle" dominant-baseline="central" fill="white" font-size="12" font-weight="bold">£${lottery.optionB.high}</text>` : ''}
+                              ${probLow > 0 ? `<text x="${describePieSlice(60, 60, 55, highAngle, 360).textX}" y="${describePieSlice(60, 60, 55, highAngle, 360).textY}" text-anchor="middle" dominant-baseline="central" fill="white" font-size="12" font-weight="bold">£${lottery.optionB.low}</text>` : ''}
+                         </svg>
                      </div>
                  </td>
              </tr>`;
@@ -895,6 +948,7 @@ window.endTrainingPerceptual = (sess) => {
     localStorage.setItem('session', window.session);
     setPageInstruction(instNum);
     hidePrevButton();
+    
 }
 
 // ------------------------------ RUN ------------------------------ //
