@@ -12,7 +12,9 @@ const PERCEPTUAL_TRAINING = 7
 const RL_TRAINING_2 = 9
 const FULL = 11
 const FULL2 = 13
-const END = 14
+const SURVEY = 14
+const RISK = 15
+const END = 16
 const CONV = 0.00002;
 const GAME_NUMBER = 5;
 
@@ -252,27 +254,11 @@ const stopLoading = () => {
 }
 
 const skipCurrentStep = () => {
-    // Check current step instead of instNum for post-game phases
-    const currentStep = getCurrentStep();
-    
-    if (currentStep === 'survey') {
-        // Skip survey, go to risk assessment
-        setStepDone('survey');
-        riskAssessmentPage();
-        return;
-    } else if (currentStep === 'risk') {
-        // Skip risk assessment, go to end
-        setStepDone('risk');
-        lastPage();
-        return;
-    }
-    
-    // Original logic for game phases
     if (instNum <= 2) {
         instNum = TUTORIAL;
         setPageInstruction(instNum);
     } else if ([TUTORIAL, PERCEPTUAL_TRAINING, RL_TRAINING_1, RL_TRAINING_2,
-         FULL, FULL2].includes(instNum)) {
+         FULL, FULL2, SURVEY, RISK].includes(instNum)) {
             switch (instNum) {
             case TUTORIAL:
                 window.endTutorial();
@@ -294,6 +280,27 @@ const skipCurrentStep = () => {
                 break;
             case FULL2:
                 window.endFull2();
+                break;
+            case SURVEY:
+                // Skip survey, go to risk assessment
+                setStepDone('survey');
+                instNum = RISK;
+                setPageInstruction(instNum);
+                break;
+            case RISK:
+                // Skip risk assessment, go to end
+                setStepDone('risk');
+                // Create dummy risk data for skip
+                window.riskData = {
+                    prolificID: window.subID,
+                    expName: 'FullPilot12_2',
+                    choice_0: 0, choice_1: 0, choice_2: 0, choice_3: 0, choice_4: 0,
+                    choice_5: 0, choice_6: 0, choice_7: 0, choice_8: 0, choice_9: 0,
+                    selected: 0,
+                    amount: 0
+                };
+                instNum = END;
+                setPageInstruction(instNum);
                 break;
         }
 
@@ -378,7 +385,8 @@ const setPageInstruction = async (instNum) => {
     } else if (TUTORIAL == instNum ||
         PERCEPTUAL_TRAINING == instNum ||
         RL_TRAINING_1 == instNum || RL_TRAINING_2 == instNum ||
-        FULL == instNum || FULL2 == instNum) {
+        FULL == instNum || FULL2 == instNum ||
+        SURVEY == instNum || RISK == instNum) {
 
         setPreviousStepDone()
         switch (instNum) {
@@ -411,9 +419,15 @@ const setPageInstruction = async (instNum) => {
                 // alert('startGame')
                 startFull2();
                 break;
+            case SURVEY:
+                surveyPage();
+                break;
+            case RISK:
+                riskAssessmentPage();
+                break;
         }
     } else if (instNum == END) {
-        window.endFull2();
+        lastPage();
 
     }
     else {
@@ -650,7 +664,8 @@ const riskAssessmentPage = () => {
             // Send risk assessment data to dedicated endpoint
             sendRiskData(riskData);
             setStepDone('risk');
-            lastPage();
+            instNum = END;
+            setPageInstruction(instNum);
             
         } else {
             alert('Please make a choice for all lottery pairs before continuing.');
@@ -720,7 +735,10 @@ const rewardPage = () => {
              </div>
      `;
     document.querySelector('#next-button').removeEventListener('click', next);
-    document.querySelector('#next-button').addEventListener('click', surveyPage);
+    document.querySelector('#next-button').addEventListener('click', () => {
+        instNum = SURVEY;
+        setPageInstruction(instNum);
+    });
 }
 
 
@@ -873,7 +891,8 @@ const surveyPage = () => {
             document.querySelector('#next-button').removeEventListener('click', checkSurvey);
             sendFeedback(dataToSend);
             setStepDone('survey');
-            riskAssessmentPage();
+            instNum = RISK;
+            setPageInstruction(instNum);
         }
     });
 
