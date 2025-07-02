@@ -162,7 +162,7 @@ const setSubID = () => {
 
 // ------------------------------ UI Managment ------------------------------ //
 const setPreviousStepDone = () => {
-    let steps = ['introduction', 'training1', 'training2', 'training3', 'full', 'full2', 'end'];
+    let steps = ['introduction', 'training1', 'training2', 'training3', 'full', 'full2', 'survey', 'risk', 'end'];
     // get current step
     let currentStep = getCurrentStep();
     console.log(currentStep);
@@ -206,7 +206,7 @@ const setCurrentStep = (step) => {
 }
 // unset all steps
 const unsetAllSteps = () => {
-    let steps = ['introduction', 'training1', 'training2', 'training3', 'full', 'full2', 'end'];
+    let steps = ['introduction', 'training1', 'training2', 'training3', 'full', 'full2', 'survey', 'risk', 'end'];
     steps.forEach((step) => {
         unsetStep(step);
     })
@@ -252,6 +252,22 @@ const stopLoading = () => {
 }
 
 const skipCurrentStep = () => {
+    // Check current step instead of instNum for post-game phases
+    const currentStep = getCurrentStep();
+    
+    if (currentStep === 'survey') {
+        // Skip survey, go to risk assessment
+        setStepDone('survey');
+        riskAssessmentPage();
+        return;
+    } else if (currentStep === 'risk') {
+        // Skip risk assessment, go to end
+        setStepDone('risk');
+        lastPage();
+        return;
+    }
+    
+    // Original logic for game phases
     if (instNum <= 2) {
         instNum = TUTORIAL;
         setPageInstruction(instNum);
@@ -422,6 +438,7 @@ const setPageInstruction = async (instNum) => {
 // ------------------------------ END ------------------------------ //
 const riskAssessmentPage = () => {
     hideButton();
+    setCurrentStep('risk');
     document.querySelector('#game').style.display = 'none';
     document.querySelector('#panel').style.display = 'block';
     
@@ -553,7 +570,7 @@ const riskAssessmentPage = () => {
 
     document.querySelector('#panel').innerHTML = content;
 
-    let riskData = { 'prolificID': window.subID, 'risk_assessment': {} };
+    let riskData = { 'prolificID': window.subID };
     // riskData must be global
 
     // Add event listeners for clickable lottery options
@@ -571,11 +588,11 @@ const riskAssessmentPage = () => {
             option.classList.add('selected');
             
             // Store the choice (A=0, B=1)
-            riskData.risk_assessment[`choice_${choiceIndex}`] = selectedOption === 'A' ? 0 : 1;
+            riskData[`choice_${choiceIndex}`] = selectedOption === 'A' ? 0 : 1;
             
             // Check if all choices are made
             const totalChoices = lotteries.length;
-            const madeChoices = Object.keys(riskData.risk_assessment).length;
+            const madeChoices = Object.keys(riskData).filter(key => key.startsWith('choice_')).length;
             
             if (madeChoices === totalChoices) {
                 showButton();
@@ -591,7 +608,7 @@ const riskAssessmentPage = () => {
     document.querySelector('#next-button').removeEventListener('click', next);
     document.querySelector('#next-button').addEventListener('click', () => {
         const totalChoices = lotteries.length;
-        const madeChoices = Object.keys(riskData.risk_assessment).length;
+        const madeChoices = Object.keys(riskData).filter(key => key.startsWith('choice_')).length;
         
         if (madeChoices === totalChoices) {
             // Add experiment name to risk data
@@ -603,7 +620,7 @@ const riskAssessmentPage = () => {
             riskData.selected = selectedLottery;
             
             // Step 2: Get participant's choice for the selected lottery
-            const participantChoice = riskData.risk_assessment[`choice_${selectedLottery}`]; // 0=A, 1=B
+            const participantChoice = riskData[`choice_${selectedLottery}`]; // 0=A, 1=B
             
             // Step 3: Get lottery parameters for the selected lottery
             const selectedLotteryData = lotteries[selectedLottery];
@@ -632,6 +649,7 @@ const riskAssessmentPage = () => {
 
             // Send risk assessment data to dedicated endpoint
             sendRiskData(riskData);
+            setStepDone('risk');
             lastPage();
             
         } else {
@@ -646,6 +664,8 @@ const lastPage = () => {
     hideButton();
     setPreviousStepDone();
     setStepDone('full');
+    setStepDone('survey');
+    setStepDone('risk');
     setCurrentStep('end')
     let points = window.score.reduce((a, b) => a + b, 0);
     // let points = window.score[window.score.length-1];
@@ -683,7 +703,7 @@ const rewardPage = () => {
     hidePrevButton()
     setPreviousStepDone();
     setStepDone('full2');
-    setCurrentStep('end')
+    setCurrentStep('survey')
     let points = window.score.reduce((a, b) => a + b, 0);
     // let points = window.score[window.score.length-1];
     let pounds = (points * CONV).toFixed(3);
@@ -760,6 +780,7 @@ const checkSurvey = () => {
 
 const surveyPage = () => {
     hideButton();
+    setCurrentStep('survey');
     document.querySelector('#game').style.display = 'none';
     let scale = `<nav class="no-space">
         <button id="" class="scale border left-round max vertical small">
@@ -851,6 +872,7 @@ const surveyPage = () => {
         if (checkSurvey()) {
             document.querySelector('#next-button').removeEventListener('click', checkSurvey);
             sendFeedback(dataToSend);
+            setStepDone('survey');
             riskAssessmentPage();
         }
     });
