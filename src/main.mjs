@@ -26,6 +26,7 @@ const RISK_PHP = 'php/insert_risk.php';
 
 // global variables mutable
 var clickBlocked = false;
+var blockingTimeout = null; // Track the timeout to clear it if needed
 var inst = [];
 var end = localStorage.getItem('end') == 'true';
 var instNum = parseInt(localStorage.getItem('instNum')) || 0;
@@ -77,9 +78,14 @@ function main() {
 
     // attach event listeners to buttons
     const nextButton = document.getElementById('next-button');
-    nextButton.addEventListener('click', next);
     const prevButton = document.getElementById('prev-button');
-    prevButton.addEventListener('click', prev); 
+    
+    // Set up initial handlers
+    currentNextHandler = next;
+    currentPrevHandler = prev;
+    
+    safelyReplaceEventListener(nextButton, 'click', null, currentNextHandler);
+    safelyReplaceEventListener(prevButton, 'click', null, currentPrevHandler); 
     // if buttons exist 
     if (document.querySelector('#reload'))
         document.querySelector('#reload').addEventListener('click', reload);
@@ -253,61 +259,67 @@ const stopLoading = () => {
     document.querySelector('progress').style.display = 'none';
 }
 
-const skipCurrentStep = () => {
-    if (instNum <= 2) {
-        instNum = TUTORIAL;
-        setPageInstruction(instNum);
-    } else if ([TUTORIAL, PERCEPTUAL_TRAINING, RL_TRAINING_1, RL_TRAINING_2,
-         FULL, FULL2, SURVEY, RISK].includes(instNum)) {
-            switch (instNum) {
-            case TUTORIAL:
-                window.endTutorial();
-                break;
-            case PERCEPTUAL_TRAINING:
-                window.endTrainingPerceptual();
-                // alert('endTrainingPerceptual')
-                // window.startTrainingRL();
-                break;
-            case RL_TRAINING_1:
-                // alert('endTrainingRL')
-                window.endTrainingRL(0);
-                break;
-            case RL_TRAINING_2:
-                window.endTrainingRL(2);
-                break;  
-            case FULL:
-                window.endFull(3);
-                break;
-            case FULL2:
-                window.endFull2();
-                break;
-            case SURVEY:
-                // Skip survey, go to risk assessment
-                setStepDone('survey');
-                instNum = RISK;
-                setPageInstruction(instNum);
-                break;
-            case RISK:
-                // Skip risk assessment, go to end
-                setStepDone('risk');
-                // Create dummy risk data for skip
-                window.riskData = {
-                    prolificID: window.subID,
-                    expName: 'FullPilot12_2',
-                    choice_0: 0, choice_1: 0, choice_2: 0, choice_3: 0, choice_4: 0,
-                    choice_5: 0, choice_6: 0, choice_7: 0, choice_8: 0, choice_9: 0,
-                    selected: 0,
-                    amount: 0
-                };
-                instNum = END;
-                setPageInstruction(instNum);
-                break;
-        }
+const skipCurrentStep = async () => {
+    try {
+        if (instNum <= 2) {
+            instNum = TUTORIAL;
+            await setPageInstruction(instNum);
+        } else if ([TUTORIAL, PERCEPTUAL_TRAINING, RL_TRAINING_1, RL_TRAINING_2,
+             FULL, FULL2, SURVEY, RISK].includes(instNum)) {
+                switch (instNum) {
+                case TUTORIAL:
+                    window.endTutorial();
+                    break;
+                case PERCEPTUAL_TRAINING:
+                    window.endTrainingPerceptual();
+                    // alert('endTrainingPerceptual')
+                    // window.startTrainingRL();
+                    break;
+                case RL_TRAINING_1:
+                    // alert('endTrainingRL')
+                    window.endTrainingRL(0);
+                    break;
+                case RL_TRAINING_2:
+                    window.endTrainingRL(2);
+                    break;  
+                case FULL:
+                    window.endFull(3);
+                    break;
+                case FULL2:
+                    window.endFull2();
+                    break;
+                case SURVEY:
+                    // Skip survey, go to risk assessment
+                    setStepDone('survey');
+                    instNum = RISK;
+                    await setPageInstruction(instNum);
+                    break;
+                case RISK:
+                    // Skip risk assessment, go to end
+                    setStepDone('risk');
+                    // Create dummy risk data for skip
+                    window.riskData = {
+                        prolificID: window.subID,
+                        expName: 'FullPilot12_2',
+                        choice_0: 0, choice_1: 0, choice_2: 0, choice_3: 0, choice_4: 0,
+                        choice_5: 0, choice_6: 0, choice_7: 0, choice_8: 0, choice_9: 0,
+                        selected: 0,
+                        amount: 0
+                    };
+                    instNum = END;
+                    await setPageInstruction(instNum);
+                    break;
+            }
 
-    } else if (REST.includes(instNum)) {
-        // alert('InstNum: '+instNum + '\n' + 'Session: '+window.session + '\n')
-        instNum++;
-        setPageInstruction(instNum);
+        } else if (REST.includes(instNum)) {
+            // alert('InstNum: '+instNum + '\n' + 'Session: '+window.session + '\n')
+            instNum++;
+            await setPageInstruction(instNum);
+        }
+    } catch (error) {
+        console.error('Error in skipCurrentStep():', error);
+        // Ensure clicks are not permanently blocked
+        unblockClick();
     }
 }
 
@@ -320,18 +332,34 @@ const hidePanel = () => {
 
 // function used to naviguate between instructions pages as markdown
 // using zero-md library
-const next = () => {
+const next = async () => {
     if (clickBlocked) return;
     blockClick();
-    instNum++;
-    setPageInstruction(instNum);
+    
+    try {
+        instNum++;
+        await setPageInstruction(instNum);
+    } catch (error) {
+        console.error('Error in next():', error);
+        // Restore previous state and unblock clicks
+        instNum--;
+        unblockClick();
+    }
 }
 
-const prev = () => {
+const prev = async () => {
     if (clickBlocked) return;
     blockClick();
-    instNum--;
-    setPageInstruction(instNum);
+    
+    try {
+        instNum--;
+        await setPageInstruction(instNum);
+    } catch (error) {
+        console.error('Error in prev():', error);
+        // Restore previous state and unblock clicks
+        instNum++;
+        unblockClick();
+    }
 }
 
 const hideButton = () => {
@@ -348,16 +376,52 @@ const hidePrevButton = () => {
 }
 
 const blockClick = () => {
+    // Clear any existing timeout to prevent conflicts
+    if (blockingTimeout) {
+        clearTimeout(blockingTimeout);
+    }
+    
     clickBlocked = true;
-    setTimeout(() => { clickBlocked = false }, clickBlockedTime);
+    blockingTimeout = setTimeout(() => { 
+        clickBlocked = false;
+        blockingTimeout = null;
+    }, clickBlockedTime);
 }
+
+// Add function to manually unblock clicks in case of errors
+const unblockClick = () => {
+    if (blockingTimeout) {
+        clearTimeout(blockingTimeout);
+        blockingTimeout = null;
+    }
+    clickBlocked = false;
+}
+
+// Safe event listener management
+const safelyReplaceEventListener = (element, eventType, oldHandler, newHandler) => {
+    try {
+        if (oldHandler) {
+            element.removeEventListener(eventType, oldHandler);
+        }
+        if (newHandler) {
+            element.addEventListener(eventType, newHandler);
+        }
+    } catch (error) {
+        console.error('Error managing event listener:', error);
+    }
+}
+
+// Keep track of current button handlers to avoid conflicts
+let currentNextHandler = null;
+let currentPrevHandler = null;
 
 const checkConsent = () => {
     document.querySelectorAll('input').forEach(element => element.reportValidity());
     // if all checked
     if (document.querySelectorAll('input:checked').length == 4) {
-        document.querySelector('#next-button').addEventListener('click', next);
-        document.querySelector('#next-button').removeEventListener('click', checkConsent)
+        const nextButton = document.querySelector('#next-button');
+        currentNextHandler = next;
+        safelyReplaceEventListener(nextButton, 'click', checkConsent, currentNextHandler);
         next()
     }
 }
@@ -372,15 +436,18 @@ const setPageInstruction = async (instNum) => {
         document.querySelector('#panel').style.display = 'flex';
         document.querySelector('#prev-button').style.display = 'none';
         document.querySelector('#game').style.display = 'none';
-        document.querySelector('#next-button').addEventListener('click', next)
+        const nextButton = document.querySelector('#next-button');
+        currentNextHandler = next;
+        safelyReplaceEventListener(nextButton, 'click', currentNextHandler, next);
     } else if (instNum == 1) {
         setCurrentStep('introduction');
         document.querySelector('#panel').innerHTML = consentPage;
         document.querySelector('#panel').style.display = 'block';
         // document.querySelector('#prev-button').style.display = 'none';
         showButton();
-        document.querySelector('#next-button').removeEventListener('click', next)
-        document.querySelector('#next-button').addEventListener('click', checkConsent)
+        const nextButton = document.querySelector('#next-button');
+        currentNextHandler = checkConsent;
+        safelyReplaceEventListener(nextButton, 'click', next, currentNextHandler);
         document.querySelector('#game').style.display = 'none';
     } else if (TUTORIAL == instNum ||
         PERCEPTUAL_TRAINING == instNum ||
@@ -618,9 +685,8 @@ const riskAssessmentPage = () => {
 
     hidePrevButton();
 
-    document.querySelector('#next-button').removeEventListener('click', surveyPage);
-    document.querySelector('#next-button').removeEventListener('click', next);
-    document.querySelector('#next-button').addEventListener('click', () => {
+    const nextButton = document.querySelector('#next-button');
+    const riskSubmitHandler = () => {
         const totalChoices = lotteries.length;
         const madeChoices = Object.keys(riskData).filter(key => key.startsWith('choice_')).length;
         
@@ -672,7 +738,10 @@ const riskAssessmentPage = () => {
             //use modal to show message
             
         }
-    });
+    };
+    
+    currentNextHandler = riskSubmitHandler;
+    safelyReplaceEventListener(nextButton, 'click', currentNextHandler, riskSubmitHandler);
 };
 
 const lastPage = () => {
@@ -734,11 +803,14 @@ const rewardPage = () => {
              <p>Please click the next button and complete a short survey and risk assessment to finish your submission.</p>
              </div>
      `;
-    document.querySelector('#next-button').removeEventListener('click', next);
-    document.querySelector('#next-button').addEventListener('click', () => {
+    const nextButton = document.querySelector('#next-button');
+    const rewardNextHandler = () => {
         instNum = SURVEY;
         setPageInstruction(instNum);
-    });
+    };
+    
+    currentNextHandler = rewardNextHandler;
+    safelyReplaceEventListener(nextButton, 'click', next, currentNextHandler);
 }
 
 
@@ -884,17 +956,18 @@ const surveyPage = () => {
     hidePrevButton();
 
     
-    document.querySelector('#next-button').removeEventListener('click', surveyPage);
-    document.querySelector('#next-button').removeEventListener('click', next)
-    document.querySelector('#next-button').addEventListener('click', () => {
+    const nextButton = document.querySelector('#next-button');
+    const surveySubmitHandler = () => {
         if (checkSurvey()) {
-            document.querySelector('#next-button').removeEventListener('click', checkSurvey);
             sendFeedback(dataToSend);
             setStepDone('survey');
             instNum = RISK;
             setPageInstruction(instNum);
         }
-    });
+    };
+    
+    currentNextHandler = surveySubmitHandler;
+    safelyReplaceEventListener(nextButton, 'click', currentNextHandler, surveySubmitHandler);
 
 }
 
