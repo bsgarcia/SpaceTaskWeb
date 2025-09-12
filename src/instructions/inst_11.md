@@ -3,7 +3,7 @@
 Well done! 🥳
 <br>
 
-Now let's continue with **game 5**. Game 5 consists in the exact same task as game 4, except that you will see **new spaceships** with **new** average spaceship **reward**. You'll see new forcefields as well, from <b style="color: yellow">yellow</b> to <b style="color: lightblue">blue</b>. Again maximize you overall score! ! You can reasonably expect a score of at least **~40000 points**. This phase lasts around ~10min. <br><br>
+Now let's continue with **game 5**. Game 5 consists in the exact same task as game 4, except that you will see *new forcefields*, from <b style="color: yellow">yellow</b> to <b style="color: lightblue">blue</b>. Again maximize you overall score! ! You can reasonably expect a score of at least **~40000 points**. This phase lasts around ~10min. <br><br>
 
 You will face waves of spaceship pairs. 
 In order to destroy a target, you have to press either **left or right arrow key**, and then press **space to shoot**.

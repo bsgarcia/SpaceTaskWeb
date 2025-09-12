@@ -115,4 +115,62 @@ The system implements the incentive-compatible payment mechanism described in th
 - 70% chance of receiving £2.81 (high payoff)
 - 30% chance of receiving £0.07 (low payoff)
 
-The `selected` field stores which lottery was chosen for payment, and `amount` stores the actual payoff amount. 
+The `selected` field stores which lottery was chosen for payment, and `amount` stores the actual payoff amount.
+
+## Table: `spaceprl_risk_trial`
+
+This table stores individual trial data from the sequential risk assessment task where each lottery is played immediately without feedback.
+
+### Column Structure
+
+| Column Name | Data Type | Description | Example Value |
+|-------------|-----------|-------------|---------------|
+| `prolificID` | VARCHAR(50) | Unique participant identifier | "random-ABC12" |
+| `expName` | VARCHAR(100) | Experiment name identifier | "FullPilot12_2" |
+| `trial` | INT | Trial number (1-10) | 7 |
+| `probHigh` | INT | Probability of high outcome (1-10) | 7 |
+| `optionA_high` | DECIMAL(5,2) | Option A high payoff | 1.46 |
+| `optionA_low` | DECIMAL(5,2) | Option A low payoff | 1.17 |
+| `optionB_high` | DECIMAL(5,2) | Option B high payoff | 2.81 |
+| `optionB_low` | DECIMAL(5,2) | Option B low payoff | 0.07 |
+| `choice` | INT | Participant's choice (0=A, 1=B) | 1 |
+| `outcome` | VARCHAR(10) | Actual outcome ('high' or 'low') | "high" |
+| `amount` | DECIMAL(5,2) | Actual payoff amount | 2.81 |
+| `randomDraw` | DECIMAL(10,8) | Random number for outcome (0-1) | 0.12345678 |
+| `totalScore` | DECIMAL(8,2) | Cumulative score after this trial | 15.47 |
+| `timestamp` | VARCHAR(50) | ISO timestamp when trial completed | "2024-01-15T14:30:22.123Z" |
+
+### SQL Table Creation
+
+```sql
+CREATE TABLE spaceprl_risk_trial (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    prolificID VARCHAR(50),
+    expName VARCHAR(100),
+    trial INT,
+    probHigh INT,
+    optionA_high DECIMAL(5,2),
+    optionA_low DECIMAL(5,2),
+    optionB_high DECIMAL(5,2),
+    optionB_low DECIMAL(5,2),
+    choice INT,
+    outcome VARCHAR(10),
+    amount DECIMAL(5,2),
+    randomDraw DECIMAL(10,8),
+    totalScore DECIMAL(8,2),
+    timestamp VARCHAR(50),
+    db_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_prolific_trial (prolificID, trial),
+    INDEX idx_timestamp (db_timestamp)
+);
+```
+
+### Trial Data Flow
+
+1. **Sequential Presentation**: Each lottery pair is presented individually
+2. **Immediate Execution**: Choice is made and lottery is played immediately
+3. **No Feedback**: Participant doesn't see outcome, but it's recorded
+4. **Score Accumulation**: Each trial outcome adds to total score
+5. **Database Recording**: Each trial is immediately sent to database
+
+This approach provides detailed trial-by-trial data for analyzing decision patterns and allows for real-time score accumulation without revealing outcomes to participants. 
