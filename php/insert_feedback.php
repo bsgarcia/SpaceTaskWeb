@@ -19,21 +19,18 @@ try {
     // Get database connection
     $conn = getDbConnection();
 
-    // Whitelist allowed columns for feedback data
-    $allowed_columns = ['prolificID', 'expName', 'timestamp', 'sessionID', 'gameNumber'];
+    // Whitelist allowed columns for feedback data based on screenshot structure
+    $allowed_columns = ['prolificID'];
     
-    // Add survey question columns (q1 through q5 typically for feedback)
-    for ($i = 1; $i <= 10; $i++) {
+    // Add question response columns (q0 through q4)
+    for ($i = 0; $i <= 4; $i++) {
         $allowed_columns[] = "q$i";
-        $allowed_columns[] = "rating_$i";
-        $allowed_columns[] = "feedback_$i";
     }
     
-    // Add other common feedback columns
-    $allowed_columns = array_merge($allowed_columns, [
-        'overall_rating', 'difficulty_rating', 'enjoyment_rating',
-        'comments', 'suggestions', 'technical_issues'
-    ]);
+    // Add open-ended question columns (open_q0 through open_q4)  
+    for ($i = 0; $i <= 4; $i++) {
+        $allowed_columns[] = "open_q$i";
+    }
     
     // Filter data to only include allowed columns
     $filtered_data = [];
