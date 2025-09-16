@@ -19,8 +19,8 @@ try {
     // Get database connection
     $conn = getDbConnection();
 
-    // Whitelist allowed columns for security
-    $allowed_columns = ['prolificID', 'expName', 'score', 'timestamp', 'sessionID', 'gameNumber'];
+    // Whitelist allowed columns for General Risk Survey data
+    $allowed_columns = ['prolificID', 'expName', 'riskScore', 'timestamp'];
     
     // Filter data to only include allowed columns
     $filtered_data = [];
@@ -34,12 +34,20 @@ try {
         sendJsonResponse('error', 'No valid columns provided');
     }
 
+    // Validate risk score is in valid range (0-10)
+    if (isset($filtered_data['riskScore'])) {
+        $risk_score = intval($filtered_data['riskScore']);
+        if ($risk_score < 0 || $risk_score > 10) {
+            sendJsonResponse('error', 'Risk score must be between 0 and 10');
+        }
+    }
+
     // Generating the placeholders for the prepared statement
     $columns = '`' . implode('`, `', array_keys($filtered_data)) . '`';
     $placeholders = ':' . implode(', :', array_keys($filtered_data));
 
-    // Inserting data into the 'spaceprl' table dynamically
-    $stmt = $conn->prepare("INSERT INTO spaceprl ($columns) VALUES ($placeholders)");
+    // Inserting data into the 'spaceprl_general_risk' table dynamically
+    $stmt = $conn->prepare("INSERT INTO spaceprl_general_risk ($columns) VALUES ($placeholders)");
 
     // Binding parameters and executing the statement
     foreach ($filtered_data as $key => $value) {
@@ -48,13 +56,13 @@ try {
 
     $stmt->execute();
 
-    sendJsonResponse('success', 'Records inserted successfully', ['inserted_id' => $conn->lastInsertId()]);
+    sendJsonResponse('success', 'General Risk Survey data inserted successfully', ['inserted_id' => $conn->lastInsertId()]);
 
 } catch (PDOException $e) {
-    error_log("Database error in insert.php: " . $e->getMessage());
+    error_log("Database error in insert_general_risk.php: " . $e->getMessage());
     sendJsonResponse('error', 'Database operation failed');
 } catch (Exception $e) {
-    error_log("General error in insert.php: " . $e->getMessage());
+    error_log("General error in insert_general_risk.php: " . $e->getMessage());
     sendJsonResponse('error', 'Operation failed');
 } finally {
     if (isset($conn)) {

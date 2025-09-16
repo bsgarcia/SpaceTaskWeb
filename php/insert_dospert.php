@@ -19,8 +19,13 @@ try {
     // Get database connection
     $conn = getDbConnection();
 
-    // Whitelist allowed columns for security
-    $allowed_columns = ['prolificID', 'expName', 'score', 'timestamp', 'sessionID', 'gameNumber'];
+    // Whitelist allowed columns for DOSPERT data
+    $allowed_columns = ['prolificID', 'expName', 'timestamp'];
+    
+    // Add question columns (q0 through q29)
+    for ($i = 0; $i <= 29; $i++) {
+        $allowed_columns[] = "q$i";
+    }
     
     // Filter data to only include allowed columns
     $filtered_data = [];
@@ -34,12 +39,24 @@ try {
         sendJsonResponse('error', 'No valid columns provided');
     }
 
+    // Validate that we have the required questions
+    $question_count = 0;
+    for ($i = 0; $i <= 29; $i++) {
+        if (isset($filtered_data["q$i"])) {
+            $question_count++;
+        }
+    }
+    
+    if ($question_count < 30) {
+        sendJsonResponse('error', "Incomplete DOSPERT data: only $question_count/30 questions provided");
+    }
+
     // Generating the placeholders for the prepared statement
     $columns = '`' . implode('`, `', array_keys($filtered_data)) . '`';
     $placeholders = ':' . implode(', :', array_keys($filtered_data));
 
-    // Inserting data into the 'spaceprl' table dynamically
-    $stmt = $conn->prepare("INSERT INTO spaceprl ($columns) VALUES ($placeholders)");
+    // Inserting data into the 'spaceprl_dospert' table dynamically
+    $stmt = $conn->prepare("INSERT INTO spaceprl_dospert ($columns) VALUES ($placeholders)");
 
     // Binding parameters and executing the statement
     foreach ($filtered_data as $key => $value) {
@@ -48,13 +65,13 @@ try {
 
     $stmt->execute();
 
-    sendJsonResponse('success', 'Records inserted successfully', ['inserted_id' => $conn->lastInsertId()]);
+    sendJsonResponse('success', 'DOSPERT data inserted successfully', ['inserted_id' => $conn->lastInsertId()]);
 
 } catch (PDOException $e) {
-    error_log("Database error in insert.php: " . $e->getMessage());
+    error_log("Database error in insert_dospert.php: " . $e->getMessage());
     sendJsonResponse('error', 'Database operation failed');
 } catch (Exception $e) {
-    error_log("General error in insert.php: " . $e->getMessage());
+    error_log("General error in insert_dospert.php: " . $e->getMessage());
     sendJsonResponse('error', 'Operation failed');
 } finally {
     if (isset($conn)) {

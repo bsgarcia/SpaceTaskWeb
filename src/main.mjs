@@ -12,10 +12,12 @@ const RL_TRAINING_1 = 5
 const PERCEPTUAL_TRAINING = 7
 const RL_TRAINING_2 = 9
 const FULL = 11
-const FULL2 = 13
-const SURVEY = 14
-const RISK = 15
-const END = 16
+const SG = 12; // General Risk Survey (before FULL2)
+const DOSPERT = 13; // DOSPERT Risk Scale (before FULL2)
+const RISK = 14 // Risk assessment (lotteries, before FULL2)
+const FULL2 = 15 // Game 5 (moved after surveys)
+const SURVEY = 16 // Post-game survey (after FULL2)
+const END = 17
 const CONV = 0.00002;
 const GAME_NUMBER = 5;
 
@@ -25,6 +27,8 @@ const clickBlockedTime = 300;
 const SURVEY_PHP = 'php/insert_feedback.php';
 const RISK_PHP = 'php/insert_risk.php';
 const RISK_TRIAL_PHP = 'php/insert_risk_trial.php';
+const DOSPERT_PHP = 'php/insert_dospert.php';
+const GENERAL_RISK_PHP = 'php/insert_general_risk.php';
 
 // global variables mutable
 var clickBlocked = false;
@@ -66,21 +70,7 @@ function main() {
     window.score = loadScore();
     setSubID();
 
-    // Check for direct access via URL parameters
-    const gotoParam = getURLParams('goto');
-    if (gotoParam === 'risk') {
-        // Direct access to risk assessment
-        // set all steps done
-        setCurrentStep('end');
-        setPreviousStepDone();
-      
-        // first step is risk assessment
-        // go to general risk survey
-        generalRiskSurveyPage();
-
-        return;
-    }
-
+ 
     // attach event listeners to buttons
     const nextButton = document.getElementById('next-button');
     const prevButton = document.getElementById('prev-button');
@@ -95,8 +85,26 @@ function main() {
     if (document.querySelector('#reload'))
         document.querySelector('#reload').addEventListener('click', reload);
     if (document.querySelector('#skip'))
-        document.querySelector('#skip').addEventListener('click', skipCurrentStep);
-
+        document.querySelector('#skip').addEventListener('click', () => {
+            console.log('=== SKIP BUTTON CLICKED ===');
+            console.log('About to call skipCurrentStep');
+            skipCurrentStep();
+        });
+    
+   // Check for direct access via URL parameters
+    const gotoParam = getURLParams('goto');
+    if (gotoParam === 'risk') {
+        // Direct access to risk assessment
+        // set all steps done
+        setCurrentStep('survey');
+        setPreviousStepDone();
+      
+        // first step is risk assessment
+        // go to general risk survey
+        generalRiskSurveyPage();
+        setPageInstruction(SG);
+        return;
+    }
     if (end) {
         window.endFull2();
         return;
@@ -175,7 +183,7 @@ const setSubID = () => {
 
 // ------------------------------ UI Managment ------------------------------ //
 const setPreviousStepDone = () => {
-    let steps = ['introduction', 'training1', 'training2', 'training3', 'full', 'full2', 'survey', 'sg', 'si', 'dospert', 'risk', 'end'];
+    let steps = ['introduction', 'training1', 'training2', 'training3', 'full', 'survey', 'full2', 'final-survey', 'end'];
     // get current step
     let currentStep = getCurrentStep();
     console.log(currentStep);
@@ -219,7 +227,7 @@ const setCurrentStep = (step) => {
 }
 // unset all steps
 const unsetAllSteps = () => {
-    let steps = ['introduction', 'training1', 'training2', 'training3', 'full', 'full2', 'survey', 'sg', 'si', 'dospert', 'risk', 'end'];
+    let steps = ['introduction', 'training1', 'training2', 'training3', 'full', 'survey', 'full2', 'final-survey', 'end'];
     steps.forEach((step) => {
         unsetStep(step);
     })
@@ -265,12 +273,19 @@ const stopLoading = () => {
 }
 
 const skipCurrentStep = async () => {
+    console.log('=== SKIP FUNCTION CALLED ===');
+    console.log('Current instNum:', instNum);
+    console.log('Current step element:', getCurrentStep());
     try {
         if (instNum <= 2) {
             instNum = TUTORIAL;
             await setPageInstruction(instNum);
         } else if ([TUTORIAL, PERCEPTUAL_TRAINING, RL_TRAINING_1, RL_TRAINING_2,
-             FULL, FULL2, SURVEY, RISK].includes(instNum)) {
+             FULL, SG, DOSPERT, RISK, FULL2, SURVEY].includes(instNum)) {
+                console.log('=== ENTERING GAME/SURVEY SKIP SECTION ===');
+                console.log('instNum value:', instNum);
+                console.log('SURVEY constant value:', SURVEY);
+                console.log('instNum === SURVEY:', instNum === SURVEY);
                 switch (instNum) {
                 case TUTORIAL:
                     window.endTutorial();
@@ -291,17 +306,32 @@ const skipCurrentStep = async () => {
                     window.endFull(3);
                     break;
                 case FULL2:
+                    console.log('Skipping FULL2 game, calling endFull2()');
                     window.endFull2();
                     break;
                 case SURVEY:
-                    // Skip survey, go to risk assessment
+                    // Skip post-game survey, go to end
+                    console.log('Skipping from SURVEY to END, instNum:', instNum);
+                    setStepDone('final-survey');
+                    instNum = END;
+                    console.log('About to call setPageInstruction with END:', END);
+                    await setPageInstruction(instNum);
+                    break;
+                case SG:
+                    // Skip SG, go to next in sequence (DOSPERT)
+                    setStepDone('survey');
+                    instNum = DOSPERT;
+                    await setPageInstruction(instNum);
+                    break;
+                case DOSPERT:
+                    // Skip DOSPERT, go to next in sequence (RISK)
                     setStepDone('survey');
                     instNum = RISK;
                     await setPageInstruction(instNum);
                     break;
                 case RISK:
-                    // Skip risk assessment, go to end
-                    setStepDone('risk');
+                    // Skip risk assessment, go to next in sequence (FULL2)
+                    setStepDone('survey');
                     // Create dummy risk data for skip
                     window.riskData = {
                         prolificID: window.subID,
@@ -311,7 +341,7 @@ const skipCurrentStep = async () => {
                         selected: 0,
                         amount: 0
                     };
-                    instNum = END;
+                    instNum = FULL2;
                     await setPageInstruction(instNum);
                     break;
             }
@@ -342,12 +372,20 @@ const next = async () => {
     blockClick();
     
     try {
-        instNum++;
-        await setPageInstruction(instNum);
+        // If there's a page-specific action, use it; otherwise use default navigation
+        if (currentAction && typeof currentAction === 'function') {
+            await currentAction();
+        } else {
+            // Default navigation behavior
+            instNum++;
+            await setPageInstruction(instNum);
+        }
     } catch (error) {
         console.error('Error in next():', error);
         // Restore previous state and unblock clicks
-        instNum--;
+        if (!currentAction) {
+            instNum--;
+        }
         unblockClick();
     }
 }
@@ -420,6 +458,9 @@ const safelyReplaceEventListener = (element, eventType, oldHandler, newHandler) 
 let currentNextHandler = null;
 let currentPrevHandler = null;
 
+// Global action function for page-specific next button behavior
+let currentAction = null;
+
 const checkConsent = () => {
     document.querySelectorAll('input').forEach(element => element.reportValidity());
     // if all checked
@@ -432,6 +473,9 @@ const checkConsent = () => {
 }
 
 const setPageInstruction = async (instNum) => {
+    // Reset any page-specific action when changing pages
+    currentAction = null;
+    
     // alert('Setting page instruction: '+instNum);
     instNum = parseInt(instNum);
     localStorage.setItem('instNum', instNum);
@@ -460,55 +504,68 @@ const setPageInstruction = async (instNum) => {
         RL_TRAINING_1 == instNum || RL_TRAINING_2 == instNum ||
         FULL == instNum || FULL2 == instNum ||
         SURVEY == instNum || RISK == instNum ||
-        SG == instNum || SI == instNum || DOSPERT == instNum) {
+        SG == instNum || DOSPERT == instNum) {
 
-        setPreviousStepDone()
     switch (instNum) {
             case TUTORIAL:
                 // alert('tutorial')
+                setPreviousStepDone()
                 setCurrentStep('introduction');
                 startTutorial();
                 break;
             case PERCEPTUAL_TRAINING:
+                setPreviousStepDone()
                 setCurrentStep('training2');
                 // alert('startTrainingPerceptual')
                 startTrainingPerceptual();
                 break;
             case RL_TRAINING_1:
+                setPreviousStepDone()
                 setCurrentStep('training1');
                 // alert('startTrainingRL')
                 startTrainingRL(1);
                 break;
             case RL_TRAINING_2:
+                setPreviousStepDone()
                 setCurrentStep('training3');
                 startTrainingRL(3);
                 break;
             case FULL:
+                setPreviousStepDone()
                 setCurrentStep('full');
                 // alert('startGame')
                 startFull();
                 break;
             case FULL2:
+                setPreviousStepDone()
                 setCurrentStep('full2');
                 // alert('startGame')
                 startFull2();
                 break;
             case SURVEY:
+                setPreviousStepDone()
+                setCurrentStep('final-survey');
                 surveyPage();
                 break;
             case SG:
+                setPreviousStepDone()
+                setCurrentStep('survey');
                 generalRiskSurveyPage();
                 break;
-            case SI:
-                hypotheticalInvestmentPage();
-                break;
+            // case SI:
+            //     hypotheticalInvestmentPage();
+            //     break;
             case DOSPERT:
+                setPreviousStepDone()
+                setCurrentStep('survey');
                 dospertScalePage();
                 break;
             // case CS:
             //     choiceSetPage();
             //     break;
             case RISK:
+                setPreviousStepDone()
+                setCurrentStep('survey');
                 riskAssessmentPage();
                 break;
         }
@@ -537,15 +594,13 @@ const setPageInstruction = async (instNum) => {
 
 // ------------------------------ END ------------------------------ //
 // --- New Behavioral Tasks --- //
-const SG = 17; // General Risk Survey
-const SI = 18; // Hypothetical Investment
-const DOSPERT = 19; // DOSPERT Risk Scale
+// SG and DOSPERT constants moved to main constants section above
+// const SI = 18; // Hypothetical Investment
 // const CS = 19; // Choice Set (Choice Overload) - DISABLED
 
 // General Risk Survey (SG)
 function generalRiskSurveyPage() {
     hideButton();
-    setCurrentStep('survey');
     document.querySelector('#game').style.display = 'none';
     document.querySelector('#panel').style.display = 'block';
     
@@ -599,23 +654,36 @@ function generalRiskSurveyPage() {
     
     showButton();
     hidePrevButton();
-    const nextButton = document.querySelector('#next-button');
-    const handler = () => {
+    
+    // Set page-specific action
+    currentAction = () => {
         if (window.sgSelectedValue === undefined) {
             document.getElementById('sg-error').textContent = 'Please select a value on the scale.';
+            unblockClick();
             return;
         }
         document.getElementById('sg-error').textContent = '';
         window.sgResult = window.sgSelectedValue;
-        setStepDone('sg');
-        instNum = SI;
+        
+        // Prepare data for sending
+        const generalRiskData = {
+            prolificID: window.subID,
+            expName: 'FullPilot12_2',
+            riskScore: window.sgSelectedValue,
+            timestamp: new Date().toISOString()
+        };
+        
+        // Send data to server
+        sendGeneralRiskData(generalRiskData);
+        
+        setStepDone('survey');
+        instNum = DOSPERT; // Go directly to DOSPERT instead of SI
         setPageInstruction(instNum);
     };
-    currentNextHandler = handler;
-    safelyReplaceEventListener(nextButton, 'click', currentNextHandler, handler);
 }
 
-// Hypothetical Investment (SI)
+// Hypothetical Investment (SI) - COMMENTED OUT
+/*
 function hypotheticalInvestmentPage() {
     hideButton();
     setCurrentStep('survey');
@@ -669,45 +737,45 @@ function hypotheticalInvestmentPage() {
         // Store investment data without showing outcome
         window.siResult = { invest, keep };
         
-        /* COMMENTED OUT - Don't show lottery outcome
+        // COMMENTED OUT - Don't show lottery outcome
         // Simulate coin flip
-        const win = Math.random() < 0.5;
-        const result = win ? invest * 3 : 0;
-        const total = keep + result;
-        window.siResult = { invest, win, result, total };
+        // const win = Math.random() < 0.5;
+        // const result = win ? invest * 3 : 0;
+        // const total = keep + result;
+        // window.siResult = { invest, win, result, total };
         
-        const resultColor = win ? 'var(--primary)' : 'var(--error)';
-        const outcomeText = win ? 'WON' : 'LOST';
+        // const resultColor = win ? 'var(--primary)' : 'var(--error)';
+        // const outcomeText = win ? 'WON' : 'LOST';
         
-        document.getElementById('si-result').innerHTML = `
-            <div style="background-color: var(--surface-container); padding: 25px; border-radius: 12px; text-align: center;">
-                <h3 style="color: ${resultColor}; margin-top: 0;">You ${outcomeText} the gamble!</h3>
-                <div style="display: flex; justify-content: space-around; margin: 20px 0; flex-wrap: wrap;">
-                    <div style="margin: 10px; min-width: 120px;">
-                        <div style="font-size: 0.9em; opacity: 0.8;">Invested</div>
-                        <div style="font-size: 1.2em; font-weight: bold;">$${invest} → ${win ? '<span style="color: var(--primary)">$' + (invest*3) + '</span>' : '<span style="color: var(--error)">$0</span>'}</div>
-                    </div>
-                    <div style="margin: 10px; min-width: 120px;">
-                        <div style="font-size: 0.9em; opacity: 0.8;">Kept Safe</div>
-                        <div style="font-size: 1.2em; font-weight: bold; color: var(--primary);">$${keep}</div>
-                    </div>
-                    <div style="margin: 10px; min-width: 120px;">
-                        <div style="font-size: 0.9em; opacity: 0.8;">Total Payoff</div>
-                        <div style="font-size: 1.4em; font-weight: bold; color: var(--primary);">$${total}</div>
-                    </div>
-                </div>
-                <button id='si-continue' class='center-align medium-elevate' style="margin-top: 15px;">
-                    <span>Continue</span>
-                </button>
-            </div>`;
+        // document.getElementById('si-result').innerHTML = `
+        //     <div style="background-color: var(--surface-container); padding: 25px; border-radius: 12px; text-align: center;">
+        //         <h3 style="color: ${resultColor}; margin-top: 0;">You ${outcomeText} the gamble!</h3>
+        //         <div style="display: flex; justify-content: space-around; margin: 20px 0; flex-wrap: wrap;">
+        //             <div style="margin: 10px; min-width: 120px;">
+        //                 <div style="font-size: 0.9em; opacity: 0.8;">Invested</div>
+        //                 <div style="font-size: 1.2em; font-weight: bold;">$${invest} → ${win ? '<span style="color: var(--primary)">$' + (invest*3) + '</span>' : '<span style="color: var(--error)">$0</span>'}</div>
+        //             </div>
+        //             <div style="margin: 10px; min-width: 120px;">
+        //                 <div style="font-size: 0.9em; opacity: 0.8;">Kept Safe</div>
+        //                 <div style="font-size: 1.2em; font-weight: bold; color: var(--primary);">$${keep}</div>
+        //             </div>
+        //             <div style="margin: 10px; min-width: 120px;">
+        //                 <div style="font-size: 0.9em; opacity: 0.8;">Total Payoff</div>
+        //                 <div style="font-size: 1.4em; font-weight: bold; color: var(--primary);">$${total}</div>
+        //             </div>
+        //         </div>
+        //         <button id='si-continue' class='center-align medium-elevate' style="margin-top: 15px;">
+        //             <span>Continue</span>
+        //         </button>
+        //     </div>`;
         
-        nextButton.style.display = 'none';
-        document.getElementById('si-continue').onclick = () => {
-            setStepDone('si');
-            instNum = RISK; // Skip CS, go directly to RISK
-            setPageInstruction(instNum);
-        };
-        */
+        // nextButton.style.display = 'none';
+        // document.getElementById('si-continue').onclick = () => {
+        //     setStepDone('si');
+        //     instNum = RISK; // Skip CS, go directly to RISK
+        //     setPageInstruction(instNum);
+        // };
+        
         
         // Go directly to next step without showing outcome
         setStepDone('si');
@@ -717,11 +785,11 @@ function hypotheticalInvestmentPage() {
     currentNextHandler = handler;
     safelyReplaceEventListener(nextButton, 'click', currentNextHandler, handler);
 }
+*/
 
 // DOSPERT Scale Page
 function dospertScalePage() {
     hideButton();
-    setCurrentStep('survey');
     document.querySelector('#game').style.display = 'none';
     document.querySelector('#panel').style.display = 'block';
     
@@ -903,6 +971,7 @@ function dospertScalePage() {
                 }
             }
             document.getElementById('dospert-error').textContent = `Please answer all questions. Missing: Q${unanswered.join(', Q')}`;
+            unblockClick();
             return;
         }
         
@@ -919,16 +988,16 @@ function dospertScalePage() {
         // Store globally
         window.dospertData = dospertData;
         
-        // TODO: Send data to server if needed
-        // sendDospertData(dospertData);
+        // Send data to server
+        sendDospertData(dospertData);
         
-        setStepDone('dospert');
+        setStepDone('survey');
         instNum = RISK;
         setPageInstruction(instNum);
     };
     
-    currentNextHandler = submitHandler;
-    safelyReplaceEventListener(nextButton, 'click', currentNextHandler, submitHandler);
+    // Set as current action instead of replacing handler
+    currentAction = submitHandler;
 }
 
 // Choice Set (CS) - Choice Overload - DISABLED
@@ -1064,7 +1133,6 @@ function choiceSetPage() {
 
 const riskAssessmentPage = () => {
     hideButton();
-    setCurrentStep('survey');
     document.querySelector('#game').style.display = 'none';
     document.querySelector('#panel').style.display = 'block';
     
@@ -1248,6 +1316,7 @@ const riskAssessmentPage = () => {
             const selected = document.querySelector(`input[name="gamble_${i}"]:checked`);
             if (!selected) {
                 document.getElementById('risk-error').textContent = `Please select an option for Gamble ${i + 1}.`;
+                unblockClick();
                 return;
             }
             selectedGambles.push(selected.value === 'A' ? 0 : 1);
@@ -1302,13 +1371,13 @@ const riskAssessmentPage = () => {
         // Send risk data
         sendRiskData(riskData);
         
-        setStepDone('risk');
-        instNum = END;
+        setStepDone('survey');
+        instNum = FULL2;
         setPageInstruction(instNum);
     };
     
-    currentNextHandler = submitHandler;
-    safelyReplaceEventListener(nextButton, 'click', currentNextHandler, submitHandler);
+    // Set as current action instead of replacing handler
+    currentAction = submitHandler;
 };
 
 const riskAssessmentPage2 = () => {
@@ -1542,8 +1611,8 @@ const riskAssessmentPage2 = () => {
         // Send final summary data
         sendRiskData(riskData);
         
-        setStepDone('risk');
-        instNum = END;
+        setStepDone('survey');
+        instNum = FULL2; // Go to game 5 after completing risk assessment
         setPageInstruction(instNum);
     };
     
@@ -1557,17 +1626,43 @@ const lastPage = () => {
     setPreviousStepDone();
     setStepDone('full');
     setStepDone('survey');
-    setStepDone('risk');
+    setStepDone('full2');
+    setStepDone('final-survey');
     setCurrentStep('end')
-    let points = window.score.reduce((a, b) => a + b, 0);
+    
+    // Safely get score with fallback
+    let points = 0;
+    try {
+        if (window.score && Array.isArray(window.score)) {
+            points = window.score.reduce((a, b) => a + b, 0);
+        }
+    } catch (error) {
+        console.warn('Error calculating score, using 0:', error);
+        points = 0;
+    }
+    
     // let points = window.score[window.score.length-1];
-    let pounds = (points * CONV).toFixed(3);
+    let pounds = 0;
+    try {
+        pounds = (points * CONV).toFixed(3);
+    } catch (error) {
+        console.warn('Error calculating pounds, using 0:', error);
+        pounds = 0;
+    }
+    
     // now add the risk assessment amount to the points
     // convert both to float
-    let riskAmount = window.riskData.finalAmount || window.riskData.totalScore || 0;
-    let total = parseFloat(pounds) + parseFloat(riskAmount);
-    // round to 2 decimal places
-    total = total.toFixed(2);
+    // let riskAmount = window.riskData.finalAmount || window.riskData.totalScore || 0;
+    let riskAmount = 0;
+    let total = 0;
+    try {
+        total = parseFloat(pounds); //+ parseFloat(riskAmount);
+        // round to 2 decimal places
+        total = total.toFixed(2);
+    } catch (error) {
+        console.warn('Error calculating total, using 0:', error);
+        total = 0;
+    }
 
 
     document.querySelector('#game').style.display = 'none';
@@ -1596,7 +1691,7 @@ const rewardPage = () => {
     hidePrevButton()
     setPreviousStepDone();
     setStepDone('full2');
-    setCurrentStep('survey')
+    setCurrentStep('final-survey')
     let points = window.score.reduce((a, b) => a + b, 0);
     // let points = window.score[window.score.length-1];
     let pounds = (points * CONV).toFixed(3);
@@ -1609,7 +1704,7 @@ const rewardPage = () => {
              <h3>💰 You earned ${points} points = ${pounds} pounds! 💰</h3>
              <br>
              <br>
-             <p>Please click the next button and complete a short survey and risk assessment to finish your submission.</p>
+             <p>Please click the next button and complete a short final survey to finish your submission.</p>
              </div>
      `;
     const nextButton = document.querySelector('#next-button');
@@ -1619,6 +1714,38 @@ const rewardPage = () => {
     };
     
     currentNextHandler = rewardNextHandler;
+    safelyReplaceEventListener(nextButton, 'click', next, currentNextHandler);
+}
+
+// Final reward page (after surveys have been completed)
+const finalRewardPage = () => {
+    showButton();
+    hidePrevButton()
+    setPreviousStepDone();
+    setStepDone('full2');
+    setCurrentStep('end')
+    let points = window.score.reduce((a, b) => a + b, 0);
+    // let points = window.score[window.score.length-1];
+    let pounds = (points * CONV).toFixed(3);
+    // now add the compensation amount to the points
+    document.querySelector('#game').style.display = 'none';
+    document.querySelector('#panel').style.display = 'flex';
+    document.querySelector('#panel').innerHTML = `
+             <div class="center-align" style="margin: auto">
+             <h1 style="display: block">🚀Congrats! 🚀</h1>
+             <h3>💰 You earned ${points} points = ${pounds} pounds! 💰</h3>
+             <br>
+             <br>
+             <p>Thank you for completing all tasks and surveys! Click next to finish.</p>
+             </div>
+     `;
+    const nextButton = document.querySelector('#next-button');
+    const finalNextHandler = () => {
+        instNum = END;
+        setPageInstruction(instNum);
+    };
+    
+    currentNextHandler = finalNextHandler;
     safelyReplaceEventListener(nextButton, 'click', next, currentNextHandler);
 }
 
@@ -1694,6 +1821,54 @@ const sendRiskTrialData = async (data, call = 0) => {
     }
 }
 
+const sendDospertData = async (data, call = 0) => {
+    let response = await fetch(DOSPERT_PHP, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+
+    if (response.ok) {
+        console.log('DOSPERT data sent successfully');
+        return response.json();
+    } else {
+        if (call > 3) {
+            console.log('Failed to send DOSPERT data');
+            return;
+        }
+        // try again after 500ms
+        setTimeout(() => {
+            sendDospertData(data, call + 1);
+        }, 500);
+    }
+}
+
+const sendGeneralRiskData = async (data, call = 0) => {
+    let response = await fetch(GENERAL_RISK_PHP, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+
+    if (response.ok) {
+        console.log('General Risk Survey data sent successfully');
+        return response.json();
+    } else {
+        if (call > 3) {
+            console.log('Failed to send General Risk Survey data');
+            return;
+        }
+        // try again after 500ms
+        setTimeout(() => {
+            sendGeneralRiskData(data, call + 1);
+        }, 500);
+    }
+}
+
 
 const checkSurvey = () => {
     document.querySelectorAll('input').forEach(element => element.reportValidity());
@@ -1703,7 +1878,6 @@ const checkSurvey = () => {
 
 const surveyPage = () => {
     hideButton();
-    setCurrentStep('survey');
     document.querySelector('#game').style.display = 'none';
     let scale = `<nav class="no-space">
         <button id="" class="scale border left-round max vertical small">
@@ -1794,13 +1968,15 @@ const surveyPage = () => {
         if (checkSurvey()) {
             sendFeedback(dataToSend);
             setStepDone('survey');
-            instNum = SG;
+            instNum = END; // Go to final end page after post-game survey
             setPageInstruction(instNum);
+        } else {
+            unblockClick();
         }
     };
     
-    currentNextHandler = surveySubmitHandler;
-    safelyReplaceEventListener(nextButton, 'click', currentNextHandler, surveySubmitHandler);
+    // Set as current action instead of replacing handler
+    currentAction = surveySubmitHandler;
 
 }
 
@@ -1840,20 +2016,33 @@ window.endTrainingRL = (sess) => {
 window.endFull = (sess) => {
     // alert('session='+session);
     if (sess == 3) {
-        window.endGame();
+        // After game 4 (FULL), go to behavioral surveys before game 5 (FULL2)
+        quitUnityGame();
+        localStorage.setItem('score', JSON.stringify(window.score));
+        setPreviousStepDone();
+        setStepDone('full');
+        setCurrentStep('surveys');
+        // Start with General Risk Survey
+        instNum = SG;
+        setPageInstruction(instNum);
     } else {
         window.endFull2();
     }
 }
 
 window.endFull2 = () => {
-    quitUnityGame();
+    try {
+        quitUnityGame();
+    } catch {
+        console.log('quitUnityGame error: no game running');
+    }
     localStorage.setItem('end', true);
     localStorage.setItem('score', JSON.stringify(window.score));
     setPreviousStepDone();
     setStepDone('full2');
-    setCurrentStep('end')
-    rewardPage();
+    setCurrentStep('final-survey')
+    instNum = SURVEY;
+    setPageInstruction(instNum);
 }
 
 window.endGame = () => {
