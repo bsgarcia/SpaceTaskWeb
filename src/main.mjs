@@ -1232,7 +1232,7 @@ const riskAssessmentPage = () => {
             <div style="padding: 20px; text-align: center; flex-shrink: 0;">
                 <h2 style="margin-bottom: 15px;">Lotteries</h2>
                 <p style="font-size: 1.1em; margin-bottom: 20px;">
-                    Please choose one option from each gamble pair below. At the end, one gamble will be randomly selected and played for real.
+                    Please choose one option from each gamble pair below. At the end, one gamble will be randomly selected and played for real, i.e. you will earn the amount as bonus.
                 </p>
                 
                 <div style="display: flex; justify-content: center; gap: 30px; margin-bottom: 20px; flex-wrap: wrap;">
