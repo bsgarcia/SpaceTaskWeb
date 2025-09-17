@@ -857,14 +857,14 @@ function dospertScalePage() {
                     Provide a rating from <b>Extremely Unlikely</b> to <b>Extremely Likely</b>, using the following scale:
                 </p>
                 ${scaleLabels}
-                <button type="button" id="fill-all-dospert" class="border small" style="margin-bottom: 15px; background-color: var(--surface-container); color: var(--on-surface); border: 1px solid var(--outline);">
-                    <span>Fill All (Testing Feature)</span>
-                </button>
+              
             </div>
             
             <div style="height: 38%; overflow-y: auto; padding: 20px; border: 2px solid #666666; border-radius: 12px; margin: 0 20px; background-color: var(--surface-container-lowest);">
                 <form id="dospert-form" style="padding: 0;">`;
-    
+    //  <button type="button" id="fill-all-dospert" class="border small" style="margin-bottom: 15px; background-color: var(--surface-container); color: var(--on-surface); border: 1px solid var(--outline);">
+    //                <span>Fill All (Testing Feature)</span>
+    //            </button>
     // Add all questions
     dospertQuestions.forEach((question, index) => {
         content += `
@@ -918,9 +918,9 @@ function dospertScalePage() {
     });
     
     // Add click handler for "fill all" testing button
-    document.getElementById('fill-all-dospert').addEventListener('click', (event) => {
-        event.preventDefault();
-        event.stopPropagation();
+    window.fill = () => {
+        // event.preventDefault();
+        // event.stopPropagation();
         
         // Clear all previous selections
         document.querySelectorAll('.scale-button').forEach(btn => {
@@ -955,7 +955,7 @@ function dospertScalePage() {
             document.getElementById('dospert-error').style.color = 'var(--error)';
             document.getElementById('dospert-error').textContent = originalText;
         }, 2000);
-    });
+    };
     
     showButton();
     hidePrevButton();
