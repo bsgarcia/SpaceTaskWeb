@@ -1137,16 +1137,16 @@ const riskAssessmentPage = () => {
     document.querySelector('#panel').style.display = 'block';
     
     const lotteries = [
-        { probHigh: 1, optionA: { high: 1.46, low: 1.17 }, optionB: { high: 2.81, low: 0.07 } },
-        { probHigh: 2, optionA: { high: 1.46, low: 1.17 }, optionB: { high: 2.81, low: 0.07 } },
-        { probHigh: 3, optionA: { high: 1.46, low: 1.17 }, optionB: { high: 2.81, low: 0.07 } },
-        { probHigh: 4, optionA: { high: 1.46, low: 1.17 }, optionB: { high: 2.81, low: 0.07 } },
-        { probHigh: 5, optionA: { high: 1.46, low: 1.17 }, optionB: { high: 2.81, low: 0.07 } },
-        { probHigh: 6, optionA: { high: 1.46, low: 1.17 }, optionB: { high: 2.81, low: 0.07 } },
-        { probHigh: 7, optionA: { high: 1.46, low: 1.17 }, optionB: { high: 2.81, low: 0.07 } },
-        { probHigh: 8, optionA: { high: 1.46, low: 1.17 }, optionB: { high: 2.81, low: 0.07 } },
-        { probHigh: 9, optionA: { high: 1.46, low: 1.17 }, optionB: { high: 2.81, low: 0.07 } },
-        { probHigh: 10, optionA: { high: 1.46, low: 1.17 }, optionB: { high: 2.81, low: 0.07 } }
+        { probHigh: 1, optionA: { high: 1.32, low: 1.06 }, optionB: { high: 2.54, low: 0.07 } },
+        { probHigh: 2, optionA: { high: 1.32, low: 1.06 }, optionB: { high: 2.54, low: 0.07 } },
+        { probHigh: 3, optionA: { high: 1.32, low: 1.06 }, optionB: { high: 2.54, low: 0.07 } },
+        { probHigh: 4, optionA: { high: 1.32, low: 1.06 }, optionB: { high: 2.54, low: 0.07 } },
+        { probHigh: 5, optionA: { high: 1.32, low: 1.06 }, optionB: { high: 2.54, low: 0.07 } },
+        { probHigh: 6, optionA: { high: 1.32, low: 1.06 }, optionB: { high: 2.54, low: 0.07 } },
+        { probHigh: 7, optionA: { high: 1.32, low: 1.06 }, optionB: { high: 2.54, low: 0.07 } },
+        { probHigh: 8, optionA: { high: 1.32, low: 1.06 }, optionB: { high: 2.54, low: 0.07 } },
+        { probHigh: 9, optionA: { high: 1.32, low: 1.06 }, optionB: { high: 2.54, low: 0.07 } },
+        { probHigh: 10, optionA: { high: 1.32, low: 1.06 }, optionB: { high: 2.54, low: 0.07 } }
     ];
     
     function describePieSlice(cx, cy, r, startAngle, endAngle) {
@@ -1398,7 +1398,7 @@ const riskAssessmentPage2 = () => {
         { probHigh: 9, optionA: { high: 1.32, low: 1.06 }, optionB: { high: 2.54, low: 0.07 } },
         { probHigh: 10, optionA: { high: 1.32, low: 1.06 }, optionB: { high: 2.54, low: 0.07 } }
     ];    // Holt and Laury 2002 risk assessment data
-    
+    let test=false;
     // Initialize trial state
     let currentTrial = 0;
     let totalScore = 0;
