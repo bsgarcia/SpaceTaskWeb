@@ -1366,6 +1366,7 @@ const riskAssessmentPage = () => {
         });
         
         // Store globally for end page
+        riskData.finalAmount = amount;
         window.riskData = riskData;
         
         // Send risk data
