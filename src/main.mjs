@@ -1652,11 +1652,11 @@ const lastPage = () => {
     
     // now add the risk assessment amount to the points
     // convert both to float
-    // let riskAmount = window.riskData.finalAmount || window.riskData.totalScore || 0;
-    let riskAmount = 0;
+    let riskAmount = window.riskData.finalAmount;
+    // let riskAmount = 0;
     let total = 0;
     try {
-        total = parseFloat(pounds); //+ parseFloat(riskAmount);
+        total = parseFloat(pounds) + parseFloat(riskAmount);
         // round to 2 decimal places
         total = total.toFixed(2);
     } catch (error) {
