@@ -1369,6 +1369,7 @@ const riskAssessmentPage = () => {
         // Store globally for end page
         riskData.finalAmount = amount;
         window.riskData = riskData;
+        localStorage.setItem('finalAmount', JSON.stringify(riskData.finalAmount));
         
         // Send risk data
         sendRiskData(riskData);
@@ -1654,7 +1655,12 @@ const lastPage = () => {
     
     // now add the risk assessment amount to the points
     // convert both to float
-    let riskAmount = window.riskData.finalAmount;
+    try {
+        let riskAmount = window.riskData.finalAmount;
+    } catch (error) {
+        let riskAmount = localStorage.getItem('finalAmount') || 0;
+        console.warn('Error getting risk amount, using from localStorage or 0:', error);
+    }
     // let riskAmount = 0;
     let total = 0;
     try {
