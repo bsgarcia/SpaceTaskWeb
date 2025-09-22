@@ -12,8 +12,8 @@ const RL_TRAINING_1 = 5
 const PERCEPTUAL_TRAINING = 7
 const RL_TRAINING_2 = 9
 const FULL = 11
-const SG = 12; // General Risk Survey (before FULL2)
-const DOSPERT = 13; // DOSPERT Risk Scale (before FULL2)
+const DOSPERT = 12; // DOSPERT Risk Scale (before General Risk)
+const SG = 13; // General Risk Survey (after DOSPERT)
 const RISK = 14 // Risk assessment (lotteries, before FULL2)
 const FULL2 = 15 // Game 5 (moved after surveys)
 const SURVEY = 16 // Post-game survey (after FULL2)
@@ -99,10 +99,9 @@ function main() {
         setCurrentStep('survey');
         setPreviousStepDone();
       
-        // first step is risk assessment
-        // go to general risk survey
-        generalRiskSurveyPage();
-        setPageInstruction(SG);
+        // first step is DOSPERT, then general risk survey
+        dospertScalePage();
+        setPageInstruction(DOSPERT);
         return;
     }
     if (end) {
@@ -281,7 +280,7 @@ const skipCurrentStep = async () => {
             instNum = TUTORIAL;
             await setPageInstruction(instNum);
         } else if ([TUTORIAL, PERCEPTUAL_TRAINING, RL_TRAINING_1, RL_TRAINING_2,
-             FULL, SG, DOSPERT, RISK, FULL2, SURVEY].includes(instNum)) {
+             FULL, DOSPERT, RISK, FULL2, SURVEY].includes(instNum)) {
                 console.log('=== ENTERING GAME/SURVEY SKIP SECTION ===');
                 console.log('instNum value:', instNum);
                 console.log('SURVEY constant value:', SURVEY);
@@ -317,14 +316,14 @@ const skipCurrentStep = async () => {
                     console.log('About to call setPageInstruction with END:', END);
                     await setPageInstruction(instNum);
                     break;
-                case SG:
-                    // Skip SG, go to next in sequence (DOSPERT)
+                case DOSPERT:
+                    // Skip DOSPERT, go to next in sequence (RISK, skip SG)
                     setStepDone('survey');
-                    instNum = DOSPERT;
+                    instNum = RISK;
                     await setPageInstruction(instNum);
                     break;
-                case DOSPERT:
-                    // Skip DOSPERT, go to next in sequence (RISK)
+                case SG:
+                    // Skip SG, go to next in sequence (RISK)
                     setStepDone('survey');
                     instNum = RISK;
                     await setPageInstruction(instNum);
@@ -504,7 +503,7 @@ const setPageInstruction = async (instNum) => {
         RL_TRAINING_1 == instNum || RL_TRAINING_2 == instNum ||
         FULL == instNum || FULL2 == instNum ||
         SURVEY == instNum || RISK == instNum ||
-        SG == instNum || DOSPERT == instNum) {
+        DOSPERT == instNum) {
 
     switch (instNum) {
             case TUTORIAL:
@@ -547,11 +546,11 @@ const setPageInstruction = async (instNum) => {
                 setCurrentStep('final-survey');
                 surveyPage();
                 break;
-            case SG:
-                setPreviousStepDone()
-                setCurrentStep('survey');
-                generalRiskSurveyPage();
-                break;
+            // case SG:
+            //     setPreviousStepDone()
+            //     setCurrentStep('survey');
+            //     generalRiskSurveyPage();
+            //     break;
             // case SI:
             //     hypotheticalInvestmentPage();
             //     break;
@@ -598,7 +597,8 @@ const setPageInstruction = async (instNum) => {
 // const SI = 18; // Hypothetical Investment
 // const CS = 19; // Choice Set (Choice Overload) - DISABLED
 
-// General Risk Survey (SG)
+// General Risk Survey (SG) - COMMENTED OUT
+/*
 function generalRiskSurveyPage() {
     hideButton();
     document.querySelector('#game').style.display = 'none';
@@ -677,10 +677,11 @@ function generalRiskSurveyPage() {
         sendGeneralRiskData(generalRiskData);
         
         setStepDone('survey');
-        instNum = DOSPERT; // Go directly to DOSPERT instead of SI
+        instNum = RISK; // Go to Risk Assessment next
         setPageInstruction(instNum);
     };
 }
+*/
 
 // Hypothetical Investment (SI) - COMMENTED OUT
 /*
@@ -992,7 +993,7 @@ function dospertScalePage() {
         sendDospertData(dospertData);
         
         setStepDone('survey');
-        instNum = RISK;
+        instNum = RISK; // Go to Risk Assessment next (skip SG)
         setPageInstruction(instNum);
     };
     
@@ -1898,17 +1899,17 @@ const surveyPage = () => {
         </button>
       </nav>`;
 
-    let question1 = `In the <b style="color: var(--primary)">game 1</b>
+    let question1 = `In the <b style="color: var(--primary)">game 1 and 3 (spaceships only)</b>
      phase it was easy to tell which <b style="color: var(--primary)">spaceship</b> was the best`;
-    let question2 = `In the <b style="color: var(--primary)">game 2</b>
+    let question2 = `In the <b style="color: var(--primary)">game 2 (shields only)</b>
      phase it was easy to tell which <b style="color: var(--primary)">forcefield</b> was the best`;
-    let question3 = `In the <b style="color: var(--primary)">game 3</b>
-     phase it was easy to tell which <b style="color: var(--primary)">spaceship</b> was the best`;
-    let question4 = `In the <b style="color: var(--primary)">game 4</b>
-     phase it was easy to tell which <b style="color: var(--primary)">spaceship x forcefield</b> was the best`;
-     let question5 = `In the <b style="color: var(--primary)">game 5</b>
-     phase it was easy to tell which <b style="color: var(--primary)">spaceship x forcefield</b> was the best`;
-    let questions = [question1, question2, question3, question4, question5];
+    let question3 = `In the <b style="color: var(--primary)">game 4 and 5 (shields and ships combined)</b>
+     phase it was easy to tell which <b style="color: var(--primary)">combination</b> was the best`;
+    // let question4 = `In the <b style="color: var(--primary)">game 4</b>
+    //  phase it was easy to tell which <b style="color: var(--primary)">spaceship x forcefield</b> was the best`;
+    //  let question5 = `In the <b style="color: var(--primary)">game 5</b>
+    //  phase it was easy to tell which <b style="color: var(--primary)">spaceship x forcefield</b> was the best`;
+    let questions = [question1, question2, question3];
 
     let content = '<h2>Survey</h2><div class="scroll-div-survey" style="">';
     // document.querySelector('#panel').innerHTML = '<h2>Survey</h2><div class="scroll-div">'
@@ -1920,7 +1921,7 @@ const surveyPage = () => {
         // document.querySelector('#panel').innerHTML += q;   
         content += q + `<div class="field input label border" style="height: 5%">
                                                         <input minlength="10" class="open" id="open_q${idx}" required></input>
-                                                        <label>Open feedback on game ${idx + 1}</label>
+                                                        <label>What strategy did you use?</label>
                                                         </div></div>`
     })
 
@@ -2023,8 +2024,8 @@ window.endFull = (sess) => {
         setPreviousStepDone();
         setStepDone('full');
         setCurrentStep('surveys');
-        // Start with General Risk Survey
-        instNum = SG;
+        // Start with DOSPERT, then General Risk Survey
+        instNum = DOSPERT;
         setPageInstruction(instNum);
     } else {
         window.endFull2();
