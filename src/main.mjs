@@ -1655,10 +1655,11 @@ const lastPage = () => {
     
     // now add the risk assessment amount to the points
     // convert both to float
+    let riskAmount = 0;
     try {
-        let riskAmount = window.riskData.finalAmount;
+        riskAmount = window.riskData.finalAmount;
     } catch (error) {
-        let riskAmount = localStorage.getItem('finalAmount') || 0;
+        riskAmount = localStorage.getItem('finalAmount') || 0;
         console.warn('Error getting risk amount, using from localStorage or 0:', error);
     }
     // let riskAmount = 0;
