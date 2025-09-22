@@ -1659,7 +1659,7 @@ const lastPage = () => {
     try {
         riskAmount = window.riskData.finalAmount;
     } catch (error) {
-        riskAmount = localStorage.getItem('finalAmount') || 0;
+        riskAmount = parseFloat(localStorage.getItem('finalAmount')) || 0;
         console.warn('Error getting risk amount, using from localStorage or 0:', error);
     }
     // let riskAmount = 0;
