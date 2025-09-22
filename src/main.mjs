@@ -1874,8 +1874,8 @@ const sendGeneralRiskData = async (data, call = 0) => {
 
 const checkSurvey = () => {
     document.querySelectorAll('input').forEach(element => element.reportValidity());
-    return document.querySelectorAll('input:valid').length == GAME_NUMBER &&
-        document.querySelectorAll('button.fill-selected').length == GAME_NUMBER;
+    return document.querySelectorAll('input:valid').length == 3 &&
+        document.querySelectorAll('button.fill-selected').length == 3;
 }
 
 const surveyPage = () => {
