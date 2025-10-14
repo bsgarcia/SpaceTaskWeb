@@ -1909,7 +1909,7 @@ const surveyPage = () => {
     let question1 = `In the <b style="color: var(--primary)">game 1 and 3 (spaceships only)</b>
      phase it was easy to tell which <b style="color: var(--primary)">spaceship</b> was the best`;
     let question2 = `In the <b style="color: var(--primary)">game 2 (shields only)</b>
-     phase it was easy to tell which <b style="color: var(--primary)">forcefield</b> was the best`;
+     phase it was easy to tell which <b style="color: var(--primary)">shield</b> was the best`;
     let question3 = `In the <b style="color: var(--primary)">game 4 and 5 (shields and ships combined)</b>
      phase it was easy to tell which <b style="color: var(--primary)">combination</b> was the best`;
     // let question4 = `In the <b style="color: var(--primary)">game 4</b>
