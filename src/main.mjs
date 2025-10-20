@@ -308,8 +308,9 @@ const skipCurrentStep = async () => {
                     await setPageInstruction(instNum);
                     break;
                 case FULL2:
-                    console.log('Skipping FULL2 game, calling endFull2()');
-                    window.endFull2();
+                    setStepDone('full2');
+                    instNum = SURVEY;
+                    await setPageInstruction(instNum);
                     break;
                 case SURVEY:
                     // Skip post-game survey, go to end
