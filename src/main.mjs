@@ -337,7 +337,7 @@ const skipCurrentStep = async () => {
                     // Create dummy risk data for skip
                     window.riskData = {
                         prolificID: window.subID,
-                        expName: 'FullPilot12_2',
+                        expName: 'FullPilotW',
                         choice_0: 0, choice_1: 0, choice_2: 0, choice_3: 0, choice_4: 0,
                         choice_5: 0, choice_6: 0, choice_7: 0, choice_8: 0, choice_9: 0,
                         selected: 0,
@@ -679,7 +679,7 @@ function generalRiskSurveyPage() {
         // Prepare data for sending
         const generalRiskData = {
             prolificID: window.subID,
-            expName: 'FullPilot12_2',
+            expName: 'FullPilotW',
             riskScore: window.sgSelectedValue,
             timestamp: new Date().toISOString()
         };
@@ -992,7 +992,7 @@ function dospertScalePage() {
         // Prepare data for storage
         const dospertData = {
             prolificID: window.subID,
-            expName: 'FullPilot12_2',
+            expName: 'FullPilotW',
             ...window.dospertResponses,
             timestamp: new Date().toISOString()
         };
@@ -1367,7 +1367,7 @@ const riskAssessmentPage = () => {
         // Prepare risk data
         let riskData = { 
             'prolificID': window.subID, 
-            'expName': 'FullPilot12_2',
+            'expName': 'FullPilotW',
             'selected': selectedGambleIndex,
             'amount': amount
         };
@@ -1416,7 +1416,7 @@ const riskAssessmentPage2 = () => {
     // Initialize trial state
     let currentTrial = 0;
     let totalScore = 0;
-    let riskData = { 'prolificID': window.subID, 'expName': 'FullPilot12_2' };
+    let riskData = { 'prolificID': window.subID, 'expName': 'FullPilotW' };
     
     function describePieSlice(cx, cy, r, startAngle, endAngle) {
         // Convert angles to radians
@@ -1571,7 +1571,7 @@ const riskAssessmentPage2 = () => {
         // Prepare trial data
         const trialData = {
             prolificID: window.subID,
-            expName: 'FullPilot12_2',
+            expName: 'FullPilotW',
             trial: trialIndex + 1,
             probHigh: lottery.probHigh,
             optionA_high: lottery.optionA.high,
