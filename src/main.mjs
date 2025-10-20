@@ -591,6 +591,14 @@ const setPageInstruction = async (instNum) => {
         if (instNum < RL_TRAINING_1) {
             setCurrentStep('introduction');
         }
+        
+        // Special handling for inst_11 (instNum = 12): next should go to FULL2
+        if (instNum == 12) {
+            currentAction = () => {
+                instNum = FULL2;
+                setPageInstruction(instNum);
+            };
+        }
     }
 }
 
@@ -2028,14 +2036,13 @@ window.endTrainingRL = (sess) => {
 window.endFull = (sess) => {
     // alert('session='+session);
     if (sess == 3) {
-        // After game 4 (FULL), go directly to game 5 (FULL2)
+        // After game 4 (FULL), show instruction page before game 5 (FULL2)
         quitUnityGame();
         localStorage.setItem('score', JSON.stringify(window.score));
         setPreviousStepDone();
         setStepDone('full');
-        setCurrentStep('full2');
-        // Go to FULL2 game
-        instNum = FULL2;
+        // Go to instruction page 11 (instNum = 12, which loads inst_11.md)
+        instNum = REST[REST.length - 1]; // REST[3] = 12
         setPageInstruction(instNum);
     } else {
         window.endFull2();
