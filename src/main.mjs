@@ -12,10 +12,11 @@ const RL_TRAINING_1 = 5
 const PERCEPTUAL_TRAINING = 7
 const RL_TRAINING_2 = 9
 const FULL = 11
-const DOSPERT = 12; // DOSPERT Risk Scale (before General Risk)
-const SG = 13; // General Risk Survey (after DOSPERT)
-const RISK = 14 // Risk assessment (lotteries, before FULL2)
-const FULL2 = 15 // Game 5 (moved after surveys)
+const FULL2 = 13 // Game 5 (moved after surveys)
+const DOSPERT = 14; // DOSPERT Risk Scale (before General Risk)
+const RISK = 15 // Risk assessment (lotteries, before FULL2)
+
+// const SG = 13; // General Risk Survey (after DOSPERT)
 const SURVEY = 16 // Post-game survey (after FULL2)
 const END = 17
 const CONV = 0.00002;
@@ -302,15 +303,18 @@ const skipCurrentStep = async () => {
                     window.endTrainingRL(2);
                     break;  
                 case FULL:
+                    window.endFull(3);
                     // Skip FULL game, go to instruction page before FULL2
-                    setStepDone('full');
-                    instNum = REST[REST.length - 1]; // 12, shows inst_11.md
-                    await setPageInstruction(instNum);
+                    // setStepDone('full');
+                    // instNum = REST[REST.length - 1]; // 12, shows inst_11.md
+                    // await setPageInstruction(instNum);
                     break;
                 case FULL2:
-                    setStepDone('full2');
-                    instNum = SURVEY;
-                    await setPageInstruction(instNum);
+                    window.endFull2();
+                    // Skip FULL2 game, go to instruction page before SURVEY
+                    // setStepDone('full2');
+                    // instNum = SURVEY;
+                    // await setPageInstruction(instNum);
                     break;
                 case SURVEY:
                     // Skip post-game survey, go to end
@@ -2035,7 +2039,6 @@ window.endTrainingRL = (sess) => {
 }
 
 window.endFull = (sess) => {
-    // alert('session='+session);
     if (sess == 3) {
         // After game 4 (FULL), show instruction page before game 5 (FULL2)
         quitUnityGame();
@@ -2043,7 +2046,7 @@ window.endFull = (sess) => {
         setPreviousStepDone();
         setStepDone('full');
         // Go to instruction page 11 (instNum = 12, which loads inst_11.md)
-        instNum = REST[REST.length - 1]; // REST[3] = 12
+        instNum = FULL2-1;
         setPageInstruction(instNum);
     } else {
         window.endFull2();
