@@ -302,9 +302,9 @@ const skipCurrentStep = async () => {
                     window.endTrainingRL(2);
                     break;  
                 case FULL:
-                    // Skip FULL game, go directly to FULL2
+                    // Skip FULL game, go to instruction page before FULL2
                     setStepDone('full');
-                    instNum = FULL2;
+                    instNum = REST[REST.length - 1]; // 12, shows inst_11.md
                     await setPageInstruction(instNum);
                     break;
                 case FULL2:
