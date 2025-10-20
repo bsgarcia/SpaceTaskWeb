@@ -56,7 +56,7 @@ try {
     $placeholders = ':' . implode(', :', array_keys($filtered_data));
 
     // Inserting data into the 'spaceprl_dospert' table dynamically
-    $stmt = $conn->prepare("INSERT INTO spaceprl_dospert_kerstin ($columns) VALUES ($placeholders)");
+    $stmt = $conn->prepare("INSERT INTO spaceprl_dospert ($columns) VALUES ($placeholders)");
 
     // Binding parameters and executing the statement
     foreach ($filtered_data as $key => $value) {

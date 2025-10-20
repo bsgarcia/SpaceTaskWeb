@@ -3,9 +3,9 @@
 Before the experiment phase (see timeline at the top of this webpage), you will undergo two training phases:
 <br>
 
-🌌 **Forcefield resistance training:** You will encounter spaceships protected by forcefields. Your objective here is to estimate the forcefield resistance of the spaceships indicated by color. <br><br>
+🌌 **shield resistance training:** You will encounter spaceships protected by shields. Your objective here is to estimate the shield resistance of the spaceships indicated by color. <br><br>
   
-🚀 **Spaceship reward training:** You will encounter unprotected spaceships (i.e. without  forcefields). You have to focus on finding the most rewarding spaceship.
+🚀 **Spaceship reward training:** You will encounter unprotected spaceships (i.e. without  shields). You have to focus on finding the most rewarding spaceship.
 <br>
 <br>
 <br>

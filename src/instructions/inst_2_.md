@@ -1,6 +1,6 @@
 # Your objective 
 In this task, to maximize you overall score (displayed at the top left of the screen), there are two things you have to learn. <br><br>
-🌌 **Forcefield resistance:** Estimate the forcefield resistance of the spaceships indicated by color. Forcefields are randomly drawn at the beginning of each trial. 
+🌌 **shield resistance:** Estimate the shield resistance of the spaceships indicated by color. shields are randomly drawn at the beginning of each trial. 
 <br><br>
 🚀**Spaceships' average rewards:** Learn the average reward of each spaceship. Each spaceship has a different average reward. 
 <br><br>

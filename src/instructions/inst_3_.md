@@ -1,8 +1,8 @@
 # Training 
 
 ### Before the main phase of the task described in the last panel, you will undergo two training phases:
-  🌌 **Forcefield resistance learning:**  You will encounter identical spaceships with varying forcefield colors. You have to focus on the forcefield mechanism, as spaceships won't provide any reward or points. <br>
-  🚀 **Spaceship reward learning:** You will encounter unprotected spaceships (i.e. without  forcefields). You have to focus finding the most rewarding spaceship.
+  🌌 **shield resistance learning:**  You will encounter identical spaceships with varying shield colors. You have to focus on the shield mechanism, as spaceships won't provide any reward or points. <br>
+  🚀 **Spaceship reward learning:** You will encounter unprotected spaceships (i.e. without  shields). You have to focus finding the most rewarding spaceship.
 
 # Ready?
 ### You can now start the experiment by clicking on next.

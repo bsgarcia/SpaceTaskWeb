@@ -49,7 +49,7 @@ try {
     $placeholders = ':' . implode(', :', array_keys($filtered_data));
 
     // Inserting data into the 'spaceprl_feedback' table dynamically
-    $stmt = $conn->prepare("INSERT INTO spaceprl_feedback_kerstin ($columns) VALUES ($placeholders)");
+    $stmt = $conn->prepare("INSERT INTO spaceprl_feedback ($columns) VALUES ($placeholders)");
 
     // Binding parameters and executing the statement
     foreach ($filtered_data as $key => $value) {

@@ -123,7 +123,7 @@ const startFull = () => {
     setStepDone('introduction');
     setStepDone('training2');
     setStepDone('training1');
-    startUnityGame('full');
+    startUnityGame('all_or_none');
 }
 
 const startFull2 = () => {
@@ -136,7 +136,7 @@ const startFull2 = () => {
     setStepDone('training2');
     setStepDone('training1');
     setStepDone('full');
-    startUnityGame('full2');
+    startUnityGame('partial_reward');
 }
 
 const startTrainingPerceptual = () => {
@@ -302,7 +302,10 @@ const skipCurrentStep = async () => {
                     window.endTrainingRL(2);
                     break;  
                 case FULL:
-                    window.endFull(3);
+                    // Skip FULL game, go directly to FULL2
+                    setStepDone('full');
+                    instNum = FULL2;
+                    await setPageInstruction(instNum);
                     break;
                 case FULL2:
                     console.log('Skipping FULL2 game, calling endFull2()');
@@ -329,7 +332,7 @@ const skipCurrentStep = async () => {
                     await setPageInstruction(instNum);
                     break;
                 case RISK:
-                    // Skip risk assessment, go to next in sequence (FULL2)
+                    // Skip risk assessment, go to final survey
                     setStepDone('survey');
                     // Create dummy risk data for skip
                     window.riskData = {
@@ -340,7 +343,7 @@ const skipCurrentStep = async () => {
                         selected: 0,
                         amount: 0
                     };
-                    instNum = FULL2;
+                    instNum = SURVEY;
                     await setPageInstruction(instNum);
                     break;
             }
@@ -1375,7 +1378,7 @@ const riskAssessmentPage = () => {
         sendRiskData(riskData);
         
         setStepDone('survey');
-        instNum = FULL2;
+        instNum = SURVEY;
         setPageInstruction(instNum);
     };
     
@@ -1913,9 +1916,9 @@ const surveyPage = () => {
     let question3 = `In the <b style="color: var(--primary)">game 4 and 5 (shields and ships combined)</b>
      phase it was easy to tell which <b style="color: var(--primary)">combination</b> was the best`;
     // let question4 = `In the <b style="color: var(--primary)">game 4</b>
-    //  phase it was easy to tell which <b style="color: var(--primary)">spaceship x forcefield</b> was the best`;
+    //  phase it was easy to tell which <b style="color: var(--primary)">spaceship x shield</b> was the best`;
     //  let question5 = `In the <b style="color: var(--primary)">game 5</b>
-    //  phase it was easy to tell which <b style="color: var(--primary)">spaceship x forcefield</b> was the best`;
+    //  phase it was easy to tell which <b style="color: var(--primary)">spaceship x shield</b> was the best`;
     let questions = [question1, question2, question3];
 
     let content = '<h2>Survey</h2><div class="scroll-div-survey" style="">';
@@ -2025,14 +2028,14 @@ window.endTrainingRL = (sess) => {
 window.endFull = (sess) => {
     // alert('session='+session);
     if (sess == 3) {
-        // After game 4 (FULL), go to behavioral surveys before game 5 (FULL2)
+        // After game 4 (FULL), go directly to game 5 (FULL2)
         quitUnityGame();
         localStorage.setItem('score', JSON.stringify(window.score));
         setPreviousStepDone();
         setStepDone('full');
-        setCurrentStep('surveys');
-        // Start with DOSPERT, then General Risk Survey
-        instNum = DOSPERT;
+        setCurrentStep('full2');
+        // Go to FULL2 game
+        instNum = FULL2;
         setPageInstruction(instNum);
     } else {
         window.endFull2();
@@ -2049,8 +2052,8 @@ window.endFull2 = () => {
     localStorage.setItem('score', JSON.stringify(window.score));
     setPreviousStepDone();
     setStepDone('full2');
-    setCurrentStep('final-survey')
-    instNum = SURVEY;
+    setCurrentStep('survey')
+    instNum = DOSPERT;
     setPageInstruction(instNum);
 }
 
