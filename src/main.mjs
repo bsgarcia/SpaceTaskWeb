@@ -598,12 +598,12 @@ const setPageInstruction = async (instNum) => {
         }
         
         // Special handling for inst_11 (instNum = 12): next should go to FULL2
-        if (instNum == 12) {
-            currentAction = () => {
-                instNum = FULL2;
-                setPageInstruction(instNum);
-            };
-        }
+        // if (instNum == 12) {
+        //     currentAction = () => {
+        //         instNum = FULL2;
+        //         setPageInstruction(instNum);
+        //     };
+        // }
     }
 }
 
