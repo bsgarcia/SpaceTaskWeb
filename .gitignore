@@ -2,4 +2,8 @@ php/credentials.php
 php/login.php
 basile_key
 fz_basile_key.ppk
+*.ppk
+*.pem
 test.ipynb
+node_modules/
+dist/

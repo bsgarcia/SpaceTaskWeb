@@ -1,0 +1,146 @@
+//////////////////////////////////////////////////////
+//English instructions for colorshapetask_shiftingtask.iqjs
+//////////////////////////////////////////////////////
+
+Note: the following image cues are used in this script.
+They can easily be replaced by others.
+The letter cues are language-dependent
+<item cues>
+/ 1 = "colorcue_letter.png" //Alternative: picture that shows symbols "colorcue_symbol.png"
+/ 2 = "shapecue_letter.png" //Alternative: picture that shows symbols "shapecue_symbol.png"
+</item>
+**************************************************************************************************************
+**************************************************************************************************************
+	EDITABLE INSTRUCTIONS: change instructions here
+**************************************************************************************************************
+**************************************************************************************************************
+<instruct>
+/ fontStyle = ("Arial", 3.5%, false, false, false, false, 5, 1)
+/ navigationButtonFontStyle = ("Arial", 3%, false, false, false, false, 5, 1)
+/ screenColor = black
+/ txColor = white
+</instruct>
+
+//the following expressions code the sizes of the instruction images used in text elements
+<expressions>
+/ exampleObjectsWidthPX = return (display.getPixelsX(50%)*1)
+/ exampleCueWidthPX = return (display.getPixelsX(10%)*1)
+</expressions>
+
+<item instructions>
+/ 1 = "You are going to play a reaction time game called 'Shapes and Colors'.<br><br>
+In this game you will see any of the following four objects, appearing one at a time:<br><br>
+<div><center><img src='exampleobjects.png' width=<%expressions.exampleObjectsWidthPX%></center></div><br><br>
+Sometimes you will be asked to respond to the COLOR of the object; at other times you will be asked to respond to the SHAPE of the object."
+
+/ 2 = "If you see this <u>signal</u> flashed onto the screen, you will be asked to respond to the 
+<i>COLOR</i> of the object that will appear next<br>
+<center><img src='<%item.cues.item(0)%>' width=<%expressions.exampleCueWidthPX%><br><br><br>
+If the object is <font color='green'>GREEN</font>, press the [<%values.responseKeyGreen%>] <%expressions.buttonInstruct1%>.<br>
+If the object is <font color='red'>RED</font>, press the [<%values.responseKeyRed%>] <%expressions.buttonInstruct1%></center>."
+
+/ 3 = "If you see this <u>signal</u> flashed onto the screen, you will be asked to respond to the <i>SHAPE</i> 
+of the object that will appear next<br>
+<div><center><img src='<%item.cues.item(1)%>' width=<%expressions.exampleCueWidthPX%><br><br><br>
+If the object is a <b>CIRCLE</b>, press the [<%values.responseKeyCircle%>] <%expressions.buttonInstruct1%>.<br>
+If the object is a <b>TRIANGLE</b>, press the [<%values.responseKeyTriangle%>] <%expressions.buttonInstruct1%>.</center>"
+
+/ 4 = "Are you ready to practice this game?<br><br>
+Pay attention to the cues and respond to the objects as fast as you can without making too many mistakes.<br><br><br>
+Press [space] to start a practice game."
+
+/ 5 = "Let's play the real game!<br><br>
+The actual game consists of 4 rounds. Each round takes appr. 2 minutes.<br><br><br> 
+Press [space] to start the first round."
+</item>
+
+<text header>
+/ items = ("Shape & Color")
+/ position = (50%, 10%)
+/ fontStyle = ("Arial", 7%, true, false, false, false, 5, 1)
+/ size = (80%, 7%)
+/ vJustify = center
+</text>
+
+<text continue>
+/ items = ("[space] >>")
+/ position = (90%, 90%)
+/ fontStyle = ("Arial", 2.5%, false, false, false, false, 5, 1)
+/ size = (15%, 5%)
+/ vJustify = center
+/ txBGColor = gray
+/ txColor = white
+</text>
+
+<text goBack>
+/ items = ("<< [B]")
+/ position = (10%, 90%)
+/ fontStyle = ("Arial", 2.5%, false, false, false, false, 5, 1)
+/ size = (15%, 5%)
+/ vJustify = center
+/ txBGColor = gray
+/ txColor = white
+</text>
+
+<text newRound>
+/ items = ("<center><h1>New Practice Round</h1><br><br>
+Press [space] to start</center>",
+"<center><h1>Round <%values.countTestBlocks%> of <%parameters.numberOfTestBlocks%></h1><br><br>
+Press [space] to start</center>")
+/ select = expressions.practice
+/ position = (50%, 50%)
+/ fontStyle = ("Arial", 4%, false, false, false, false, 5, 1)
+</text>
+<expressions>
+/ practice = return (values.practice-1); //0-based selection
+</expressions>
+
+
+A page that is presented (by default) at the end of each test block
+<page blockFeedback>
+<br><br><br><br><br><br>
+<center><h2><%list.accBlock.mean * 100%> % correct responses</h2></center>
+</page>
+
+<text errorFeedback>
+/ items = ("INCORRECT")
+/ position = (50%, 50%)
+/ fontStyle = ("Arial",5%, false, false, false, false, 5, 1)
+/ txColor = red
+/ txBGColor = black
+</text>
+
+**************************************************************************************************************
+get ready trial
+**************************************************************************************************************
+
+<text getReady>
+/ items = ("<center><h2>Get Ready!</h2><br>
+<%expressions.buttonInstruct3%>")
+/ fontStyle = ("Arial", 3.5%, false, false, false, false, 5, 1)
+</text>
+
+
+<trial getReady>
+/ stimulusFrames = [1 = getReady]
+/ trialDuration = parameters.readyDuration
+/ validResponse = (parameters.responseKeyLeft, parameters.responseKeyRight)
+/ beginResponseTime = parameters.readyDuration
+/ errorMessage = false
+/ recordData = true
+/ correctResponse = (anyResponse)
+</trial>
+
+****************************************************************************************************
+general instruction expressions: adjust the instruction text depending on device used to run script
+****************************************************************************************************
+<expressions>
+/ buttonInstruct1 = if (computer.touch && !computer.hasKeyboard) {return "button";} 
+else {return "key";}
+/ buttonInstruct3 = if (computer.touch && !computer.hasKeyboard) {return "Place your index fingers over the left and right response button";} 
+else {return "Put your index fingers on the [<%parameters.responseKeyLeft%>] and [<%parameters.responseKeyRight%>] keys";}
+</expressions>
+
+**************************************************************************************************************
+                                             END OF FILE
+**************************************************************************************************************

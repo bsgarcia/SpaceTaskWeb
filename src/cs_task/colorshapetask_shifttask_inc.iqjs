@@ -1,0 +1,1262 @@
+<userManual>
+___________________________________________________________________________________________________________________
+
+								Color Shape Task-Shifting Task
+___________________________________________________________________________________________________________________
+
+Script Author: Katja Borchert, Ph.D. (katjab@millisecond.com), Millisecond
+Created: 12-11-2018
+Last Updated:  02-24-2026 by K. Borchert (katjab@millisecond.com), Millisecond
+
+Script Copyright © 02-24-2026 Millisecond Software, LLC
+
+___________________________________________________________________________________________________________________
+BACKGROUND INFO
+___________________________________________________________________________________________________________________
+This default script implements a simple mixed-design Color Shape Task based on Friedman et al (2008). 
+The mixed-design Color Shape Task is considered a measure of Executive Functioning of 'Set Shifting' abilities,
+defined as 'the ability to flexibly switch back and forth between tasks or mental sets'.
+
+Note: 
+The (almost) full design (including blocked conditions) described by Miyake et al (2004) 
+can be run by Millisecond's "colorshapetask.iqjs"
+
+___________________________________________________________________________________________________________________
+REFERENCES
+___________________________________________________________________________________________________________________
+
+Miyake, A., Emerson, M.J., Padilla, F., & Ahn, J.C. (2004). Inner speech as a retrieval aid for task goals:
+the effects of cue type and articulatory suppression in the random task cuing paradigm. Acta Psychologica, 115, 123–142.
+
+Friedman, N. P., Miyake, A., Young, S. E., DeFries, J. C., Corley, R.
+P., & Hewitt, J. K. (2008). Individual differences in executive
+functions are almost entirely genetic in origin. Journal of Experimental
+Psychology: General, 137, 201–225.
+
+___________________________________________________________________________________________________________________
+TASK DESCRIPTION
+___________________________________________________________________________________________________________________
+Participants are presented red or green circles or triangles and have to  either sort the stimuli by shape or by color
+as fast as they can.  Participants are given cues before each stimulus appears that inform them which 
+characteristic (color vs shape) to focus on.
+
+___________________________________________________________________________________________________________________
+DURATION 
+___________________________________________________________________________________________________________________
+10 minutes
+___________________________________________________________________________________________________________________
+DATA OUTPUT DICTIONARY
+___________________________________________________________________________________________________________________
+
+(1) Raw data file: 'colorshapetask_shifttask_raw*.iqdat'
+
+build:						The specific Inquisit version used (the 'build') that was run
+computer.platform:			the platform the script was run on (win/mac/ios/android)
+computer.touch:				0 = device has no touchscreen capabilities; 1 = device has touchscreen capabilities
+computer.hasKeyboard:		0 = no external keyboard detected; 1 = external keyboard detected
+date:						date script was run 
+time: 						(local) time script was run 
+subject:					with the current subject id
+group: 						with the current group id
+session:					with the current session id
+blockcode:					the name the current block (built-in Inquisit variable) 
+blocknum:					the number of the current block (built-in Inquisit variable)
+trialcode: 					the name of the currently recorded trial (built-in Inquisit variable)
+trialnum: 					the number of the currently recorded trial (built-in Inquisit variable)
+								Note: trialnum is a built-in Inquisit variable; it counts all trials run;  
+								even those that do not store data to the data file.
+
+group:						Response Key assignment group
+							1 = red and circle on one response key (default: A)
+							2 = red and triangle on one respone key (default: A)
+							3 = red and circle on one response key (default: L)
+							4 = red and triangle on one respone key (default: L)
+
+countPracticeBlocks:		a running counter of the practice blocks run
+countTestBlocks:			a running count of the test blocks run	
+
+countTrials:				a running count of the trials run in a block (resets after each block)	
+							Note: does not count the first trial
+
+shape:						stores the shape of the current stimulus (circle/triangle)
+color:						stores the color of the current stimulus (green/red)
+categorizationTask:			the type of primary task: "Color" vs. "Shape"
+shiftTask:					"Shift" vs. "Repeat"
+soa:						stores the current SOA in ms (stimulus onset asynchrony btw. onset of cue and onset of shape)
+
+responseKeyMapping:			stores whether the mapping of responsekeys for the current shape and color
+							are consistent in mixed task (e.g. consistent = shape AND color are mapped onto same response key)
+
+stimulusItem:				stores the cue stimulus
+stimulus:					stores the last presented red/green/circle/triangle stimulus
+response:					the participant's response (scancode of response: default 30 -> A; 38 -> L)
+
+responseCategory:			the interpreted response based on response scancode:
+							Shape trials: "Circle" vs. "Triangle"
+							Color trials: "Red" vs. "Green"
+
+correct:					the correctness of the response
+latency: 					the response latency (in ms); measured from onset of stim
+
+(2) Summary data file: 'colorshapetask_shifttask_summary*.iqdat'
+
+inquisit.version:			Inquisit version run
+computer.platform:			the platform the script was run on (win/mac/ios/android)
+computer.touch:				0 = device has no touchscreen capabilities; 1 = device has touchscreen capabilities
+computer.hasKeyboard:		0 = no external keyboard detected; 1 = external keyboard detected
+startDate:					date script was run
+startTime:					time script was started
+subjectId:					assigned subject id number
+groupId:					assigned group id number
+sessionId:					assigned session id number
+elapsedTime:				time it took to run script (in ms); measured from onset to offset of script
+completed:					0 = script was not completed (prematurely aborted); 
+							1 = script was completed (all conditions run)
+
+group:						Response Key assignment group
+							1 = red and circle on one response key (default: A)
+							2 = red and triangle on one respone key (default: A)
+							3 = red and circle on one response key (default: L)
+							4 = red and triangle on one respone key (default: L)
+
+countPracticeBlocks:		number of practice blocks run
+practiceAcc: 				proportion correct during the last practice run
+
+practicePass:				1 (yes)= participant passed practice (proportion correct >= minPracticeACC = 0.85 by default)
+							0 (no) = participant did not pass practice (proportion correct < minPracticeACC = 0.85 by default)
+
+abortPractice:				1 (yes)= practice is aborted if participant fails practice after max. 5 (default) practice blocks
+							0 (no)= participant moves on to practice even if practice performance does not reach criterium
+
+countTestBlocks:			number of test blocks run
+
+//Summary variables: updated for each test block trial by trial (trial.firsttask excluded from summary variables)
+accColor.itemCount: 		counts the number of color trials
+percentCorrectColor: 		percent correct of color responses
+meanrtColor:				mean rt of correct color responses
+
+accShape.itemCount: 		counts the number of shape trials
+percentCorrectShape: 		percent correct of shape responses
+meanrtShape:				mean rt of correct shape responses
+
+accRepeat.itemCount: 		counts the number of repeat trials
+percentCorrectRepeat: 		percent correct of repeat responses
+meanrtRepeat:				mean rt of correct repeat responses
+
+accShift.itemCount: 		counts the number of shift trials
+percentCorrectShift: 		percent correct of shift responses
+meanrtShift:				mean rt of correct shift responses
+
+switchCost:					calculates the switch costs as the mean reaction-time difference between (correct) switch and (correct) repeat trials.
+							positive => it took on average longer to respond to shift trials
+___________________________________________________________________________________________________________________
+EXPERIMENTAL SET-UP 
+___________________________________________________________________________________________________________________
+
+//DEFAULT SET-UP:
+(a) Training Block: with error feedback for 1000ms (default) after an incorrect response and before ITI
+- default: 48 trials (+ plus starttrial) per block; can be set under EDITABLE CODE -> Editable Values -> parameters.numberpracticetrials
+
+By default, participants have to reach "minPracticeACC" (default: 85% correct) before they can move on to the test blocks.
+If participants do not reach the allotted practice performance within 5 (default) practice blocks, the script
+automatically aborts (by default). Check settings for practice parameters under section EDITABLE PARAMETERS.
+
+(b) Test Blocks: no error feedback
+- 4 test blocks (default, change under section Editable Parameters):
+- 48 trials (+ plus starttrial) per block; can be set under EDITABLE CODE -> Editable Values -> parameters.numberOfTestTrials
+		Trial Sequence:
+		- The sampling of stimuli is done randomly without replacement
+		- The intertrial interval (ITI) between response and presentation of next stimulus is parameters.iti
+		- a rest trial is presented after parameters.trialstoRest (-> editable value), default: halfway through the block
+
+- number of switch and repeat trials in each test block is controlled via EDITABLE CODE -> Editable Lists -> list.shiftrepeat_frequency
+		=> default: 50% switch; 50% repeat trials => 24 shift; 24 repeat trials
+		=> number of color and number of shape tasks will vary between participants
+
+- by default, participants are given performance feedback after each block (-> page.blockfeedback)
+
+
+//Trial Sequence:
+-> Cue for SOA (default: 500ms -> see editable list.SOAs)
+-> Cue + Shape until response
+-> blank iti (default: 600ms)
+
+Additional notes:
+*Response key assignment: counterbalanced by groupnumber (4 different groupnumbers) -> set in section EXPERIMENT
+
+1: red and circle on one response key (default: A)
+2: red and triangle on one respone key (default: L)
+3: red and triangle on one response key (default: A)
+4: red and circle on one respone key (default: L)
+
+___________________________________________________________________________________________________________________
+STIMULI
+___________________________________________________________________________________________________________________
+Stimuli and cues provided by Millisecond. The stimuli can be edited under 
+EDITABLE CODE -> Editable Stimuli (item.stimuli).
+The cue stimuli are currently language dependent (use the first letter of the word s(hape) and c(olor))
+and are listed in script 'colorshapetask_shiftingtask_instructions_inc.iqjs'
+
+Note: This script presents the cues as images. You can run any images you want (e.g. symbols or words or letters).
+By default, this script runs with letter cues but the script also comes with symbol cue images.
+___________________________________________________________________________________________________________________
+INSTRUCTIONS 
+___________________________________________________________________________________________________________________
+Instructions are provided by Millisecond. 
+To edit the instructions go to script 'colorshapetask_shiftingtask_instructions_inc.iqjs'
+
+___________________________________________________________________________________________________________________
+EDITABLE CODE 
+___________________________________________________________________________________________________________________
+
+//Stim Sizing Parameters
+/ stimHeight = 25%						sets the size of the stimulus as a percentage of monitor height
+										Note: Miyake et al (2004. p.128):
+										- the size of the color patch was roughly 36mm
+
+/ cueHeight = 20%						sets the height (size) of the cues as a percentage of monitor height
+/ cuePosition = 20%						sets the vertical cue position in canvas percentages
+
+//Timing Parameters
+/ readyDuration = 2000					the duration (in ms) of the get ready trial
+/ iti = 600								the duration (in ms) of the intertrial interval
+
+//Exp. design parameters
+/ numberOfTestTrials = 48				number of test trials per test block (default: 48 plus starttrial)
+/ numberOfTestBlocks = 4				number of test blocks to run
+
+//practice:
+/ numberPracticeTrials = 48				number of practice trials per practice block
+/ minPracticeAcc = 0.85					minimum practice proportion correct to advance to test
+									
+/ maxNumberPracticeBlocks = 5			max. number of practice blocks run if performance is below minPracticeACC
+/ abortPractice = true					true (1): if participant's practice performance is still under minPracticeACC
+										after the last practice block, then the script quits prematurely
+										false (0): all participants start test regardless of practice acc at the end of the last 
+										practice block
+
+//Response keys: 
+/ responseKeyLeft = "A"					left response key (left on QWERTY keyboard)
+/ responseKeyRight = "L"				right response key (right on QWERTY keyboard)
+										Note: response keys to shape and color are counterbalanced by groupnumbers
+
+</userManual>
+
+
+**************************************************************************************************************
+**************************************************************************************************************
+	EDITABLE PARAMETERS: change editable parameters here
+**************************************************************************************************************
+**************************************************************************************************************
+
+<parameters>
+//Stim Sizing Parameters
+/ stimHeight = 25%						//sets the size of the stimulus as a percentage of monitor height
+										//Note: Miyake et al (2004. p.128):
+										//- the size of the color patch was roughly 36mm
+									
+/ cueHeight = 20%						//sets the height (size) of the cues as a percentage of monitor height
+/ cuePosition = 20%						//sets the vertical cue position in canvas percentages
+
+//Timing Parameters
+/ readyDuration = 2000					//the duration (in ms) of the get ready trial
+/ iti = 600								//the duration (in ms) of the intertrial interval
+
+//Exp. design parameters
+/ numberOfTestTrials = 48				//number of test trials per test block
+/ numberOfTestBlocks = 4					//number of test blocks to run
+
+//practice:
+/ numberPracticeTrials = 48				//number of practice trials per practice block 
+/ minPracticeAcc = 0.85					//minimum practice proportion correct to advance to test
+									
+/ maxNumberPracticeBlocks = 5			//max. number of practice blocks run if performance is below minPracticeACC
+/ abortPractice = true						//true (1): if participant's practice performance is still under minPracticeACC
+										//after the last practice block, then the script quits prematurely
+										//false (0): all participants start test regardless of practice acc at the end of the last 
+										//practice block
+
+//Response keys: 
+/ responseKeyLeft = "A"					//left response key (left on QWERTY keyboard)
+/ responseKeyRight = "L"				//right response key (right on QWERTY keyboard)
+										//Note: response keys to shape and color are counterbalanced by groupnumbers
+</parameters>
+
+**************************************************************************************************************
+**************************************************************************************************************
+	EDITABLE STIMULI: change editable stimuli here
+**************************************************************************************************************
+**************************************************************************************************************
+
+Note: the following stimuli are used in this script. The itemnumbers are used
+by trial elements to select the appropriate stimuli
+<item stimuli>
+/ 1 = "redcircle.png" 
+/ 2 = "redtriangle.png"
+/ 3 = "greencircle.png"
+/ 4 = "greentriangle.png"
+</item>
+
+
+**************************************************************************************************************
+**************************************************************************************************************
+	EDITABLE LISTS: change editable lists here
+**************************************************************************************************************
+**************************************************************************************************************
+
+Note: the following list controls number of shift trials (1) and number of repeat trials (2). 
+By default, each mixed block plays 48 trials (parameters.numberOfTestTrials -> editable parameter)
+and an equal number of shift and repeat trials (set by /itemprobabilities)
+
+<list shiftRepeatFrequency>
+/ items = (1, 2)
+/ poolSize = parameters.numberOfTestTrials
+/ itemProbabilities = (0.5, 0.5)
+/ resetInterval = 1
+/ replace = false
+</list>
+
+<list practiceShiftRepeatFrequency>
+/ items = (1, 2)
+/ poolSize = parameters.numberPracticeTrials
+/ itemProbabilities = (0.5, 0.5)
+/ resetInterval = 1
+/ replace = false
+</list>
+
+<list soas>
+/ items = (500)
+/ replace = false
+</list>
+
+**************************************************************************************************************
+								!!!REMAINING CODE: Customize after careful consideration only!!!
+**************************************************************************************************************
+
+
+**************************************************************************************************************
+**************************************************************************************************************
+	DEFAULTS
+**************************************************************************************************************
+**************************************************************************************************************
+script requires Inquisit "7.0.0.0" or higher
+
+<defaults>
+/ canvasAspectRatio = (4,3)
+/ minimumVersion = "7.0.0.0"
+/ fontStyle = ("Arial", 3%, false, false, false, false, 5, 1)
+/ txBGColor = black
+/ txColor = white
+/ screenColor = black
+</defaults>
+
+*******************************************************************************************************************
+*******************************************************************************************************************
+	DATA: this section contains data file information (customize)
+*******************************************************************************************************************
+*******************************************************************************************************************
+
+********************
+raw data
+********************
+
+<data>
+/ columns = (build, computer.platform, computer.touch, computer.hasKeyboard, date, time, subject, group, session, 
+blockCode, blockNum, trialCode, trialNum, 
+values.group, values.countPracticeBlocks, values.countTestBlocks, values.countTrials,
+values.shape, values.color, values.categorizationTask, values.shiftTask, 
+values.soa, values.responseKeyMapping,
+stimulusitem, values.stimulus, response, values.responseCategory, correct, latency)
+</data>
+
+********************
+summary data
+********************
+
+<summaryData>
+/ columns = (inquisit.version, computer.platform, computer.touch, computer.hasKeyboard, script.startDate, script.startTime, script.subjectId, script.groupId, script.sessionId, 
+script.elapsedTime, script.completed, 
+values.group, 
+values.countPracticeBlocks, values.practiceAcc, values.practicePass, parameters.abortPractice,
+values.countTestBlocks, 
+list.accColor.itemCount, expressions.percentCorrectColor, expressions.meanRTColor, 
+list.accShape.itemCount, expressions.percentCorrectShape, expressions.meanRTShape, 
+list.accRepeat.itemCount, expressions.percentCorrectRepeat, expressions.meanRTRepeat,
+list.accShift.itemCount, expressions.percentCorrectShift, expressions.meanRTShift, 
+expressions.switchCost)
+</summaryData>
+
+*******************************************************************************************************************
+*******************************************************************************************************************
+	VALUES: automatically updated
+*******************************************************************************************************************
+*******************************************************************************************************************
+
+/color:										stores the color of the current stimulus (green/red)
+/shape:										stores the shape of the current stimulus (circle/triangle)
+/categorizationTask:						the type of primary task: "Color" vs. "Shape"
+/shiftTask:									the type of shift task: "Shift" vs. "Repeat"
+/responseKeyMapping:						stores whether the mapping of responsekeys for the current shape and color
+											are consistent (e.g. consistent = shape AND color are mapped onto same
+											response key)
+
+
+The following variables are used in the counterbalancing of the pre-determined responsekeys:
+/group:											Response Key assignment group
+													1 = red and circle on one response key (default: A)
+													2 = red and triangle on one respone key (default: A)
+													3 = red and circle on one response key (default: L)
+													4 = red and triangle on one respone key (default: L)
+
+/responseKeyRed:								responsekey for color "red"
+/responseKeyGreen:								responsekey for color "green"
+/responseKeyCircle:							responsekey for shape "circle"
+/responseKeyTriangle:							responsekey for shape "triangle"
+
+/stimulus:										stores the currently presented stimulus
+/selectstim:									stores the itemnumber of the current stimulus
+/selectCue:										stores the itemnumber of the current cue 
+/selectInstruct:								stores the itemnumber of the current instruction slide
+/firstTask:										stores the task of the randomly determined first task : 1 = shape; 2 = color												
+/nextTrial:										stores the type of shift trial (1 = shift; 2 = repeat) to be presented next
+/soa:											stores the current SOA
+/countTrials:									counts the number of mixed trials presented (minus first trial)
+/helper:										helper variable
+												
+
+<values>
+/ color = ""
+/ shape = ""
+/ categorizationTask = ""
+/ shiftTask = ""
+/ responseKeyMapping = ""
+/ group = 0
+/ practice = 0
+/ countPracticeBlocks = 0
+/ practiceAcc = 0
+/ practicePass = 1
+/ countTestBlocks = 0
+/ responseKeyRed = "A"
+/ responseKeyGreen = "L"
+/ responseKeyCircle = "A"
+/ responseKeyTriangle = "L"
+
+/ stimulus = ""
+/ selectstim = 1
+/ selectCue = 1
+/ selectInstruct = 1
+/ firstTask = 0
+/ nextTrial = 0
+/ soa = 0
+/ countTrials = 0
+/ helper = 0
+/ leftResponseTextColor = ""
+/ rightResponseTextColor = ""
+/ leftResponseTextShape = ""
+/ rightResponseTextShape = ""
+
+/ responseCategory = ""
+</values>
+
+*******************************************************************************************************************
+*******************************************************************************************************************
+	EXPRESSIONS
+*******************************************************************************************************************
+*******************************************************************************************************************
+
+/leftKeyAssignedColor-
+/rightKeyAssignedShape:		helper function to assemble the key reminders that are presented at the bottom of the screen
+
+
+Summary variables: updated after each block
+
+/percentCorrectShape: 			percent correct of shape responses
+/percentCorrectColor: 			percent correct of color responses
+/meanRTShape:					mean rt of correct shape responses
+/meanRTColor:					mean rt of correct color responses
+
+/percentCorrectShif: 			percent correct of shift responses
+/percentCorrectRepeat: 		percent correct of repeat responses
+/meanRTShift:					mean rt of correct shift responses 
+/meanRTRepeat:					mean rt of correct repeat responses 
+
+/switchCost:					calculates the switch cost as the mean reaction-time difference between (correct) switch and (correct) repeat trials.
+									=> positive: longer (average) switch latencies 
+									=> negative: shorter (average) switch latencies
+
+
+
+<expressions>
+/ leftKeyAssignedColor = {
+	if (values.group == 1 || values.group == 3){
+		return "RED";
+	} else if (values.group == 2 || values.group == 4){
+		return "GREEN";
+	}
+}
+/ rightKeyAssignedColor = {
+	if (values.group == 1 || values.group == 3){
+		return "GREEN";
+	} else if (values.group == 2 || values.group == 4){
+		return "RED";
+	}
+}
+/ leftKeyAssignedShape = {
+	if (values.group == 1 || values.group == 2){
+		return "CIRCLE";
+	} else if (values.group == 3 || values.group == 4){
+		return "TRIANGLE";
+	}	
+}
+/ rightKeyAssignedShape = {
+	if (values.group == 1 || values.group == 2){
+		return "TRIANGLE";
+	} else if (values.group == 3 || values.group == 4){
+		return "CIRCLE";
+	}	
+}
+
+/ percentCorrectShape = return list.accShape.mean * 100
+/ percentCorrectColor = return list.accColor.mean * 100
+/ meanRTShape = return list.rtShape.mean
+/ meanRTColor = return list.rtColor.mean
+
+/ percentCorrectShift = return list.accShift.mean * 100
+/ percentCorrectRepeat = return list.accRepeat.mean * 100
+/ meanRTShift = return list.rtShift.mean
+/ meanRTRepeat = return list.rtRepeat.mean
+
+/ switchCost = return (expressions.meanRTShift - expressions.meanRTRepeat)
+</expressions>
+
+*************************************************
+Data Lists: used for descriptive statistics
+store correct latencies/accuracy data
+fill up during runtime
+*************************************************
+
+
+Note: list stores 1 = correct response; 0 = incorrect response for each relevant trial
+any response coded as an error is automatically coded as 0
+
+<list accBlock>
+</list>
+
+<list accShape>
+</list>
+
+<list accColor>
+</list>
+
+<list accShift>
+</list>
+
+<list accRepeat>
+</list>
+
+Note: list stores the latency of correct responses for each relevant trial
+<list rtShape>
+</list>
+
+<list rtColor>
+</list>
+
+<list rtShift>
+</list>
+
+<list rtRepeat>
+</list>
+
+
+*******************************************************************************************************************
+*******************************************************************************************************************
+	INSTRUCTIONS
+*******************************************************************************************************************
+*******************************************************************************************************************
+
+*************************
+Instruction Stimuli
+*************************
+
+
+*************************
+Instruction Trials
+*************************
+
+<text instructions>
+/ items = instructions
+/ select = expressions.selectInstruct
+/ fontStyle = ("Arial",3.5%, false, false, false, false, 5, 1)
+</text>
+<expressions>
+/ selectInstruct = return (values.selectInstruct-1); //0-based selection
+</expressions>
+
+
+<text leftResponseText>
+/ items = ("<%parameters.responseKeyLeft%>")
+/ fontStyle = ("Arial", 2.5%, true, false, false, false, 5, 1)
+/ size = (40%, 3%)
+/ vJustify = center
+/ txColor = gray
+/ position = (25%, 90%)
+/ vAlign = bottom
+</text>
+
+<text leftResponseTextColor>
+/ items = ("<%expressions.leftKeyAssignedColor%>")
+/ fontStyle = ("Arial", 2%, false, false, false, false, 5, 1)
+/ size = (40%, 3%)
+/ vJustify = center
+/ txColor = gray
+/ position = (25%, 90%)
+/ vAlign = top
+</text>
+
+<text leftResponseTextShape>
+/ items = ("<%expressions.leftKeyAssignedShape%>")
+/ fontStyle = ("Arial", 2%, false, false, false, false, 5, 1)
+/ size = (40%, 3%)
+/ vJustify = center
+/ txColor = gray
+/ hPosition = text.leftResponseTextColor.x
+/ vPosition = pct(text.leftResponseTextColor.y + text.leftResponseTextColor.height)
+/ vAlign = top
+</text>
+
+<text rightResponseText>
+/ items = ("<%parameters.responseKeyRight%>")
+/ fontStyle = ("Arial", 2.5%, true, false, false, false, 5, 1)
+/ size = (40%, 3%)
+/ vJustify = center
+/ txColor = gray
+/ position = (75%, 90%)
+/ vAlign = bottom
+</text>
+
+<text rightResponseTextColor>
+/ items = ("<%expressions.rightKeyAssignedColor%>")
+/ fontStyle = ("Arial", 2%, false, false, false, false, 5, 1)
+/ size = (40%, 3%)
+/ vJustify = center
+/ txColor = gray
+/ position = (75%, 90%)
+/ vAlign = top
+</text>
+
+<text rightResponseTextShape>
+/ items = ("<%expressions.rightKeyAssignedShape%>")
+/ fontStyle = ("Arial", 2%, false, false, false, false, 5, 1)
+/ size = (40%, 3%)
+/ vJustify = center
+/ txColor = gray
+/ hPosition = text.rightResponseTextColor.x
+/ vPosition = pct(text.rightResponseTextColor.y + text.rightResponseTextColor.height)
+/ vAlign = top
+</text>
+
+
+<trial intro1>
+/ onTrialBegin = {
+	values.selectInstruct = 1;
+}
+/ stimulusFrames = [1 = instructions, header, continue]
+/ validResponse = (" ")
+/ branch = {
+	return trial.intro2;
+}
+/ recordData = false
+</trial>
+
+
+<trial intro2>
+/ onTrialBegin = {
+	values.selectInstruct = 2;
+}
+/ stimulusFrames = [1 = instructions, header, leftResponseText, leftResponseTextColor, rightResponseText, rightResponseTextColor, 
+goBack,continue]
+/ validResponse = ("B", " ")
+/ branch = {
+	if (this.responseText == "B"){
+		return trial.intro1;
+	} else {
+		return trial.intro3;
+	}
+}
+/ recordData = false
+</trial>
+
+<trial intro3>
+/ onTrialBegin = {
+	values.selectInstruct = 3;
+}
+/ stimulusFrames = [1 = instructions, header, leftResponseText, leftResponseTextShape, rightResponseText, rightResponseTextShape, continue, goBack]
+/ validResponse = ("B", " ")
+/ branch = {
+	if (this.responseText == "B"){
+		return trial.intro2;
+	} else {
+		return trial.intro4;
+	}
+}
+/ recordData = false
+</trial>
+
+<trial intro4>
+/ onTrialBegin = {
+	values.selectInstruct = 4;
+}
+/ stimulusFrames = [1 = instructions, header, leftResponseText, leftResponseTextColor, leftResponseTextShape, 
+rightResponseText, rightResponseTextColor, rightResponseTextShape, continue, goBack]
+/ validResponse = ("B", " ")
+/ branch = {
+	if (this.responseText == "B"){
+		return trial.intro3;
+	} else {
+		return null;
+	}
+}
+/ recordData = false
+</trial>
+
+<trial practiceInstruct>
+/ validResponse = (" ")
+/ recordData = true
+</trial>
+
+<trial testInstruct>
+/ onTrialBegin = {
+	values.selectInstruct = 5;
+}
+/ stimulusFrames = [1 = instructions, header, leftResponseText, leftResponseTextColor, leftResponseTextShape, 
+rightResponseText, rightResponseTextColor, rightResponseTextShape]
+/ validResponse = (" ")
+/ recordData = false
+</trial>
+
+
+*******************************************************************************************************************
+*******************************************************************************************************************
+	STIMULI
+*******************************************************************************************************************
+*******************************************************************************************************************
+
+Notes:
+* selects the appropriate stimulus via values.selectstim (set in trials)
+<picture stimulus>
+/ items = stimuli
+/ select = expressions.selectstim
+/ position = (50%, 50%)
+/ size = (100%, parameters.stimHeight)
+</picture>
+<expressions>
+/ selectstim = return (values.selectstim - 1); //0-based selection
+</expressions>
+
+
+Notes:
+* selects the appropriate cue via values.selectcue (set in trials)
+<picture cue>
+/ items = cues
+/ select = expressions.selectCue
+/ position = (50%, parameters.cuePosition)
+/ height = parameters.cueHeight
+</picture>
+<expressions>
+/ selectCue = return (values.selectCue-1); //0-based selection
+</expressions>
+
+
+*******************************************************************************************************************
+*******************************************************************************************************************
+	PRACTICE LISTS
+*******************************************************************************************************************
+*******************************************************************************************************************
+
+Notes:
+* randomly samples the first task (Shape (1) vs. Color (2))
+<list firstTask>
+/ items = (1, 2)
+/ replace = true
+</list>
+
+Notes:
+* randomly selects itemnumber of the bivalent stimuli (without replacement) for practice
+* each of the four bivalent stimulus appears equally often
+<list practiceStimuli>
+/ items = (1, 2, 3, 4)
+/ poolSize = parameters.numberPracticeTrials
+/ replace = false
+/ resetInterval = 1
+</list>
+
+Notes:
+* randomly selects itemnumber of the bivalent stimuli (without replacement)
+* each of the four bivalent stimulus appears equally often
+<list stimuli>
+/ items = (1, 2, 3, 4)
+/ poolSize = parameters.numberOfTestTrials
+/ replace = false
+/ resetInterval = 1
+</list>
+
+*******************************************************************************************************************
+*******************************************************************************************************************
+	TRIALS
+*******************************************************************************************************************
+*******************************************************************************************************************
+
+<trial newRound>
+/ stimulusFrames = [1 = newRound]
+/ validResponse = (" ")
+/ recordData = false
+/ correctResponse = (" ")
+/ errorMessage = false
+</trial>
+
+
+
+////////////////////////////////////////////////
+functions that apply to all trials
+////////////////////////////////////////////////
+
+<script>
+//trial setUp:
+function init(shiftTask, tempThis){
+	values.shiftTask = shiftTask;
+	values.responseCategory = "";	
+	
+	//cueSelection:
+	if (values.categorizationTask == "Shape") {
+		values.selectCue = 2;		
+	} else {
+		values.selectCue = 1;
+	}
+	
+	//stimSelection:
+	if (shiftTask != "firstTrial"){
+		if (script.currentBlock == block.practice) {
+			values.selectstim = list.practiceStimuli.nextValue;
+		} else {
+			values.selectstim = list.stimuli.nextValue;
+		}	
+	} else {
+		values.selectstim = replace([1, 2, 3, 4]);
+	}
+
+	if (values.selectstim == 1) {
+		values.shape = "Circle"; 
+		values.color = "Red";
+	} else if (values.selectstim == 2) {
+		values.shape = "Triangle"; 
+		values.color = "Red";
+	} else if (values.selectstim == 3) {
+		values.shape = "Circle"; 
+		values.color = "Green";
+	} else if (values.selectstim == 4) {
+		values.shape = "Triangle"; 
+		values.color = "Green";
+	}
+
+	//dynamic stimuli insertion:
+	tempThis.insertStimulusTime(picture.stimulus, values.soa);	
+}
+//accuracy evaluation:
+function accEval(tempThis){
+	return ((values.categorizationTask == "Shape" && values.selectstim == 1 && tempThis.responseText == values.responseKeyCircle) || 
+		(values.categorizationTask == "Color" && values.selectstim == 1 && tempThis.responseText == values.responseKeyRed) || 
+		(values.categorizationTask == "Shape" && values.selectstim == 2 && tempThis.responseText == values.responseKeyTriangle) ||
+		(values.categorizationTask == "Color" && values.selectstim == 2 && tempThis.responseText == values.responseKeyRed) ||
+		(values.categorizationTask == "Shape" && values.selectstim == 3 && tempThis.responseText == values.responseKeyCircle) ||
+		(values.categorizationTask == "Color" && values.selectstim == 3 && tempThis.responseText == values.responseKeyGreen) ||
+		(values.categorizationTask == "Shape" && values.selectstim == 4 && tempThis.responseText == values.responseKeyTriangle) ||
+		(values.categorizationTask == "Color" && values.selectstim == 4 && tempThis.responseText == values.responseKeyGreen));
+}
+//trial cleanUp:
+function onEnd(tempThis){
+	tempThis.resetStimulusFrames();
+	
+	values.stimulus = picture.stimulus.currentItem;	
+	
+	values.responseKeyMapping = "Inconsistent";	
+	if (values.selectstim == 1 && values.responseKeyRed == values.responseKeyCircle) {
+		values.responseKeyMapping = "Consistent";
+	} else if (values.selectstim == 2 && values.responseKeyRed == values.responseKeyTriangle) {
+		values.responseKeyMapping = "Consistent";
+	} else if (values.selectstim == 3 && values.responseKeyGreen == values.responseKeyCircle) {
+		values.responseKeyMapping = "Consistent";
+	} else if (values.selectstim == 4 && values.responseKeyGreen == values.responseKeyTriangle) {
+		values.responseKeyMapping = "Consistent";
+	}
+	
+	//convert scancode of response to responseCategory
+	if (values.categorizationTask == "Shape"){
+		if (tempThis.responseText == values.responseKeyCircle){
+			values.responseCategory = "Circle";
+		} else if (tempThis.responseText == values.responseKeyTriangle){
+			values.responseCategory = "Triangle";
+		}
+	} else if (values.categorizationTask == "Color"){
+		if (tempThis.responseText == values.responseKeyRed){
+			values.responseCategory = "Red";
+		} else if (tempThis.responseText == values.responseKeyGreen){
+			values.responseCategory = "Green";
+		}
+	} 
+	
+	//Summary Variables:
+	if (values.shiftTask != "firstTrial"){
+		list.accBlock.appendItem(tempThis.correct);
+		list["acc" + values.shiftTask].appendItem(tempThis.correct);	
+		list["acc" + values.categorizationTask].appendItem(tempThis.correct);
+			
+		if (tempThis.correct) {
+			list["rt" + values.shiftTask].appendItem(tempThis.latency);
+			list["rt" + values.categorizationTask].appendItem(tempThis.latency);
+		}		
+	}	
+}
+</script>
+
+
+Note: 
+* determines the first judgmenttask (Shape vs. Color) (cannot be a "Shift" nor "Repeat" trial)
+which is selected at random for each participant (controlled via list.firsttask)
+* selects the first stimulus randomly (controlled via list.stimuli)
+* calls trial.iti
+
+<trial firstTask>
+/ onTrialBegin = {
+	values.soa = list.soas.nextValue;
+	values.firstTask = list.firstTask.nextValue;
+	
+	if (values.firstTask == 1) {
+		values.categorizationTask = "Shape";	
+	} else {
+		values.categorizationTask = "Color";
+	}
+	
+	init("firstTrial", this);
+}
+/ stimulusTimes = [0 = cue, 
+leftResponseText, leftResponseTextColor, leftResponseTextShape,
+rightResponseText, rightResponseTextColor, rightResponseTextShape,
+]
+/ beginResponseTime = values.soa
+/ responseInterrupt = immediate
+/ validResponse = (parameters.responseKeyLeft, parameters.responseKeyRight)
+/ isCorrectResponse = {
+	return accEval(this);
+}
+/ onTrialEnd = {
+	onEnd(this);
+}
+/ postTrialPause = parameters.iti
+/ branch = {
+	return trial.selectTrial;
+}
+</trial>
+
+Note:
+* determines whether a shift (1) or repeat (2) trial should be run next
+<trial selectTrial>
+/ onTrialBegin = {
+	values.soa = list.soas.nextValue;
+	values.countTrials++;
+	
+	if (script.currentBlock == block.practice) {
+		values.nextTrial = list.practiceShiftRepeatFrequency.nextValue;
+	} else {
+		values.nextTrial = list.shiftRepeatFrequency.nextValue;
+	}
+}
+/ validResponse = (parameters.responseKeyLeft, parameters.responseKeyRight)
+/ isValidResponse = {
+	return false; //necessary to present continuous response buttons for touchscreen devices
+}
+/ branch = {
+	if (values.nextTrial == 1) {
+		return trial.shift;
+	} else {
+		return trial.repeat;
+	}
+}
+/ trialDuration = 0
+/ recordData = false
+/ errorMessage = false
+</trial>
+
+Note:
+* switches judgment tasks
+* selects next stimuli randomly via list.stimuli
+* calls trial.iti
+
+<trial shift>
+/ onTrialBegin = {	
+	//change categorizationTask:
+	if (values.categorizationTask == "Shape") {
+		//in case the previous categorization task was 'shape' the current one needs to be 'color'		
+		values.categorizationTask = "Color";
+	} else {
+		//in case the previous categorization task was 'color' the current one needs to be 'shape'	
+		values.categorizationTask = "Shape"; 
+	}
+	
+	init("Shift", this);
+}
+/ stimulusTimes = [0 = cue, 
+leftResponseText, leftResponseTextColor, leftResponseTextShape,
+rightResponseText, rightResponseTextColor, rightResponseTextShape,
+]
+/ beginResponseTime = values.soa
+/ responseInterrupt = immediate
+/ validResponse = (parameters.responseKeyLeft, parameters.responseKeyRight)
+/ isCorrectResponse = {
+	return accEval(this);
+}
+/ onTrialEnd = {
+	onEnd(this);
+}
+/ postTrialPause = parameters.iti
+/ branch = {
+	return trial.selectTrial;
+}
+</trial>
+	
+Note:
+* repeats judgment task
+* calls trial.iti
+<trial repeat>
+/ onTrialBegin = {
+	init("Repeat", this);
+}
+/ stimulusTimes = [0 = cue, 
+leftResponseText, leftResponseTextColor, leftResponseTextShape,
+rightResponseText, rightResponseTextColor, rightResponseTextShape,
+]
+/ beginResponseTime = values.soa
+/ responseInterrupt = immediate
+/ validResponse = (parameters.responseKeyLeft, parameters.responseKeyRight)
+/ isCorrectResponse = {
+	return accEval(this);
+}
+/ onTrialEnd = {
+	onEnd(this);
+}
+/ postTrialPause = parameters.iti
+/ branch = {
+	return trial.selectTrial;
+}
+</trial>
+
+*******************************************************************************************************************
+*******************************************************************************************************************
+	BLOCKS
+*******************************************************************************************************************
+*******************************************************************************************************************
+
+<block intro>
+/ trials = [1 = intro1]
+</block>
+
+<block practice>
+/ stop = {return (values.countTrials == parameters.numberPracticeTrials + 1);}
+/ onBlockBegin = {
+	values.practice = 1;
+	values.countPracticeBlocks++;
+	values.countTrials = 0;
+	list.accShape.reset();
+	list.rtShape.reset();
+	list.accColor.reset();
+	list.rtColor.reset();
+	list.accShift.reset();
+	list.rtShift.reset();
+	list.accRepeat.reset();
+	list.rtRepeat.reset();	
+	list.accBlock.reset();
+}
+/ trials = [
+	1 = newRound;
+	2 = getReady; 
+	3 = firstTask;
+]
+/ onBlockEnd = {
+	values.practiceAcc = list.accBlock.mean;
+}
+/ errorMessage = true(errorFeedback, 1000)
+/ onBlockEnd = {
+	if (list.accBlock.mean >= parameters.minPracticeAcc){
+		values.practicePass = 1;
+	} else {
+		values.practicePass = 0;
+	}
+}
+/ branch = {
+if (!monkey.monkeyMode){
+	if (values.practicePass == 0){
+		if (values.countPracticeBlocks < parameters.maxNumberPracticeBlocks){
+			return this;
+		} else {
+			if (parameters.abortPractice == true){
+				return block.prematureEnd;
+			} else {
+				return null;
+			}
+		}
+	} else {
+		return null;
+	}
+} else {
+	return null;
+}
+}
+</block>
+
+<block testintro>
+/ trials = [1 = testInstruct]
+/ onBlockBegin = { 
+	list.accShape.reset();
+	list.rtShape.reset();
+	list.accColor.reset();
+	list.rtColor.reset();
+	list.accShift.reset();
+	list.rtShift.reset();
+	list.accRepeat.reset();
+	list.rtRepeat.reset();	
+	values.practice = 2;
+}
+</block>
+
+<block test>
+/ stop = {return (values.countTrials == parameters.numberOfTestTrials + 1);}
+/ onBlockBegin = {
+	values.countTestBlocks++;
+	values.countTrials = 0;
+	list.accBlock.reset();
+
+}
+/ trials = [
+	1 = newRound;
+	2 = getReady; 
+	3 = firstTask;
+]
+/ postInstructions = (blockFeedback)
+/ branch = {
+	if (values.countTestBlocks < parameters.numberOfTestBlocks){
+		return this;
+	} else {
+		return null;
+	}
+}
+</block>
+
+<block prematureEnd>
+/ onBlockEnd = {
+	script.abort();
+}
+</block>
+
+*******************************************************************************************************************
+*******************************************************************************************************************
+	EXPERIMENT: controls the flow of the experiment (customize)
+*******************************************************************************************************************
+*******************************************************************************************************************
+Notes: 
+- response key mappings are counterbalanced by groupnumber (1-4) -> 4 expt elements
+		1 = red and circle on one response key (default: A)
+		2 = red and triangle on one response key (default: L)
+		3 = red and triangle on one response key (default: A)
+		4 = red and circle on one response key (default: L)
+
+
+<expt a>
+/ groups = (1 of 4)
+/ onExptBegin = {
+	values.group = 1;
+	values.responseKeyCircle = parameters.responseKeyLeft; 
+	values.responseKeyTriangle = parameters.responseKeyRight; 
+	values.responseKeyRed = parameters.responseKeyLeft; 
+	values.responseKeyGreen = parameters.responseKeyRight; 
+	
+	if (!computer.hasKeyboard && computer.touch){
+		text.continue.skip = true;
+		text.goBack.skip = true;
+	}	
+}
+/ blocks = [
+	1 = intro;
+	2 = practice; 
+	3 = testintro;
+	4 = test;
+]
+</expt>
+
+<expt b>
+/ groups = (2 of 4)
+/ onExptBegin = {
+	values.group = 2;
+	values.responseKeyCircle = parameters.responseKeyLeft; 
+	values.responseKeyTriangle = parameters.responseKeyRight; 
+	values.responseKeyRed = parameters.responseKeyRight; 
+	values.responseKeyGreen = parameters.responseKeyLeft; 
+	
+	if (!computer.hasKeyboard && computer.touch){
+		text.continue.skip = true;
+		text.goBack.skip = true;
+	}		
+}
+/ blocks = [
+	1 = intro;
+	2 = practice; 
+	3 = testintro;
+	4 = test;
+]
+</expt>
+
+<expt c>
+/ groups = (3 of 4)
+/ onExptBegin = {
+	values.group = 3;
+	values.responseKeyCircle = parameters.responseKeyRight; 
+	values.responseKeyTriangle = parameters.responseKeyLeft; 
+	values.responseKeyRed = parameters.responseKeyLeft; 
+	values.responseKeyGreen = parameters.responseKeyRight; 
+	
+	if (!computer.hasKeyboard && computer.touch){
+		text.continue.skip = true;
+		text.goBack.skip = true;
+	}		
+}
+/ blocks = [
+	1 = intro;
+	2 = practice; 
+	3 = testintro;
+	4 = test;
+]
+</expt>
+
+<expt d>
+/ groups = (4 of 4)
+/ onExptBegin = {
+	values.group = 4;
+	values.responseKeyCircle = parameters.responseKeyRight; 
+	values.responseKeyTriangle = parameters.responseKeyLeft; 
+	values.responseKeyRed = parameters.responseKeyRight; 
+	values.responseKeyGreen = parameters.responseKeyLeft; 
+	
+	if (!computer.hasKeyboard && computer.touch){
+		text.continue.skip = true;
+		text.goBack.skip = true;
+	}		
+}
+/ blocks = [
+	1 = intro;
+	2 = practice; 
+	3 = testintro;
+	4 = test;
+]
+</expt>
+
+*******************************************************************************************************************
+												End of File
+*******************************************************************************************************************
