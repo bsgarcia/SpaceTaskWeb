@@ -13,8 +13,9 @@ const PERCEPTUAL_TRAINING = 7
 const RL_TRAINING_2 = 9
 const FULL = 11
 const FULL2 = 13 // Game 5 (moved after surveys)
-const DOSPERT = 14; // DOSPERT Risk Scale (before General Risk)
-const RISK = 15 // Risk assessment (lotteries, before FULL2)
+const CFI = 14;
+const CFS = 15;
+const CS_TASK = 18;
 
 // const SG = 13; // General Risk Survey (after DOSPERT)
 const SURVEY = 16 // Post-game survey (after FULL2)
@@ -26,10 +27,8 @@ const COMP_LINK = 'aHR0cHM6Ly9hcHAucHJvbGlmaWMuY29tL3N1Ym1pc3Npb25zL2NvbXBsZXRlP
 
 const clickBlockedTime = 300;
 const SURVEY_PHP = 'php/insert_feedback.php';
-const RISK_PHP = 'php/insert_risk.php';
-const RISK_TRIAL_PHP = 'php/insert_risk_trial.php';
-const DOSPERT_PHP = 'php/insert_dospert.php';
-const GENERAL_RISK_PHP = 'php/insert_general_risk.php';
+const CFI_PHP = 'php/insert_cfi.php';
+const CFS_PHP = 'php/insert_cfs.php';
 
 // global variables mutable
 var clickBlocked = false;
@@ -91,22 +90,59 @@ function main() {
             console.log('About to call skipCurrentStep');
             skipCurrentStep();
         });
+
+    // DEBUG mode
+    if (getURLParams('DEBUG') === '1') {
+        document.getElementById('skip').style.display = '';
+        document.getElementById('reload').style.display = '';
+
+        // Map stepper step IDs to instNums
+        const stepMap = {
+            'introduction': 0,
+            'training1':    RL_TRAINING_1,
+            'training2':    PERCEPTUAL_TRAINING,
+            'training3':    RL_TRAINING_2,
+            'full':         FULL,
+            'full2':        FULL2,
+            'survey':       CFI,
+            'cs-task':      CS_TASK,
+            'end':          END,
+        };
+        Object.entries(stepMap).forEach(([id, num]) => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.style.cursor = 'pointer';
+            el.title = `DEBUG: jump to step ${num}`;
+            el.addEventListener('click', () => {
+                instNum = num;
+                setPageInstruction(instNum);
+            });
+        });
+    }
     
    // Check for direct access via URL parameters
     const gotoParam = getURLParams('goto');
-    if (gotoParam === 'risk') {
+    if (gotoParam === 'survey') {
         // Direct access to risk assessment
         // set all steps done
         setCurrentStep('survey');
         setPreviousStepDone();
       
-        // first step is DOSPERT, then general risk survey
-        dospertScalePage();
-        setPageInstruction(DOSPERT);
+        // first step is CFI, then CFS
+        cfiPage();
+        setPageInstruction(CFI);
+        return;
+    }
+    if (getURLParams('end') === '1') {
+        lastPage();
         return;
     }
     if (end) {
-        window.endFull2();
+        if (instNum >= END) {
+            lastPage();
+        } else {
+            window.endFull2();
+        }
         return;
     }
 
@@ -177,13 +213,20 @@ const startTutorial = () => {
 // ------------------------------ Utils ------------------------------ //
 
 const setSubID = () => {
-    window.subID = getURLParams('prolificID') || 'random-' + createCode(5);
+    const fromURL = getURLParams('prolificID');
+    if (fromURL) {
+        window.subID = fromURL;
+        localStorage.setItem('subID', fromURL);
+    } else {
+        window.subID = localStorage.getItem('subID') || 'random-' + createCode(5);
+        localStorage.setItem('subID', window.subID);
+    }
     document.querySelector('.subID').innerHTML = 'id: ' + window.subID;
 }
 
 // ------------------------------ UI Managment ------------------------------ //
 const setPreviousStepDone = () => {
-    let steps = ['introduction', 'training1', 'training2', 'training3', 'full', 'survey', 'full2', 'final-survey', 'end'];
+    let steps = ['introduction', 'training1', 'training2', 'training3', 'full', 'survey', 'full2', 'cs-task', 'end'];
     // get current step
     let currentStep = getCurrentStep();
     console.log(currentStep);
@@ -227,7 +270,7 @@ const setCurrentStep = (step) => {
 }
 // unset all steps
 const unsetAllSteps = () => {
-    let steps = ['introduction', 'training1', 'training2', 'training3', 'full', 'survey', 'full2', 'final-survey', 'end'];
+    let steps = ['introduction', 'training1', 'training2', 'training3', 'full', 'survey', 'full2', 'cs-task', 'end'];
     steps.forEach((step) => {
         unsetStep(step);
     })
@@ -281,7 +324,7 @@ const skipCurrentStep = async () => {
             instNum = TUTORIAL;
             await setPageInstruction(instNum);
         } else if ([TUTORIAL, PERCEPTUAL_TRAINING, RL_TRAINING_1, RL_TRAINING_2,
-             FULL, DOSPERT, RISK, FULL2, SURVEY].includes(instNum)) {
+             FULL, CFI, CFS, CS_TASK, FULL2, SURVEY].includes(instNum)) {
                 console.log('=== ENTERING GAME/SURVEY SKIP SECTION ===');
                 console.log('instNum value:', instNum);
                 console.log('SURVEY constant value:', SURVEY);
@@ -324,31 +367,19 @@ const skipCurrentStep = async () => {
                     console.log('About to call setPageInstruction with END:', END);
                     await setPageInstruction(instNum);
                     break;
-                case DOSPERT:
-                    // Skip DOSPERT, go to next in sequence (RISK, skip SG)
+                case CFI:
                     setStepDone('survey');
-                    instNum = RISK;
+                    instNum = CFS;
                     await setPageInstruction(instNum);
                     break;
-                case SG:
-                    // Skip SG, go to next in sequence (RISK)
+                case CFS:
                     setStepDone('survey');
-                    instNum = RISK;
+                    instNum = CS_TASK;
                     await setPageInstruction(instNum);
                     break;
-                case RISK:
-                    // Skip risk assessment, go to final survey
-                    setStepDone('survey');
-                    // Create dummy risk data for skip
-                    window.riskData = {
-                        prolificID: window.subID,
-                        expName: 'FullPilotW',
-                        choice_0: 0, choice_1: 0, choice_2: 0, choice_3: 0, choice_4: 0,
-                        choice_5: 0, choice_6: 0, choice_7: 0, choice_8: 0, choice_9: 0,
-                        selected: 0,
-                        amount: 0
-                    };
-                    instNum = SURVEY;
+                case CS_TASK:
+                    setStepDone('cs-task');
+                    instNum = END;
                     await setPageInstruction(instNum);
                     break;
             }
@@ -366,6 +397,39 @@ const skipCurrentStep = async () => {
 }
 
 window.skip = skipCurrentStep;
+
+window.fill = () => {
+    const surveys = [
+        { formId: 'cfi-form',     responseKey: 'cfiResponses',     maxScale: 7, errorId: 'cfi-error' },
+        { formId: 'cfs-form',     responseKey: 'cfsResponses',     maxScale: 6, errorId: 'cfs-error' },
+        { formId: 'dospert-form', responseKey: 'dospertResponses', maxScale: 7, errorId: 'dospert-error' },
+    ];
+
+    const active = surveys.find(s => document.getElementById(s.formId));
+    if (!active) { console.warn('No survey form found on page.'); return; }
+
+    document.querySelectorAll('.scale-button').forEach(btn => btn.classList.remove('fill-selected'));
+    if (!window[active.responseKey]) window[active.responseKey] = {};
+
+    const groups = document.querySelectorAll('.question-scale');
+    groups.forEach(group => {
+        const questionIndex = group.getAttribute('data-question');
+        const randomValue = Math.floor(Math.random() * active.maxScale) + 1;
+        window[active.responseKey][`q${questionIndex}`] = randomValue;
+        const button = group.querySelector(`[data-value="${randomValue}"]`);
+        if (button) button.classList.add('fill-selected');
+    });
+
+    const errorEl = document.getElementById(active.errorId);
+    if (errorEl) {
+        errorEl.style.color = 'var(--primary)';
+        errorEl.textContent = 'All questions filled with random values for testing!';
+        setTimeout(() => {
+            errorEl.style.color = 'var(--error)';
+            errorEl.textContent = '';
+        }, 2000);
+    }
+};
 
 
 const hidePanel = () => {
@@ -510,8 +574,8 @@ const setPageInstruction = async (instNum) => {
         PERCEPTUAL_TRAINING == instNum ||
         RL_TRAINING_1 == instNum || RL_TRAINING_2 == instNum ||
         FULL == instNum || FULL2 == instNum ||
-        SURVEY == instNum || RISK == instNum ||
-        DOSPERT == instNum) {
+        SURVEY == instNum || CFI == instNum ||
+        CFS == instNum || CS_TASK == instNum) {
 
     switch (instNum) {
             case TUTORIAL:
@@ -562,18 +626,20 @@ const setPageInstruction = async (instNum) => {
             // case SI:
             //     hypotheticalInvestmentPage();
             //     break;
-            case DOSPERT:
-                setPreviousStepDone()
+            case CFI:
+                setPreviousStepDone();
                 setCurrentStep('survey');
-                dospertScalePage();
+                cfiPage();
                 break;
-            // case CS:
-            //     choiceSetPage();
-            //     break;
-            case RISK:
-                setPreviousStepDone()
+            case CFS:
+                setPreviousStepDone();
                 setCurrentStep('survey');
-                riskAssessmentPage();
+                cfsPage();
+                break;
+            case CS_TASK:
+                setPreviousStepDone();
+                setCurrentStep('cs-task');
+                csTaskPage();
                 break;
         }
     } else if (instNum == END) {
@@ -684,7 +750,7 @@ function generalRiskSurveyPage() {
         // Prepare data for sending
         const generalRiskData = {
             prolificID: window.subID,
-            expName: 'FullPilotW',
+            expName: 'Within',
             riskScore: window.sgSelectedValue,
             timestamp: new Date().toISOString()
         };
@@ -804,12 +870,315 @@ function hypotheticalInvestmentPage() {
 }
 */
 
-// DOSPERT Scale Page
+// CFI Page (Cognitive Flexibility Inventory — 20 items, 7-point scale)
+function cfiPage() {
+    hideButton();
+    document.querySelector('#game').style.display = 'none';
+    document.querySelector('#panel').style.display = 'block';
+
+    const cfiQuestions = [
+        'I am good at "sizing up" situations.',
+        "I have a hard time making decisions when faced with difficult situations.",
+        "I consider multiple options before making a decision.",
+        "When I encounter difficult situations, I feel like I am losing control.",
+        "I like to look at difficult situations from many different angles.",
+        "I seek additional information not immediately available before attributing causes to behavior.",
+        "When encountering difficult situations, I become so stressed that I can not think of a way to resolve the situation.",
+        "I try to think about things from another person's point of view.",
+        "I find it troublesome that there are so many different ways to deal with difficult situations.",
+        "I am good at putting myself in others' shoes.",
+        "When I encounter difficult situations, I just don't know what to do.",
+        "It is important to look at difficult situations from many angles.",
+        "When in difficult situations, I consider multiple options before deciding how to behave.",
+        "I often look at a situation from different viewpoints.",
+        "I am capable of overcoming the difficulties in life that I face.",
+        "I consider all the available facts and information when attributing causes to behavior.",
+        "I feel I have no power to change things in difficult situations.",
+        "When I encounter difficult situations, I stop and try to think of several ways to resolve it.",
+        "I can think of more than one way to resolve a difficult situation I'm confronted with.",
+        "I consider multiple options before responding to difficult situations."
+    ];
+
+    // 0-indexed positions that are reverse-scored: items 2,4,7,9,11,17 (1-indexed)
+    const reverseItems = [1, 3, 6, 8, 10, 16];
+
+    let scale = `<nav class="no-space" style="margin: 15px 0;">`;
+    for (let i = 1; i <= 7; i++) {
+        const roundClass = i === 1 ? 'left-round' : i === 7 ? 'right-round' : 'no-round';
+        scale += `
+            <button type="button" class="scale-button border ${roundClass} max vertical small" data-value="${i}" style="min-width: 60px; padding: 8px 4px;">
+                <span style="font-size: 0.8em;">${i}</span>
+            </button>`;
+    }
+    scale += `</nav>`;
+
+    const scaleLabels = `
+        <div style="display: flex; justify-content: space-between; margin: 5px 0 20px 0; font-size: 0.8em; opacity: 0.8;">
+            <span><b>1</b> = Strongly Disagree</span>
+            <span><b>4</b> = Neutral</span>
+            <span><b>7</b> = Strongly Agree</span>
+        </div>`;
+
+    let content = `
+        <div style="display: flex; flex-direction: column; height: 130vh; max-width: 90%; margin: auto;">
+            <div style="text-align: center; flex-shrink: 0;">
+                <h2 style="margin-bottom: 5px;">Survey 1</h2>
+                <p style="font-size: 1.1em; margin-bottom: 20px; line-height: 1.6;">
+                    Below are statements that may or may not describe you. Please read each statement and indicate the extent to which you agree or disagree.
+                </p>
+                ${scaleLabels}
+            </div>
+            <div style="height: 38%; overflow-y: auto; padding: 20px; border: 2px solid #666666; border-radius: 12px; margin: 0 20px; background-color: var(--surface-container-lowest);">
+                <form id="cfi-form" style="padding: 0;">`;
+
+    cfiQuestions.forEach((question, index) => {
+        content += `
+            <div style="border: 2px solid var(--outline-variant); border-radius: 12px; padding: 20px; margin: 15px 0; background-color: var(--surface-container-low);">
+                <div style="margin-bottom: 15px;">
+                    <p style="font-size: 1em; line-height: 1.4; margin: 0;">
+                        <b>Q${index + 1}:</b> ${question}
+                    </p>
+                </div>
+                <div class="question-scale" data-question="${index}">
+                    ${scale.replace(/data-value="/g, `data-question="${index}" data-value="`)}
+                </div>
+            </div>`;
+    });
+
+    content += `
+                </form>
+            </div>
+            <div style="padding: 15px 20px; flex-shrink: 0; border-top: 1px solid var(--outline-variant); background-color: var(--surface-container);">
+                <div id="cfi-error" style="color: var(--error); text-align: center; font-weight: bold; min-height: 20px;"></div>
+            </div>
+        </div>`;
+
+    document.querySelector('#panel').innerHTML = content;
+
+    document.querySelectorAll('.scale-button').forEach(button => {
+        button.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            const questionIndex = button.getAttribute('data-question');
+            const value = button.getAttribute('data-value');
+            document.querySelectorAll(`[data-question="${questionIndex}"]`).forEach(btn => {
+                btn.classList.remove('fill-selected');
+            });
+            button.classList.add('fill-selected');
+            if (!window.cfiResponses) window.cfiResponses = {};
+            window.cfiResponses[`q${questionIndex}`] = parseInt(value);
+            document.getElementById('cfi-error').textContent = '';
+        });
+    });
+
+    showButton();
+    hidePrevButton();
+
+    const submitHandler = () => {
+        if (!window.cfiResponses || Object.keys(window.cfiResponses).length < cfiQuestions.length) {
+            const unanswered = [];
+            for (let i = 0; i < cfiQuestions.length; i++) {
+                if (!window.cfiResponses || window.cfiResponses[`q${i}`] === undefined) {
+                    unanswered.push(i + 1);
+                }
+            }
+            document.getElementById('cfi-error').textContent = `Please answer all questions. Missing: Q${unanswered.join(', Q')}`;
+            unblockClick();
+            return;
+        }
+        document.getElementById('cfi-error').textContent = '';
+
+        let score = 0;
+        for (let i = 0; i < cfiQuestions.length; i++) {
+            const raw = window.cfiResponses[`q${i}`];
+            score += reverseItems.includes(i) ? 8 - raw : raw;
+        }
+
+        const cfiData = {
+            prolificID: window.subID,
+            expName: 'Within',
+            timestamp: new Date().toISOString(),
+            ...window.cfiResponses,
+            score
+        };
+        sendCfiData(cfiData);
+
+        instNum = CFS;
+        setPageInstruction(instNum);
+    };
+    currentAction = submitHandler;
+}
+
+// CFS Page (Cognitive Flexibility Scale — 12 items, 6-point scale)
+function cfsPage() {
+    hideButton();
+    document.querySelector('#game').style.display = 'none';
+    document.querySelector('#panel').style.display = 'block';
+
+    const cfsQuestions = [
+        "I can communicate an idea in many different ways.",
+        "I avoid new and unusual situations.",
+        "I feel like I never get to make decisions.",
+        "I can find workable solutions to seemingly unsolvable problems.",
+        "I seldom have choices when deciding how to behave.",
+        "I am willing to work at creative solutions to problems.",
+        "In any given situation, I am able to act appropriately.",
+        "My behavior is a result of conscious decisions that I make.",
+        "I have many possible ways of behaving in any given situation.",
+        "I have difficulty using my knowledge on a given topic in real life situations.",
+        "I am willing to listen and consider alternatives for handling a problem.",
+        "I have the self-confidence necessary to try different ways of behaving."
+    ];
+
+    // 0-indexed positions that are reverse-scored: items 2,3,5,10 (1-indexed)
+    const reverseItems = [1, 2, 4, 9];
+
+    let scale = `<nav class="no-space" style="margin: 15px 0;">`;
+    for (let i = 1; i <= 6; i++) {
+        const roundClass = i === 1 ? 'left-round' : i === 6 ? 'right-round' : 'no-round';
+        scale += `
+            <button type="button" class="scale-button border ${roundClass} max vertical small" data-value="${i}" style="min-width: 60px; padding: 8px 4px;">
+                <span style="font-size: 0.8em;">${i}</span>
+            </button>`;
+    }
+    scale += `</nav>`;
+
+    const scaleLabels = `
+        <div style="display: flex; justify-content: space-between; margin: 5px 0 20px 0; font-size: 0.8em; opacity: 0.8;">
+            <span><b>1</b> = Strongly Disagree</span>
+            <span><b>6</b> = Strongly Agree</span>
+        </div>`;
+
+    let content = `
+        <div style="display: flex; flex-direction: column; height: 130vh; max-width: 90%; margin: auto;">
+            <div style="text-align: center; flex-shrink: 0;">
+                <h2 style="margin-bottom: 5px;">Survey 2</h2>
+                <p style="font-size: 1.1em; margin-bottom: 20px; line-height: 1.6;">
+                    Below are statements that may or may not describe you. Please indicate the extent to which you agree or disagree with each statement.
+                </p>
+                ${scaleLabels}
+            </div>
+            <div style="height: 38%; overflow-y: auto; padding: 20px; border: 2px solid #666666; border-radius: 12px; margin: 0 20px; background-color: var(--surface-container-lowest);">
+                <form id="cfs-form" style="padding: 0;">`;
+
+    cfsQuestions.forEach((question, index) => {
+        content += `
+            <div style="border: 2px solid var(--outline-variant); border-radius: 12px; padding: 20px; margin: 15px 0; background-color: var(--surface-container-low);">
+                <div style="margin-bottom: 15px;">
+                    <p style="font-size: 1em; line-height: 1.4; margin: 0;">
+                        <b>Q${index + 1}:</b> ${question}
+                    </p>
+                </div>
+                <div class="question-scale" data-question="${index}">
+                    ${scale.replace(/data-value="/g, `data-question="${index}" data-value="`)}
+                </div>
+            </div>`;
+    });
+
+    content += `
+                </form>
+            </div>
+            <div style="padding: 15px 20px; flex-shrink: 0; border-top: 1px solid var(--outline-variant); background-color: var(--surface-container);">
+                <div id="cfs-error" style="color: var(--error); text-align: center; font-weight: bold; min-height: 20px;"></div>
+            </div>
+        </div>`;
+
+    document.querySelector('#panel').innerHTML = content;
+
+    document.querySelectorAll('.scale-button').forEach(button => {
+        button.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            const questionIndex = button.getAttribute('data-question');
+            const value = button.getAttribute('data-value');
+            document.querySelectorAll(`[data-question="${questionIndex}"]`).forEach(btn => {
+                btn.classList.remove('fill-selected');
+            });
+            button.classList.add('fill-selected');
+            if (!window.cfsResponses) window.cfsResponses = {};
+            window.cfsResponses[`q${questionIndex}`] = parseInt(value);
+            document.getElementById('cfs-error').textContent = '';
+        });
+    });
+
+    showButton();
+    hidePrevButton();
+
+    const submitHandler = () => {
+        if (!window.cfsResponses || Object.keys(window.cfsResponses).length < cfsQuestions.length) {
+            const unanswered = [];
+            for (let i = 0; i < cfsQuestions.length; i++) {
+                if (!window.cfsResponses || window.cfsResponses[`q${i}`] === undefined) {
+                    unanswered.push(i + 1);
+                }
+            }
+            document.getElementById('cfs-error').textContent = `Please answer all questions. Missing: Q${unanswered.join(', Q')}`;
+            unblockClick();
+            return;
+        }
+        document.getElementById('cfs-error').textContent = '';
+
+        let score = 0;
+        for (let i = 0; i < cfsQuestions.length; i++) {
+            const raw = window.cfsResponses[`q${i}`];
+            score += reverseItems.includes(i) ? 7 - raw : raw;
+        }
+
+        const cfsData = {
+            prolificID: window.subID,
+            expName: 'Within',
+            timestamp: new Date().toISOString(),
+            ...window.cfsResponses,
+            score
+        };
+        sendCfsData(cfsData);
+
+        instNum = CS_TASK;
+        setPageInstruction(instNum);
+    };
+    currentAction = submitHandler;
+}
+
+// Color-Shape Task interstitial page
+function csTaskPage() {
+    hideButton();
+    document.querySelector('#game').style.display = 'none';
+    document.querySelector('#panel').style.display = 'flex';
+
+    const taskURL = `https://mili2nd.co/lbmc?subjectid=${encodeURIComponent(window.subID)}`;
+
+    document.querySelector('#panel').innerHTML = `
+        <div style="margin: auto; max-width: 650px; padding: 48px 32px; text-align: center;">
+            <h2 style="margin-bottom: 24px;">Color-Shape Task</h2>
+
+            <p style="font-size: 1.05em; line-height: 1.8; margin-bottom: 16px;">
+                You've completed the surveys — well done!
+            </p>
+            <p style="font-size: 1.05em; line-height: 1.8; margin-bottom: 24px;">
+                Before finishing, please complete a short <b>Color-Shape Task</b>.<br>
+                If you feel cognitively tired, feel free to take a short break before starting it.
+            </p>
+
+            <a href="${taskURL}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+                <button style="font-size: 1.1em; padding: 16px 36px; border-radius: 50px; cursor: pointer;">
+                    Open Color-Shape Task &nbsp;&#8599;
+                </button>
+            </a>
+
+            <p style="font-size: 0.9em; margin-top: 36px; opacity: 0.7; line-height: 1.6;">
+                The task will open in a new tab.<br>
+                You will be automatically redirected back here when you are done.
+            </p>
+        </div>
+    `;
+}
+
+// --- DOSPERT Scale Page (deprecated — replaced by CFI/CFS above) ---
 function dospertScalePage() {
     hideButton();
     document.querySelector('#game').style.display = 'none';
     document.querySelector('#panel').style.display = 'block';
-    
+
     const dospertQuestions = [
         "Admitting that your tastes are different from those of a friend.",
         "Going camping in the wilderness.",
@@ -934,46 +1303,6 @@ function dospertScalePage() {
         });
     });
     
-    // Add click handler for "fill all" testing button
-    window.fill = () => {
-        // event.preventDefault();
-        // event.stopPropagation();
-        
-        // Clear all previous selections
-        document.querySelectorAll('.scale-button').forEach(btn => {
-            btn.classList.remove('fill-selected');
-        });
-        
-        // Initialize responses object
-        if (!window.dospertResponses) window.dospertResponses = {};
-        
-        // Fill all questions with random values between 1-7
-        for (let questionIndex = 0; questionIndex < dospertQuestions.length; questionIndex++) {
-            const randomValue = Math.floor(Math.random() * 7) + 1; // Random value 1-7
-            
-            // Store the response
-            window.dospertResponses[`q${questionIndex}`] = randomValue;
-            
-            // Visually select the button
-            const button = document.querySelector(`[data-question="${questionIndex}"][data-value="${randomValue}"]`);
-            if (button) {
-                button.classList.add('fill-selected');
-            }
-        }
-        
-        // Clear any error messages
-        document.getElementById('dospert-error').textContent = '';
-        
-        // Show confirmation message briefly
-        const originalText = document.getElementById('dospert-error').textContent;
-        document.getElementById('dospert-error').style.color = 'var(--primary)';
-        document.getElementById('dospert-error').textContent = 'All questions filled with random values for testing!';
-        setTimeout(() => {
-            document.getElementById('dospert-error').style.color = 'var(--error)';
-            document.getElementById('dospert-error').textContent = originalText;
-        }, 2000);
-    };
-    
     showButton();
     hidePrevButton();
     
@@ -997,7 +1326,7 @@ function dospertScalePage() {
         // Prepare data for storage
         const dospertData = {
             prolificID: window.subID,
-            expName: 'FullPilotW',
+            expName: 'Within',
             ...window.dospertResponses,
             timestamp: new Date().toISOString()
         };
@@ -1576,7 +1905,7 @@ const riskAssessmentPage2 = () => {
         // Prepare trial data
         const trialData = {
             prolificID: window.subID,
-            expName: 'FullPilotW',
+            expName: 'Within',
             trial: trialIndex + 1,
             probHigh: lottery.probHigh,
             optionA_high: lottery.optionA.high,
@@ -1646,7 +1975,7 @@ const lastPage = () => {
     setStepDone('full');
     setStepDone('survey');
     setStepDone('full2');
-    setStepDone('final-survey');
+    setStepDone('cs-task');
     setCurrentStep('end')
     
     // Safely get score with fallback
@@ -1697,7 +2026,6 @@ const lastPage = () => {
              <h1 style="display: block">🚀Thank you!🚀</h1>
              <br>
              <h3>💰 You earned ${pounds} pounds from the space shooter game!💰</h3>
-             <h3>💰 You also earned ${riskAmount.toFixed(2)} pounds in the survey phase! 💰</h3>
              <h3>💰 You earned ${total} pounds in total! 💰</h3>
              <br>
              <h4>Thank you for participating in our experiment!</h4>
@@ -1706,6 +2034,8 @@ const lastPage = () => {
              <button id="submit-button" class="btn btn-primary">Complete</button>
              </div>
      `;
+                //   <h3>💰 You also earned ${riskAmount.toFixed(2)} pounds in the survey phase! 💰</h3>
+// 
     document.querySelector('#submit-button').addEventListener('click', () => {
         window.location.href = atob(COMP_LINK);
     })
@@ -1798,8 +2128,8 @@ const sendFeedback = async (data, call = 0) => {
     }
 }
 
-const sendRiskData = async (data, call = 0) => {
-    let response = await fetch(RISK_PHP, {
+const sendCfiData = async (data, call = 0) => {
+    let response = await fetch(CFI_PHP, {
         method: 'POST',
         body: JSON.stringify(data),
         headers: {
@@ -1808,22 +2138,21 @@ const sendRiskData = async (data, call = 0) => {
     });
 
     if (response.ok) {
-        console.log('Risk assessment data sent successfully');
+        console.log('CFI data sent successfully');
         return response.json();
     } else {
         if (call > 3) {
-            console.log('Failed to send risk assessment data');
+            console.log('Failed to send CFI data');
             return;
         }
-        // try again after 500ms
         setTimeout(() => {
-            sendRiskData(data, call + 1);
+            sendCfiData(data, call + 1);
         }, 500);
     }
 }
 
-const sendRiskTrialData = async (data, call = 0) => {
-    let response = await fetch(RISK_TRIAL_PHP, {
+const sendCfsData = async (data, call = 0) => {
+    let response = await fetch(CFS_PHP, {
         method: 'POST',
         body: JSON.stringify(data),
         headers: {
@@ -1832,64 +2161,15 @@ const sendRiskTrialData = async (data, call = 0) => {
     });
 
     if (response.ok) {
-        console.log('Risk trial data sent successfully');
+        console.log('CFS data sent successfully');
         return response.json();
     } else {
         if (call > 3) {
-            console.log('Failed to send risk trial data');
+            console.log('Failed to send CFS data');
             return;
         }
-        // try again after 500ms
         setTimeout(() => {
-            sendRiskTrialData(data, call + 1);
-        }, 500);
-    }
-}
-
-const sendDospertData = async (data, call = 0) => {
-    let response = await fetch(DOSPERT_PHP, {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
-
-    if (response.ok) {
-        console.log('DOSPERT data sent successfully');
-        return response.json();
-    } else {
-        if (call > 3) {
-            console.log('Failed to send DOSPERT data');
-            return;
-        }
-        // try again after 500ms
-        setTimeout(() => {
-            sendDospertData(data, call + 1);
-        }, 500);
-    }
-}
-
-const sendGeneralRiskData = async (data, call = 0) => {
-    let response = await fetch(GENERAL_RISK_PHP, {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
-
-    if (response.ok) {
-        console.log('General Risk Survey data sent successfully');
-        return response.json();
-    } else {
-        if (call > 3) {
-            console.log('Failed to send General Risk Survey data');
-            return;
-        }
-        // try again after 500ms
-        setTimeout(() => {
-            sendGeneralRiskData(data, call + 1);
+            sendCfsData(data, call + 1);
         }, 500);
     }
 }
@@ -2064,7 +2344,7 @@ window.endFull2 = () => {
     setPreviousStepDone();
     setStepDone('full2');
     setCurrentStep('survey')
-    instNum = DOSPERT;
+    instNum = CFI;
     setPageInstruction(instNum);
 }
 
