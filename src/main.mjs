@@ -1149,7 +1149,7 @@ function csTaskPage() {
 
     document.querySelector('#panel').innerHTML = `
         <div style="margin: auto; max-width: 650px; padding: 48px 32px; text-align: center;">
-            <h2 style="margin-bottom: 24px;">Color-Shape Task</h2>
+            <h2 style="margin-bottom: 24px; margin-left: 10%">Color-Shape Task</h2>
 
             <p style="font-size: 1.05em; line-height: 1.8; margin-bottom: 16px;">
                 You've completed the surveys — well done!
