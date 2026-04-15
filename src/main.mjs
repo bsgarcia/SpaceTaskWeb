@@ -998,8 +998,7 @@ function cfiPage() {
             prolificID: window.subID,
             expName: 'Within',
             timestamp: new Date().toISOString(),
-            ...window.cfiResponses,
-            score
+            ...window.cfiResponses            
         };
         sendCfiData(cfiData);
 
@@ -1128,8 +1127,7 @@ function cfsPage() {
             prolificID: window.subID,
             expName: 'Within',
             timestamp: new Date().toISOString(),
-            ...window.cfsResponses,
-            score
+            ...window.cfsResponses
         };
         sendCfsData(cfsData);
 
