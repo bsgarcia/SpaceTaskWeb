@@ -405,6 +405,26 @@ const skipCurrentStep = async () => {
 
 window.skip = skipCurrentStep;
 
+/**
+ * window.surveyOrderInfo()  — log the current survey order to the console
+ * window.setSurveyOrder('CFI_FIRST' | 'CFS_FIRST')  — force an order for testing
+ */
+window.surveyOrderInfo = () => {
+    const names = { [CFI]: 'CFI', [CFS]: 'CFS' };
+    console.log(
+        `%cSurvey order: ${surveyOrder.map(n => names[n]).join(' → ')} → CS_TASK`,
+        'color: cyan; font-weight: bold'
+    );
+    console.log('surveyOrder array:', surveyOrder);
+    console.log('localStorage surveyOrder:', localStorage.getItem('surveyOrder'));
+};
+
+window.setSurveyOrder = (order) => {
+    const next = order === 'CFS_FIRST' ? [CFS, CFI] : [CFI, CFS];
+    localStorage.setItem('surveyOrder', JSON.stringify(next));
+    console.log(`surveyOrder set to ${next.map(n => ({[CFI]:'CFI',[CFS]:'CFS'}[n])).join(' → ')}. Reload to apply.`);
+};
+
 window.fill = () => {
     const surveys = [
         { formId: 'cfi-form',     responseKey: 'cfiResponses',     maxScale: 7, errorId: 'cfi-error' },
