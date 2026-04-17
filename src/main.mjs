@@ -1154,6 +1154,7 @@ function cfsPage() {
             prolificID: window.subID,
             expName: 'Within',
             timestamp: new Date().toISOString(),
+            first: surveyOrder[0] === CFS ? 1 : 0,
             ...window.cfsResponses
         };
         sendCfsData(cfsData);

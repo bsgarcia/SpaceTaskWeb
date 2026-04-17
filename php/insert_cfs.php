@@ -17,7 +17,7 @@ try {
     $conn = getDbConnection();
 
     // Whitelist allowed columns for CFS data
-    $allowed_columns = ['prolificID', 'expName', 'timestamp', 'score'];
+    $allowed_columns = ['prolificID', 'expName', 'timestamp', 'score', 'first'];
 
     // Add question columns (q0 through q11)
     for ($i = 0; $i <= 11; $i++) {
