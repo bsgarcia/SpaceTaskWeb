@@ -393,32 +393,37 @@ def run_browser_bot(base_url: str, headless: bool, prolific_id: str) -> list[dic
         wait_for_inst(page, 13)
         inject_score_and_call(page, 13, "window.endFull2();")
 
-        # ── Phase 14: CFI survey (20 questions, 1–7 Likert) ───────────────
-        log("[Phase 14] CFI survey — auto-filling via window.fill()")
-        wait_for_inst(page, 14)
-        page.wait_for_selector("#cfi-form", timeout=DEFAULT_TIMEOUT_MS)
-        page.evaluate("() => window.fill()")
-        page.wait_for_timeout(500)  # let UI settle
-        # Verify all 20 responses were recorded
-        cfi_filled = page.evaluate(
-            "() => window.cfiResponses ? Object.keys(window.cfiResponses).length : 0"
+        # ── Phases 14 & 15: CFI / CFS surveys (randomised order) ────────────
+        # Read surveyOrder from localStorage to match the JS-assigned order.
+        survey_order_raw = page.evaluate(
+            "() => localStorage.getItem('surveyOrder')"
         )
-        if cfi_filled < 20:
-            warn(f"    CFI: only {cfi_filled}/20 responses set before submit")
-        click_next(page, "CFI → CFS")
+        import json as _json
+        CFI_INST, CFS_INST = 14, 15
+        if survey_order_raw:
+            survey_order = _json.loads(survey_order_raw)
+        else:
+            survey_order = [CFI_INST, CFS_INST]  # fallback
 
-        # ── Phase 15: CFS survey (12 questions, 1–6 Likert) ───────────────
-        log("[Phase 15] CFS survey — auto-filling via window.fill()")
-        wait_for_inst(page, 15)
-        page.wait_for_selector("#cfs-form", timeout=DEFAULT_TIMEOUT_MS)
-        page.evaluate("() => window.fill()")
-        page.wait_for_timeout(500)
-        cfs_filled = page.evaluate(
-            "() => window.cfsResponses ? Object.keys(window.cfsResponses).length : 0"
-        )
-        if cfs_filled < 12:
-            warn(f"    CFS: only {cfs_filled}/12 responses set before submit")
-        click_next(page, "CFS → CS Task")
+        _survey_meta = {
+            CFI_INST: ("CFI", "#cfi-form", "cfiResponses", 20),
+            CFS_INST: ("CFS", "#cfs-form", "cfsResponses", 12),
+        }
+
+        for idx, inst_id in enumerate(survey_order):
+            name, form_sel, resp_key, q_count = _survey_meta[inst_id]
+            next_label = _survey_meta[survey_order[1]][0] if idx == 0 else "CS Task"
+            log(f"[Phase {inst_id}] {name} survey — auto-filling via window.fill()")
+            wait_for_inst(page, inst_id)
+            page.wait_for_selector(form_sel, timeout=DEFAULT_TIMEOUT_MS)
+            page.evaluate("() => window.fill()")
+            page.wait_for_timeout(500)
+            filled = page.evaluate(
+                f"() => window.{resp_key} ? Object.keys(window.{resp_key}).length : 0"
+            )
+            if filled < q_count:
+                warn(f"    {name}: only {filled}/{q_count} responses set before submit")
+            click_next(page, f"{name} → {next_label}")
 
         # ── Phase 18: CS Task (external link — skip) ──────────────────────
         log("[Phase 18] CS Task — skipping via window.skip()")

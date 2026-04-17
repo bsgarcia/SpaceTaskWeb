@@ -17,6 +17,13 @@ const CFI = 14;
 const CFS = 15;
 const CS_TASK = 18;
 
+// Randomise survey order once per participant; persist through refreshes
+const _storedOrder = localStorage.getItem('surveyOrder');
+const surveyOrder = _storedOrder
+    ? JSON.parse(_storedOrder)
+    : (Math.random() < 0.5 ? [CFI, CFS] : [CFS, CFI]);
+if (!_storedOrder) localStorage.setItem('surveyOrder', JSON.stringify(surveyOrder));
+
 // const SG = 13; // General Risk Survey (after DOSPERT)
 const SURVEY = 16 // Post-game survey (after FULL2)
 const END = 17
@@ -128,9 +135,9 @@ function main() {
         setCurrentStep('survey');
         setPreviousStepDone();
       
-        // first step is CFI, then CFS
-        cfiPage();
-        setPageInstruction(CFI);
+        // first survey is determined randomly (surveyOrder)
+        surveyOrder[0] === CFI ? cfiPage() : cfsPage();
+        setPageInstruction(surveyOrder[0]);
         return;
     }
     if (getURLParams('end') === '1') {
@@ -369,12 +376,12 @@ const skipCurrentStep = async () => {
                     break;
                 case CFI:
                     setStepDone('survey');
-                    instNum = CFS;
+                    instNum = surveyOrder.indexOf(CFI) === 0 ? CFS : CS_TASK;
                     await setPageInstruction(instNum);
                     break;
                 case CFS:
                     setStepDone('survey');
-                    instNum = CS_TASK;
+                    instNum = surveyOrder.indexOf(CFS) === 0 ? CFI : CS_TASK;
                     await setPageInstruction(instNum);
                     break;
                 case CS_TASK:
@@ -922,7 +929,7 @@ function cfiPage() {
     let content = `
         <div style="display: flex; flex-direction: column; height: 130vh; max-width: 90%; margin: auto;">
             <div style="text-align: center; flex-shrink: 0;">
-                <h2 style="margin-bottom: 5px;">Survey 1</h2>
+                <h2 style="margin-bottom: 5px;">${surveyOrder.indexOf(CFI) === 0 ? 'Survey 1' : 'Survey 2'}</h2>
                 <p style="font-size: 1.1em; margin-bottom: 20px; line-height: 1.6;">
                     Below are statements that may or may not describe you. Please read each statement and indicate the extent to which you agree or disagree.
                 </p>
@@ -1002,7 +1009,7 @@ function cfiPage() {
         };
         sendCfiData(cfiData);
 
-        instNum = CFS;
+        instNum = surveyOrder.indexOf(CFI) === 0 ? CFS : CS_TASK;
         setPageInstruction(instNum);
     };
     currentAction = submitHandler;
@@ -1051,7 +1058,7 @@ function cfsPage() {
     let content = `
         <div style="display: flex; flex-direction: column; height: 130vh; max-width: 90%; margin: auto;">
             <div style="text-align: center; flex-shrink: 0;">
-                <h2 style="margin-bottom: 5px;">Survey 2</h2>
+                <h2 style="margin-bottom: 5px;">${surveyOrder.indexOf(CFS) === 0 ? 'Survey 1' : 'Survey 2'}</h2>
                 <p style="font-size: 1.1em; margin-bottom: 20px; line-height: 1.6;">
                     Below are statements that may or may not describe you. Please indicate the extent to which you agree or disagree with each statement.
                 </p>
@@ -1131,7 +1138,7 @@ function cfsPage() {
         };
         sendCfsData(cfsData);
 
-        instNum = CS_TASK;
+        instNum = surveyOrder.indexOf(CFS) === 0 ? CFI : CS_TASK;
         setPageInstruction(instNum);
     };
     currentAction = submitHandler;
@@ -2342,7 +2349,7 @@ window.endFull2 = () => {
     setPreviousStepDone();
     setStepDone('full2');
     setCurrentStep('survey')
-    instNum = CFI;
+    instNum = surveyOrder[0];
     setPageInstruction(instNum);
 }
 
