@@ -29,7 +29,6 @@ const SURVEY = 16 // Post-game survey (after FULL2)
 const END = 17
 const CONV = 0.00002;
 const GAME_NUMBER = 5;
-
 const COMP_LINK = 'aHR0cHM6Ly9hcHAucHJvbGlmaWMuY29tL3N1Ym1pc3Npb25zL2NvbXBsZXRlP2NjPUNKRllaSlk3';
 
 const clickBlockedTime = 300;
@@ -951,7 +950,7 @@ function cfiPage() {
             <div style="text-align: center; flex-shrink: 0;">
                 <h2 style="margin-bottom: 5px;">${surveyOrder.indexOf(CFI) === 0 ? 'Survey 1' : 'Survey 2'}</h2>
                 <p style="font-size: 1.1em; margin-bottom: 20px; line-height: 1.6;">
-                    Below are statements that may or may not describe you. Please read each statement and indicate the extent to which you agree or disagree.
+                    Please use the scale below to indicate the extent to which you agree or disagree with the following statements.
                 </p>
                 ${scaleLabels}
             </div>
@@ -1080,7 +1079,7 @@ function cfsPage() {
             <div style="text-align: center; flex-shrink: 0;">
                 <h2 style="margin-bottom: 5px;">${surveyOrder.indexOf(CFS) === 0 ? 'Survey 1' : 'Survey 2'}</h2>
                 <p style="font-size: 1.1em; margin-bottom: 20px; line-height: 1.6;">
-                    Below are statements that may or may not describe you. Please indicate the extent to which you agree or disagree with each statement.
+                    The following statements deal with your beliefs and feelings about your own behavior. Read each statement and respond by selecting the number that best represents your agreement with each statement.
                 </p>
                 ${scaleLabels}
             </div>
