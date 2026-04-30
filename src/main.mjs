@@ -105,11 +105,11 @@ function main() {
         // Map stepper step IDs to instNums
         const stepMap = {
             'introduction': 0,
-            'training1':    RL_TRAINING_1,
-            'training2':    PERCEPTUAL_TRAINING,
-            'training3':    RL_TRAINING_2,
-            'full':         FULL,
-            'full2':        FULL2,
+                'training1':    RL_TRAINING_1 - 1,
+                'training2':    PERCEPTUAL_TRAINING - 1,
+                'training3':    RL_TRAINING_2 - 1,
+                'full':         FULL - 1,
+                'full2':        FULL2 - 1,
             'survey':       CFI,
             'cs-task':      CS_TASK,
             'end':          END,
@@ -118,7 +118,7 @@ function main() {
             const el = document.getElementById(id);
             if (!el) return;
             el.style.cursor = 'pointer';
-            el.title = `DEBUG: jump to step ${num}`;
+                el.title = `DEBUG: jump to page ${num}`;
             el.addEventListener('click', () => {
                 instNum = num;
                 setPageInstruction(instNum);
