@@ -1022,7 +1022,7 @@ function cfiPage() {
 
         const cfiData = {
             prolificID: window.subID,
-            expName: 'Within',
+            expName: 'Within2',
             timestamp: new Date().toISOString(),
             ...window.cfiResponses            
         };
@@ -1151,7 +1151,7 @@ function cfsPage() {
 
         const cfsData = {
             prolificID: window.subID,
-            expName: 'Within',
+            expName: 'Within2',
             timestamp: new Date().toISOString(),
             first: surveyOrder[0] === CFS ? 1 : 0,
             ...window.cfsResponses
