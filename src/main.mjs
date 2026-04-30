@@ -12,7 +12,7 @@ const RL_TRAINING_1 = 5
 const PERCEPTUAL_TRAINING = 7
 const RL_TRAINING_2 = 9
 const FULL = 11
-const FULL2 = 13 // Game 5 (moved after surveys)
+const FULL2 = 13 // Second combined game
 const CFI = 14;
 const CFS = 15;
 const CS_TASK = 18;
@@ -166,7 +166,7 @@ const startFull = () => {
     setStepDone('introduction');
     setStepDone('training2');
     setStepDone('training1');
-    startUnityGame('all_or_none');
+    startUnityGame('partial_reward');
 }
 
 const startFull2 = () => {
@@ -179,7 +179,7 @@ const startFull2 = () => {
     setStepDone('training2');
     setStepDone('training1');
     setStepDone('full');
-    startUnityGame('partial_reward');
+    startUnityGame('all_or_none');
 }
 
 const startTrainingPerceptual = () => {
@@ -1985,7 +1985,7 @@ const riskAssessmentPage2 = () => {
         sendRiskData(riskData);
         
         setStepDone('survey');
-        instNum = FULL2; // Go to game 5 after completing risk assessment
+        instNum = FULL2; // Go to the second combined game after completing risk assessment
         setPageInstruction(instNum);
     };
     
@@ -2345,12 +2345,12 @@ window.endTrainingRL = (sess) => {
 
 window.endFull = (sess) => {
     if (sess == 3) {
-        // After game 4 (FULL), show instruction page before game 5 (FULL2)
+        // After the first combined game (FULL), show the instruction page before the second one (FULL2)
         quitUnityGame();
         localStorage.setItem('score', JSON.stringify(window.score));
         setPreviousStepDone();
         setStepDone('full');
-        // Go to instruction page 11 (instNum = 12, which loads inst_11.md)
+        // Go to the instruction page before FULL2 (instNum = 12, which loads inst_11.md)
         instNum = FULL2-1;
         setPageInstruction(instNum);
     } else {
