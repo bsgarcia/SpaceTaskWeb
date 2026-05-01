@@ -2344,7 +2344,14 @@ window.endTrainingRL = (sess) => {
 }
 
 window.endFull = (sess) => {
-    if (sess == 3) {
+    const currentStep = getCurrentStep();
+
+    if (currentStep === 'full2') {
+        window.endFull2();
+        return;
+    }
+
+    if (currentStep === 'full' || sess == 3) {
         // After the first combined game (FULL), show the instruction page before the second one (FULL2)
         quitUnityGame();
         localStorage.setItem('score', JSON.stringify(window.score));
@@ -2353,9 +2360,10 @@ window.endFull = (sess) => {
         // Go to the instruction page before FULL2 (instNum = 12, which loads inst_11.md)
         instNum = FULL2-1;
         setPageInstruction(instNum);
-    } else {
-        window.endFull2();
+        return;
     }
+
+    window.endFull2();
 }
 
 window.endFull2 = () => {
