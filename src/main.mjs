@@ -12,42 +12,34 @@ const RL_TRAINING_1 = 5
 const PERCEPTUAL_TRAINING = 7
 const RL_TRAINING_2 = 9
 const FULL = 11
-const FULL2 = 13 // Game 5 (moved after surveys)
+const FULL2 = 13 
 
 // Whether the Perceptual Training (training2) phase uses the partial-reward
 // build (src/game/training2PR) instead of the standard one (src/game/training2)
-const TRAINING2_PARTIAL_REWARD = true;
-// const CFI = 14;      // RETIRED — replaced by new battery (kept for reference)
-// const CFS = 15;
-// const CS_TASK = 18;  // Color-Shape Task — retired (kept for reference)
-const CFI = 14;   // kept defined so retired cfiPage()/sendCfiData stay valid
-const CFS = 15;   // kept defined so retired cfsPage()/sendCfsData stay valid
-const CS_TASK = 18; // kept defined so retired csTaskPage() stays valid
+const TRAINING2_PARTIAL_REWARD = false;
 
-// New survey/task battery phases
-const NFC   = 19; // Need for Cognition
+// Order of the two final games (FULL = game 4, FULL2 = game 5).
+// false (default): all_or_none first (FULL), then partial_reward (FULL2).
+// true: partial_reward first (FULL), then all_or_none (FULL2).
+const PARTIAL_REWARD_FIRST = false;
+
+// Survey/task battery phases
+const REI40 = 19; // Rational-Experiential Inventory (40-item)
 const CFQ   = 20; // Cognitive Failures Questionnaire
 const OCIR  = 21; // Obsessive-Compulsive Inventory-Revised
 const BFI2S = 22; // Big Five Inventory-2 Short form
 const WCST  = 23; // Wisconsin Card Sorting Test (NOT YET IMPLEMENTED)
 
-// OLD two-item CFI/CFS order — commented out, replaced by 4-item battery below
-// const _storedOrder = localStorage.getItem('surveyOrder');
-// const surveyOrder = _storedOrder
-//     ? JSON.parse(_storedOrder)
-//     : (Math.random() < 0.5 ? [CFI, CFS] : [CFS, CFI]);
-// if (!_storedOrder) localStorage.setItem('surveyOrder', JSON.stringify(surveyOrder));
-
 // Randomise battery order once per participant; persist through refreshes
-const BATTERY = [NFC, CFQ, OCIR, BFI2S];
-const BATTERY_NAMES = { [NFC]: 'NFC', [CFQ]: 'CFQ', [OCIR]: 'OCIR', [BFI2S]: 'BFI2S' };
+const BATTERY = [REI40, CFQ, OCIR, BFI2S];
+const BATTERY_NAMES = { [REI40]: 'REI40', [CFQ]: 'CFQ', [OCIR]: 'OCIR', [BFI2S]: 'BFI2S' };
 const _storedOrder = localStorage.getItem('surveyOrder');
 const surveyOrder = _storedOrder
     ? JSON.parse(_storedOrder)
     : shuffle([...BATTERY]);
 if (!_storedOrder) localStorage.setItem('surveyOrder', JSON.stringify(surveyOrder));
 
-// Comma-separated battery order (e.g. "NFC,CFQ,OCIR,BFI2S") sent alongside
+// Comma-separated battery order (e.g. "REI40,CFQ,OCIR,BFI2S") sent alongside
 // each survey's data so the order can be recovered without joins.
 const surveyOrderNames = surveyOrder.map(n => BATTERY_NAMES[n]).join(',');
 
@@ -62,7 +54,7 @@ function nextInBattery(currentPhase) {
 // Returns the page-render function for a given battery phase constant.
 function pageForBatteryPhase(phase) {
     switch (phase) {
-        case NFC:   return nfcPage;
+        case REI40: return rei40Page;
         case CFQ:   return cfqPage;
         case OCIR:  return ociRPage;
         case BFI2S: return bfi2sPage;
@@ -70,18 +62,15 @@ function pageForBatteryPhase(phase) {
     }
 }
 
-// const SG = 13; // General Risk Survey (after DOSPERT)
-const SURVEY = 16 // Post-game survey (after FULL2)
-const END = 17
+// END must stay numerically ABOVE every reachable phase (battery 19–22, WCST 23).
+// The resume guard in main() uses `instNum >= END` to decide "show the final page".
+const END = 24
 const CONV = 0.00002;
 const GAME_NUMBER = 5;
 const COMP_LINK = 'aHR0cHM6Ly9hcHAucHJvbGlmaWMuY29tL3N1Ym1pc3Npb25zL2NvbXBsZXRlP2NjPUNKRllaSlk3';
 
 const clickBlockedTime = 300;
-const SURVEY_PHP = 'php/insert_feedback.php';
-const CFI_PHP = 'php/insert_cfi.php';
-const CFS_PHP = 'php/insert_cfs.php';
-const NFC_PHP   = 'php/insert_nfc.php';
+const REI40_PHP = 'php/insert_rei40.php';
 const CFQ_PHP   = 'php/insert_cfq.php';
 const OCIR_PHP  = 'php/insert_ocir.php';
 const BFI2S_PHP = 'php/insert_bfi2s.php';
@@ -162,7 +151,6 @@ function main() {
             'full':         FULL,
             'full2':        FULL2,
             'survey':       surveyOrder[0],
-            // 'cs-task':   CS_TASK, // RETIRED — Color-Shape Task no longer in flow
             'end':          END,
         };
         Object.entries(stepMap).forEach(([id, num]) => {
@@ -185,9 +173,6 @@ function main() {
         setCurrentStep('survey');
         setPreviousStepDone();
       
-        // first survey is determined randomly (surveyOrder)
-        // OLD two-item CFI/CFS dispatch — commented out, see new battery dispatch below
-        // surveyOrder[0] === CFI ? cfiPage() : cfsPage();
         pageForBatteryPhase(surveyOrder[0])();
         setPageInstruction(surveyOrder[0]);
         return;
@@ -219,7 +204,7 @@ const startFull = () => {
     setStepDone('introduction');
     setStepDone('training2');
     setStepDone('training1');
-    startUnityGame('all_or_none');
+    startUnityGame(PARTIAL_REWARD_FIRST ? 'partial_reward' : 'all_or_none');
 }
 
 const startFull2 = () => {
@@ -232,7 +217,7 @@ const startFull2 = () => {
     setStepDone('training2');
     setStepDone('training1');
     setStepDone('full');
-    startUnityGame('partial_reward');
+    startUnityGame(PARTIAL_REWARD_FIRST ? 'all_or_none' : 'partial_reward');
 }
 
 const startTrainingPerceptual = () => {
@@ -285,7 +270,7 @@ const setSubID = () => {
 
 // ------------------------------ UI Managment ------------------------------ //
 const setPreviousStepDone = () => {
-    let steps = ['introduction', 'training1', 'training2', 'training3', 'full', 'survey', 'full2', 'cs-task', 'end'];
+    let steps = ['introduction', 'training1', 'training2', 'training3', 'full', 'full2', 'survey', 'final-survey', 'end'];
     // get current step
     let currentStep = getCurrentStep();
     console.log(currentStep);
@@ -329,7 +314,7 @@ const setCurrentStep = (step) => {
 }
 // unset all steps
 const unsetAllSteps = () => {
-    let steps = ['introduction', 'training1', 'training2', 'training3', 'full', 'survey', 'full2', 'cs-task', 'end'];
+    let steps = ['introduction', 'training1', 'training2', 'training3', 'full', 'full2', 'survey', 'final-survey', 'end'];
     steps.forEach((step) => {
         unsetStep(step);
     })
@@ -383,12 +368,7 @@ const skipCurrentStep = async () => {
             instNum = TUTORIAL;
             await setPageInstruction(instNum);
         } else if ([TUTORIAL, PERCEPTUAL_TRAINING, RL_TRAINING_1, RL_TRAINING_2,
-             FULL, FULL2, SURVEY, NFC, CFQ, OCIR, BFI2S].includes(instNum)) {
-             // CFI, CFS, CS_TASK — RETIRED, removed from this list
-                console.log('=== ENTERING GAME/SURVEY SKIP SECTION ===');
-                console.log('instNum value:', instNum);
-                console.log('SURVEY constant value:', SURVEY);
-                console.log('instNum === SURVEY:', instNum === SURVEY);
+             FULL, FULL2, REI40, CFQ, OCIR, BFI2S].includes(instNum)) {
                 switch (instNum) {
                 case TUTORIAL:
                     window.endTutorial();
@@ -414,20 +394,9 @@ const skipCurrentStep = async () => {
                     break;
                 case FULL2:
                     window.endFull2();
-                    // Skip FULL2 game, go to instruction page before SURVEY
-                    // setStepDone('full2');
-                    // instNum = SURVEY;
-                    // await setPageInstruction(instNum);
+                    // Skip FULL2 game, go straight to the survey battery
                     break;
-                case SURVEY:
-                    // Skip post-game survey, go to end
-                    console.log('Skipping from SURVEY to END, instNum:', instNum);
-                    setStepDone('final-survey');
-                    instNum = END;
-                    console.log('About to call setPageInstruction with END:', END);
-                    await setPageInstruction(instNum);
-                    break;
-                case NFC:
+                case REI40:
                 case CFQ:
                 case OCIR:
                 case BFI2S:
@@ -453,7 +422,7 @@ window.skip = skipCurrentStep;
 
 /**
  * window.surveyOrderInfo()  — log the current battery order to the console
- * window.setSurveyOrder([NFC, CFQ, OCIR, BFI2S])  — force an order for testing
+ * window.setSurveyOrder([REI40, CFQ, OCIR, BFI2S])  — force an order for testing
  */
 window.surveyOrderInfo = () => {
     console.log(
@@ -474,7 +443,7 @@ window.fill = () => {
         { formId: 'cfi-form',     responseKey: 'cfiResponses',     minScale: 1, maxScale: 7, errorId: 'cfi-error' },
         { formId: 'cfs-form',     responseKey: 'cfsResponses',     minScale: 1, maxScale: 6, errorId: 'cfs-error' },
         { formId: 'dospert-form', responseKey: 'dospertResponses', minScale: 1, maxScale: 7, errorId: 'dospert-error' },
-        { formId: 'nfc-form',     responseKey: 'nfcResponses',     minScale: 1, maxScale: 5, errorId: 'nfc-error' },
+        { formId: 'rei40-form',   responseKey: 'rei40Responses',   minScale: 1, maxScale: 5, errorId: 'rei40-error' },
         { formId: 'cfq-form',     responseKey: 'cfqResponses',     minScale: 0, maxScale: 4, errorId: 'cfq-error' },
         { formId: 'ocir-form',    responseKey: 'ociRResponses',    minScale: 0, maxScale: 4, errorId: 'ocir-error' },
         { formId: 'bfi2s-form',   responseKey: 'bfi2sResponses',   minScale: 1, maxScale: 5, errorId: 'bfi2s-error' },
@@ -649,9 +618,7 @@ const setPageInstruction = async (instNum) => {
         PERCEPTUAL_TRAINING == instNum ||
         RL_TRAINING_1 == instNum || RL_TRAINING_2 == instNum ||
         FULL == instNum || FULL2 == instNum ||
-        SURVEY == instNum ||
-        // CFI == instNum || CFS == instNum || CS_TASK == instNum || // RETIRED
-        NFC == instNum || CFQ == instNum ||
+        REI40 == instNum || CFQ == instNum ||
         OCIR == instNum || BFI2S == instNum) {
 
     switch (instNum) {
@@ -690,12 +657,7 @@ const setPageInstruction = async (instNum) => {
                 // alert('startGame')
                 startFull2();
                 break;
-            case SURVEY:
-                setPreviousStepDone()
-                setCurrentStep('final-survey');
-                surveyPage();
-                break;
-            case NFC:
+            case REI40:
             case CFQ:
             case OCIR:
             case BFI2S:
@@ -716,7 +678,9 @@ const setPageInstruction = async (instNum) => {
         quitUnityGame();
         document.querySelector('#panel').innerHTML = '<progress style="width:35%; margin: auto"></progress>';
         document.querySelector('#panel').style.display = 'flex';
-        document.querySelector('#panel').innerHTML = await getInstructionPage(`src/instructions/inst_${instNum - 1}.md`) // inst[instNum];
+        const _prPages = PARTIAL_REWARD_FIRST ? [5, 11] : [];
+        const _instFile = `src/instructions/inst_${instNum - 1}${_prPages.includes(instNum - 1) ? '_pr' : ''}.md`;
+        document.querySelector('#panel').innerHTML = await getInstructionPage(_instFile);
         showButton();
         if ([PERCEPTUAL_TRAINING, RL_TRAINING_1, RL_TRAINING_2, FULL, FULL2].includes(instNum - 1)) {
             hidePrevButton();
@@ -738,31 +702,55 @@ const setPageInstruction = async (instNum) => {
 // ------------------------------ END ------------------------------ //
 
 
-// NfC Page (Need for Cognition — 18 items, 5-point scale)
-function nfcPage() {
+// REI-40 Page (Rational-Experiential Inventory — 40 items, 5-point scale)
+function rei40Page() {
     hideButton();
     document.querySelector('#game').style.display = 'none';
     document.querySelector('#panel').style.display = 'block';
 
-    const nfcQuestions = [
-        "I would prefer complex to simple problems.",
-        "I like to have the responsibility of handling a situation that requires a lot of thinking.",
-        "Thinking is not my idea of fun.",
-        "I would rather do something that requires little thought than something that is sure to challenge my thinking abilities.",
-        "I try to anticipate and avoid situations where there is a likely chance I will have to think in depth about something.",
-        "I find satisfaction in deliberating hard and for long hours.",
-        "I only think as hard as I have to.",
-        "I prefer to think about small, daily projects rather than long-term ones.",
-        "I like tasks that require little thought once I've learned them.",
-        "The idea of relying on thought to make my way to the top appeals to me.",
-        "I really enjoy a task that involves coming up with new solutions to problems.",
-        "Learning new ways to think doesn't excite me very much.",
-        "I prefer my life to be filled with puzzles that I must solve.",
-        "The notion of thinking abstractly appeals to me.",
-        "I would prefer a task that is intellectual, difficult, and important to one that is somewhat important but does not require much thought.",
-        "I feel relief rather than satisfaction after completing a task that required a lot of mental effort.",
-        "It's enough for me that something gets the job done; I don't care how or why it works.",
-        "I usually end up deliberating about issues even when they do not affect me personally."
+    const rei40Questions = [
+        // Rational subscale (q0–q19) — from Pacini & Epstein (1999) Table 1
+        "I try to avoid situations that require thinking in depth about something.",   // q0  re−
+        "I'm not that good at figuring out complicated problems.",                    // q1  ra−
+        "I enjoy intellectual challenges.",                                            // q2  re
+        "I am not very good at solving problems that require careful logical analysis.", // q3 ra−
+        "I don't like to have to do a lot of thinking.",                              // q4  re−
+        "I enjoy solving problems that require hard thinking.",                        // q5  re
+        "Thinking is not my idea of an enjoyable activity.",                          // q6  re−
+        "I am not a very analytical thinker.",                                        // q7  ra−
+        "Reasoning things out carefully is not one of my strong points.",             // q8  ra−
+        "I prefer complex problems to simple problems.",                              // q9  re
+        "Thinking hard and for a long time about something gives me little satisfaction.", // q10 re−
+        "I don't reason well under pressure.",                                        // q11 ra−
+        "I am much better at figuring things out logically than most people.",        // q12 ra
+        "I have a logical mind.",                                                     // q13 ra
+        "I enjoy thinking in abstract terms.",                                        // q14 re
+        "I have no problem thinking things through carefully.",                       // q15 ra
+        "Using logic usually works well for me in figuring out problems in my life.", // q16 ra
+        "Knowing the answer without having to understand the reasoning behind it is good enough for me.", // q17 re−
+        "I usually have clear, explainable reasons for my decisions.",                // q18 ra
+        "Learning new ways to think would be very appealing to me.",                 // q19 re
+        // Experiential subscale (q20–q39)
+        "I like to rely on my intuitive impressions.",                                // q20 ee
+        "I don't have a very good sense of intuition.",                               // q21 ea−
+        "Using my gut feelings usually works well for me in figuring out problems in my life.", // q22 ea
+        "I believe in trusting my hunches.",                                          // q23 ea
+        "Intuition can be a very useful way to solve problems.",                      // q24 ee
+        "I often go by my instincts when deciding on a course of action.",            // q25 ee
+        "I trust my initial feelings about people.",                                  // q26 ea
+        "When it comes to trusting people, I can usually rely on my gut feelings.",  // q27 ea
+        "If I were to rely on my gut feelings, I would often make mistakes.",         // q28 ea−
+        "I don't like situations in which I have to rely on intuition.",              // q29 ee−
+        "I think there are times when one should rely on one's intuition.",           // q30 ee
+        "I think it is foolish to make important decisions based on feelings.",       // q31 ee−
+        "I don't think it is a good idea to rely on one's intuition for important decisions.", // q32 ee−
+        "I generally don't depend on my feelings to help me make decisions.",         // q33 ee−
+        "I hardly ever go wrong when I listen to my deepest gut feelings to find an answer.", // q34 ea
+        "I would not want to depend on anyone who described himself or herself as intuitive.", // q35 ee−
+        "My snap judgments are probably not as good as most people's.",               // q36 ea−
+        "I tend to use my heart as a guide for my actions.",                         // q37 ee
+        "I can usually feel when a person is right or wrong, even if I can't explain how I know.", // q38 ea
+        "I suspect my hunches are inaccurate as often as they are accurate."         // q39 ea−
     ];
 
     let scale = `<nav class="no-space" style="margin: 15px 0;">`;
@@ -777,24 +765,24 @@ function nfcPage() {
 
     const scaleLabels = `
         <div style="display: flex; justify-content: space-between; margin: 5px 0 20px 0; font-size: 0.8em; opacity: 0.8;">
-            <span><b>1</b> = Extremely uncharacteristic of me</span>
-            <span><b>3</b> = Uncertain</span>
-            <span><b>5</b> = Extremely characteristic of me</span>
+            <span><b>1</b> = Definitely False</span>
+            <span><b>3</b> = Neither True nor False</span>
+            <span><b>5</b> = Definitely True</span>
         </div>`;
 
     let content = `
         <div style="display: flex; flex-direction: column; height: 130vh; max-width: 90%; margin: auto;">
             <div style="text-align: center; flex-shrink: 0;">
-                <h2 style="margin-bottom: 5px;">Survey ${surveyOrder.indexOf(NFC) + 1} of ${surveyOrder.length}</h2>
+                <h2 style="margin-bottom: 5px;">Survey ${surveyOrder.indexOf(REI40) + 1} of ${surveyOrder.length}</h2>
                 <p style="font-size: 1.1em; margin-bottom: 20px; line-height: 1.6;">
-                    For each of the statements below, please indicate to what extent the statement is characteristic of you, using the scale provided.
+                    Rate how well each statement describes you, using the scale provided.
                 </p>
                 ${scaleLabels}
             </div>
             <div style="height: 38%; overflow-y: auto; padding: 20px; border: 2px solid #666666; border-radius: 12px; margin: 0 20px; background-color: var(--surface-container-lowest);">
-                <form id="nfc-form" style="padding: 0;">`;
+                <form id="rei40-form" style="padding: 0;">`;
 
-    nfcQuestions.forEach((question, index) => {
+    rei40Questions.forEach((question, index) => {
         content += `
             <div style="border: 2px solid var(--outline-variant); border-radius: 12px; padding: 20px; margin: 15px 0; background-color: var(--surface-container-low);">
                 <div style="margin-bottom: 15px;">
@@ -812,7 +800,7 @@ function nfcPage() {
                 </form>
             </div>
             <div style="padding: 15px 20px; flex-shrink: 0; border-top: 1px solid var(--outline-variant); background-color: var(--surface-container);">
-                <div id="nfc-error" style="color: var(--error); text-align: center; font-weight: bold; min-height: 20px;"></div>
+                <div id="rei40-error" style="color: var(--error); text-align: center; font-weight: bold; min-height: 20px;"></div>
             </div>
         </div>`;
 
@@ -828,9 +816,9 @@ function nfcPage() {
                 btn.classList.remove('fill-selected');
             });
             button.classList.add('fill-selected');
-            if (!window.nfcResponses) window.nfcResponses = {};
-            window.nfcResponses[`q${questionIndex}`] = parseInt(value);
-            document.getElementById('nfc-error').textContent = '';
+            if (!window.rei40Responses) window.rei40Responses = {};
+            window.rei40Responses[`q${questionIndex}`] = parseInt(value);
+            document.getElementById('rei40-error').textContent = '';
         });
     });
 
@@ -838,31 +826,31 @@ function nfcPage() {
     hidePrevButton();
 
     const submitHandler = () => {
-        if (!window.nfcResponses || Object.keys(window.nfcResponses).length < nfcQuestions.length) {
+        if (!window.rei40Responses || Object.keys(window.rei40Responses).length < rei40Questions.length) {
             const unanswered = [];
-            for (let i = 0; i < nfcQuestions.length; i++) {
-                if (!window.nfcResponses || window.nfcResponses[`q${i}`] === undefined) {
+            for (let i = 0; i < rei40Questions.length; i++) {
+                if (!window.rei40Responses || window.rei40Responses[`q${i}`] === undefined) {
                     unanswered.push(i + 1);
                 }
             }
-            document.getElementById('nfc-error').textContent = `Please answer all questions. Missing: Q${unanswered.join(', Q')}`;
+            document.getElementById('rei40-error').textContent = `Please answer all questions. Missing: Q${unanswered.join(', Q')}`;
             unblockClick();
             return;
         }
-        document.getElementById('nfc-error').textContent = '';
+        document.getElementById('rei40-error').textContent = '';
 
-        // Raw responses only — reverse-scoring and totals are computed at
-        // analysis time (see surveys/NfC.md for the reverse-item key).
-        const nfcData = {
+        // Raw responses only — reverse-scoring (19 items) and subscale totals are
+        // computed at analysis time (see surveys/REI-40.md for the full key).
+        const rei40Data = {
             prolificID: window.subID,
             expName: 'Within',
             timestamp: new Date().toISOString(),
             surveyOrder: surveyOrderNames,
-            ...window.nfcResponses
+            ...window.rei40Responses
         };
-        sendNfcData(nfcData);
+        sendRei40Data(rei40Data);
 
-        instNum = nextInBattery(NFC);
+        instNum = nextInBattery(REI40);
         setPageInstruction(instNum);
     };
     currentAction = submitHandler;
@@ -892,7 +880,7 @@ function cfqPage() {
         "Do you have trouble making up your mind?",
         "Do you find you forget appointments?",
         "Do you forget where you put things like a newspaper or a book?",
-        "Do you find you accidentally throw away the thing you want and keep what you meant to throw away?",
+        "Do you find you accidentally throw away the thing you want and keep what you meant to throw away — as in the example of throwing away the matchbox and keeping the used match?",
         "Do you daydream when you ought to be listening to something?",
         "Do you find you forget people's names?",
         "Do you start doing one thing at home and get distracted into doing something else (unintentionally)?",
@@ -1277,48 +1265,9 @@ function bfi2sPage() {
     currentAction = submitHandler;
 }
 
-// Color-Shape Task interstitial page
-function csTaskPage() {
-    hideButton();
-    document.querySelector('#game').style.display = 'none';
-    document.querySelector('#panel').style.display = 'flex';
-
-    const taskURL = `https://mili2nd.co/lbmc?subjectid=${encodeURIComponent(window.subID)}`;
-
-    document.querySelector('#panel').innerHTML = `
-        <div style="margin: auto; max-width: 650px; padding: 48px 32px; text-align: center;">
-            <h2 style="margin-bottom: 24px; margin-left: 10%;">Color-Shape Task</h2>
-
-            <p style="font-size: 1.05em; line-height: 1.8; margin-bottom: 16px;">
-                You've completed the surveys — well done!
-            </p>
-            <p style="font-size: 1.05em; line-height: 1.8; margin-bottom: 24px;">
-                Before finishing, please complete a 10min <b>Color-Shape Task</b>.<br>
-                If you feel cognitively tired, feel free to take a short break before starting it.
-            </p>
-
-            <a href="${taskURL}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
-                <button style="font-size: 1.1em; padding: 16px 36px; border-radius: 50px; cursor: pointer;">
-                    Open Color-Shape Task &nbsp;&#8599;
-                </button>
-            </a>
-
-            <p style="font-size: 0.9em; margin-top: 36px; opacity: 0.7; line-height: 1.6;">
-                The task will open in a new tab.<br>
-                You will be automatically redirected back here when you are done.
-            </p>
-        </div>
-    `;
-}
-
 const lastPage = () => {
     hideButton();
-    setPreviousStepDone();
-    setStepDone('full');
-    setStepDone('survey');
-    setStepDone('full2');
-    setStepDone('cs-task');
-    setCurrentStep('end')
+    setCurrentStep('end');
     
     // Safely get score with fallback
     let points = 0;
@@ -1383,72 +1332,9 @@ const lastPage = () => {
     })
 }
 
-const rewardPage = () => {
-    showButton();
-    hidePrevButton()
-    setPreviousStepDone();
-    setStepDone('full2');
-    setCurrentStep('final-survey')
-    let points = window.score.reduce((a, b) => a + b, 0);
-    // let points = window.score[window.score.length-1];
-    let pounds = (points * CONV).toFixed(3);
-    // now add the compensation amount to the points
-    document.querySelector('#game').style.display = 'none';
-    document.querySelector('#panel').style.display = 'flex';
-    document.querySelector('#panel').innerHTML = `
-             <div class="center-align" style="margin: auto">
-             <h1 style="display: block">🚀Congrats! 🚀</h1>
-             <h3>💰 You earned ${points} points = ${pounds} pounds! 💰</h3>
-             <br>
-             <br>
-             <p>Please click the next button and complete a short final survey to finish your submission.</p>
-             </div>
-     `;
-    const nextButton = document.querySelector('#next-button');
-    const rewardNextHandler = () => {
-        instNum = SURVEY;
-        setPageInstruction(instNum);
-    };
-    
-    currentNextHandler = rewardNextHandler;
-    safelyReplaceEventListener(nextButton, 'click', next, currentNextHandler);
-}
 
-// Final reward page (after surveys have been completed)
-const finalRewardPage = () => {
-    showButton();
-    hidePrevButton()
-    setPreviousStepDone();
-    setStepDone('full2');
-    setCurrentStep('end')
-    let points = window.score.reduce((a, b) => a + b, 0);
-    // let points = window.score[window.score.length-1];
-    let pounds = (points * CONV).toFixed(3);
-    // now add the compensation amount to the points
-    document.querySelector('#game').style.display = 'none';
-    document.querySelector('#panel').style.display = 'flex';
-    document.querySelector('#panel').innerHTML = `
-             <div class="center-align" style="margin: auto">
-             <h1 style="display: block">🚀Congrats! 🚀</h1>
-             <h3>💰 You earned ${points} points = ${pounds} pounds! 💰</h3>
-             <br>
-             <br>
-             <p>Thank you for completing all tasks and surveys! Click next to finish.</p>
-             </div>
-     `;
-    const nextButton = document.querySelector('#next-button');
-    const finalNextHandler = () => {
-        instNum = END;
-        setPageInstruction(instNum);
-    };
-    
-    currentNextHandler = finalNextHandler;
-    safelyReplaceEventListener(nextButton, 'click', next, currentNextHandler);
-}
-
-
-const sendFeedback = async (data, call = 0) => {
-    let response = await fetch(SURVEY_PHP, {
+const sendRei40Data = async (data, call = 0) => {
+    let response = await fetch(REI40_PHP, {
         method: 'POST',
         body: JSON.stringify(data),
         headers: {
@@ -1457,40 +1343,15 @@ const sendFeedback = async (data, call = 0) => {
     });
 
     if (response.ok) {
+        console.log('REI-40 data sent successfully');
         return response.json();
     } else {
         if (call > 3) {
-            console.log('Failed to send feedback');
-            return;
-        }
-        // try again after 500ms
-        setTimeout(() => {
-            sendFeedback(data, call + 1);
-        }, 500);
-    }
-}
-
-
-
-const sendNfcData = async (data, call = 0) => {
-    let response = await fetch(NFC_PHP, {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
-
-    if (response.ok) {
-        console.log('NfC data sent successfully');
-        return response.json();
-    } else {
-        if (call > 3) {
-            console.log('Failed to send NfC data');
+            console.log('Failed to send REI-40 data');
             return;
         }
         setTimeout(() => {
-            sendNfcData(data, call + 1);
+            sendRei40Data(data, call + 1);
         }, 500);
     }
 }
@@ -1564,116 +1425,6 @@ const sendBfi2sData = async (data, call = 0) => {
     }
 }
 
-
-const checkSurvey = () => {
-    document.querySelectorAll('input').forEach(element => element.reportValidity());
-    return document.querySelectorAll('input:valid').length == 3 &&
-        document.querySelectorAll('button.fill-selected').length == 3;
-}
-
-const surveyPage = () => {
-    hideButton();
-    document.querySelector('#game').style.display = 'none';
-    let scale = `<nav class="no-space">
-        <button id="" class="scale border left-round max vertical small">
-          <span>Strongly Disagree</span>
-        </button>
-        <button id="" class="scale border no-round max vertical small">
-          <span>Disagree<span>
-        </button>
-        <button id="" class="scale border no-round max vertical small">
-          <span>Neutral<span>
-        </button>
-        <button id="" class="scale border no-round max vertical small">
-          <span>Agree<span>
-        </button>
-        <button id="" class="scale border right-round max vertical small">
-          <span>Strongly Agree</span>
-        </button>
-      </nav>`;
-
-    let question1 = `In the <b style="color: var(--primary)">game 1 and 3 (spaceships only)</b>
-     phase it was easy to tell which <b style="color: var(--primary)">spaceship</b> was the best`;
-    let question2 = `In the <b style="color: var(--primary)">game 2 (shields only)</b>
-     phase it was easy to tell which <b style="color: var(--primary)">shield</b> was the best`;
-    let question3 = `In the <b style="color: var(--primary)">game 4 and 5 (shields and ships combined)</b>
-     phase it was easy to tell which <b style="color: var(--primary)">combination</b> was the best`;
-    // let question4 = `In the <b style="color: var(--primary)">game 4</b>
-    //  phase it was easy to tell which <b style="color: var(--primary)">spaceship x shield</b> was the best`;
-    //  let question5 = `In the <b style="color: var(--primary)">game 5</b>
-    //  phase it was easy to tell which <b style="color: var(--primary)">spaceship x shield</b> was the best`;
-    let questions = [question1, question2, question3];
-
-    let content = '<h2>Survey</h2><div class="scroll-div-survey" style="">';
-    // document.querySelector('#panel').innerHTML = '<h2>Survey</h2><div class="scroll-div">'
-    document.querySelector('#panel').style.display = 'block';
-
-    questions.forEach((question, idx) => {
-        let box = '<div style="margin-top:2.5%; padding:.5%">'
-        let q = box + question + '<br>' + scale.replace(/id=""/g, `id="q${idx}"`) + '';
-        // document.querySelector('#panel').innerHTML += q;   
-        content += q + `<div class="field input label border" style="height: 5%">
-                                                        <input minlength="10" class="open" id="open_q${idx}" required></input>
-                                                        <label>What strategy did you use?</label>
-                                                        </div></div>`
-    })
-
-    content += '</div>';
-    document.querySelector('#panel').innerHTML = content;
-
-    let dataToSend = { 'prolificID': window.subID };
-
-    // wait .5s first for dom to be updated
-
-    // remove event listeners on keypress that were put by unity
-    document.querySelectorAll('.open').forEach((open, idx) => {
-
-        open.addEventListener('input', () => {
-            dataToSend[open.id] = open.value;
-        })
-    })
-
-    document.querySelectorAll('.scale').forEach((button, idx) => {
-        button.addEventListener('click', () => {
-            let id = button.id;
-            // get all buttons in the same row
-            let buttons = document.querySelectorAll(`#${id}`);
-            buttons.forEach((b) => {
-                b.classList.remove('fill-selected');
-            })
-            button.classList.add('fill-selected');
-
-            dataToSend[id] = button.innerText;
-
-            // show next button if all questions are answered
-            // if (document.querySelectorAll('button.fill-selected').length == questions.length) {
-                // showButton();
-                // hidePrevButton();
-            // }
-
-        })
-    })
-
-    showButton();
-    hidePrevButton();
-
-    
-    const nextButton = document.querySelector('#next-button');
-    const surveySubmitHandler = () => {
-        if (checkSurvey()) {
-            sendFeedback(dataToSend);
-            setStepDone('survey');
-            instNum = END; // Go to final end page after post-game survey
-            setPageInstruction(instNum);
-        } else {
-            unblockClick();
-        }
-    };
-    
-    // Set as current action instead of replacing handler
-    currentAction = surveySubmitHandler;
-
-}
 
 window.endTutorial = () => {
     quitUnityGame();

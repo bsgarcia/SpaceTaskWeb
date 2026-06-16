@@ -54,9 +54,10 @@ SpaceTaskWithin/
 │   ├── admin.html          ← Dashboard UI (Materialize table)
 │   ├── insert.php          ← Game session data → spaceprl
 │   ├── insert_feedback.php ← Post-game survey → spaceprl_feedback
-│   ├── insert_dospert.php  ← DOSPERT 30-item → spaceprl_dospert
-│   ├── insert_risk.php     ← Lottery choices → spaceprl_risk
-│   └── insert_general_risk.php ← General risk → spaceprl_general_risk
+│   ├── insert_rei40.php    ← Rational-Experiential Inventory → spaceprl_rei40
+│   ├── insert_cfq.php      ← Cognitive Failures → spaceprl_cfq
+│   ├── insert_ocir.php     ← OC Inventory-Revised → spaceprl_ocir
+│   └── insert_bfi2s.php    ← Big Five Inventory-2 Short → spaceprl_bfi2s
 │
 ├── lib/
 │   ├── css/                ← Admonitions, stepper, slider, Font Awesome
@@ -103,17 +104,21 @@ main.mjs
   │     body: { prolificID, q0–q4, open_q0–open_q4 }
   │     → spaceprl_feedback table
   │
-  ├── POST /php/insert_dospert.php
-  │     body: { prolificID, expName, timestamp, q0–q29 }
-  │     → spaceprl_dospert table
+  ├── POST /php/insert_rei40.php
+  │     body: { prolificID, expName, timestamp, surveyOrder, q0–q39 }
+  │     → spaceprl_rei40 table
   │
-  ├── POST /php/insert_risk.php
-  │     body: { prolificID, expName, selected, amount, choice_0–choice_9 }
-  │     → spaceprl_risk table
+  ├── POST /php/insert_cfq.php
+  │     body: { prolificID, expName, timestamp, surveyOrder, q0–q24 }
+  │     → spaceprl_cfq table
   │
-  └── POST /php/insert_general_risk.php
-        body: { prolificID, expName, riskScore }
-        → spaceprl_general_risk table
+  ├── POST /php/insert_ocir.php
+  │     body: { prolificID, expName, timestamp, surveyOrder, q0–q17 }
+  │     → spaceprl_ocir table
+  │
+  └── POST /php/insert_bfi2s.php
+        body: { prolificID, expName, timestamp, surveyOrder, q0–q29 }
+        → spaceprl_bfi2s table
 ```
 
 All INSERT endpoints share `login.php` for PDO connection and column whitelisting. Retry logic in main.mjs resends failed POSTs up to 3 times.
@@ -160,14 +165,14 @@ LocalStorage allows participants to resume after an accidental page refresh.
  │  RL Training 2            (phase 9)     │
  │  Rest                     (phase 12)    │
  │  Game 4 — full            (phase 11)    │
- │  Game 5 — partial_reward  (phase 13)    │
+ │  Game 5 — full2           (phase 13)    │
  └─────────────────────────────────────────┘
        │
- DOSPERT 30-item scale       (phase 14)
-       │
- Lottery Risk Assessment     (phase 15)  ── Holt-Laury 10-pair
-       │
- Post-game Survey            (phase 16)
+ Survey battery (randomised order):
+   REI40 — Rational-Experiential Inventory (phase 19)
+   CFQ  — Cognitive Failures        (phase 20)
+   OCIR — OC Inventory-Revised      (phase 21)
+   BFI2S — Big Five Inventory-2 Short (phase 22)
        │
  End / Reward Page           (phase 17)  → redirect to Prolific
 ```
@@ -182,9 +187,10 @@ Score is converted to GBP at `CONV = 0.00002` and displayed on the final page.
 |-------|---------|
 | `spaceprl` | prolificID, expName, score, timestamp, sessionID, gameNumber |
 | `spaceprl_feedback` | prolificID, q0–q4, open_q0–open_q4 |
-| `spaceprl_dospert` | prolificID, expName, timestamp, q0–q29 |
-| `spaceprl_risk` | prolificID, expName, selected, amount, choice_0–choice_9 |
-| `spaceprl_general_risk` | prolificID, expName, riskScore, timestamp |
+| `spaceprl_rei40` | prolificID, expName, timestamp, surveyOrder, q0–q39 |
+| `spaceprl_cfq` | prolificID, expName, timestamp, surveyOrder, q0–q24 |
+| `spaceprl_ocir` | prolificID, expName, timestamp, surveyOrder, q0–q17 |
+| `spaceprl_bfi2s` | prolificID, expName, timestamp, surveyOrder, q0–q29 |
 
 ---
 

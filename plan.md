@@ -11,7 +11,7 @@ battery while keeping the main game task (~40 min) unchanged.
 Main task (games, ~40 min)            ← UNCHANGED
    │
    ├─ RANDOMIZED ORDER (per participant):
-   │     NfC      Need for Cognition              (~4 min)
+   │     REI-40   Rational-Experiential Inventory  (~6 min)
    │     CFQ      Cognitive Failures Questionnaire (~4 min)
    │     OCI-R    Obsessive-Compulsive Inventory-R (~3 min)
    │     BFI-2-S  Big Five short form             (~5 min)
@@ -38,7 +38,7 @@ per instrument plus a source index:
 
 - [surveys/sources.md](surveys/sources.md) — table of where each instrument's
   item text/scale/scoring was sourced (links for later re-verification)
-- [surveys/NfC.md](surveys/NfC.md) — 18 items, 1–5 scale, 9 reverse items, scoring
+- [surveys/REI-40.md](surveys/REI-40.md) — 40 items, 1–5 scale, 13 reverse items, two subscales (Rational/Experiential)
 - [surveys/CFQ.md](surveys/CFQ.md) — 25 items, 0–4 scale, no reverse items, scoring
 - [surveys/OCI-R.md](surveys/OCI-R.md) — 18 items, 0–4 scale, 6 subscales, scoring
 - [surveys/BFI-2-S.md](surveys/BFI-2-S.md) — 30 items, 1–5 scale, domain + reverse key, scoring (⚠️ flagged for a final spot-check against the official Colby PDF before launch)
@@ -62,7 +62,7 @@ formula, ready for mechanical translation into a page function.
 
 2. **Add** new battery phase constants (pick unused numbers, e.g.):
    ```js
-   const NFC   = 19;
+   const REI40 = 19;
    const CFQ   = 20;
    const OCIR  = 21;
    const BFI2S = 22;
@@ -75,7 +75,7 @@ formula, ready for mechanical translation into a page function.
    // OLD two-item order — commented out, see new block below
    // const surveyOrder = ... [CFI, CFS] ...
 
-   const BATTERY = [NFC, CFQ, OCIR, BFI2S];
+   const BATTERY = [REI40, CFQ, OCIR, BFI2S];
    const _stored = localStorage.getItem('surveyOrder');
    const surveyOrder = _stored ? JSON.parse(_stored) : shuffle([...BATTERY]);
    if (!_stored) localStorage.setItem('surveyOrder', JSON.stringify(surveyOrder));
@@ -108,8 +108,8 @@ Then wire it in three places:
 
 2. **`setPageInstruction()` switch** (`src/main.mjs:606-670`):
    - Comment out the `case CFI / CFS / CS_TASK` blocks.
-   - Add `case NFC / CFQ / OCIR / BFI2S:` → `setCurrentStep('survey')` +
-     call the matching page fn (`nfcPage()` etc.).
+   - Add `case REI40 / CFQ / OCIR / BFI2S:` → `setCurrentStep('survey')` +
+     call the matching page fn (`rei40Page()` etc.).
    - Add `case WCST:` → `setCurrentStep('wcst')` + `wcstPage()`.
    - Update the membership guard at `src/main.mjs:599-604` (the
      `TUTORIAL == instNum || ...` chain) to include the new phases and
@@ -117,7 +117,7 @@ Then wire it in three places:
 
 3. **`skipCurrentStep()` switch** (`src/main.mjs:338-391`):
    - Comment out `case CFI / CFS / CS_TASK`.
-   - Add `case NFC / CFQ / OCIR / BFI2S:` → `setStepDone('survey'); instNum = nextInBattery(<phase>); setPageInstruction(instNum);`
+   - Add `case REI40 / CFQ / OCIR / BFI2S:` → `setStepDone('survey'); instNum = nextInBattery(<phase>); setPageInstruction(instNum);`
    - Add `case WCST:` → `setStepDone('wcst'); instNum = END; setPageInstruction(instNum);`
    - Update the `.includes([...])` array at `src/main.mjs:332-333`.
 
@@ -139,7 +139,7 @@ window key, error element id, POST fn, and the advance target
 
 Add (do **not** remove `cfiPage`/`cfsPage`/`dospertScalePage` — leave them):
 
-- `nfcPage()`    — scale 1–5, NfC items + reverse key
+- `rei40Page()`  — scale 1–5, REI-40 items + reverse key
 - `cfqPage()`    — scale 0–4 (note: starts at 0 — adjust the button loop, which
   currently runs `for i=1..N`; make it 0..4), no reverse items
 - `ociRPage()`   — scale 0–4, no reverse items, 18 items
@@ -163,10 +163,10 @@ form ids / response keys / scales (keep old entries).
 ## Part 4 — Data senders (`src/main.mjs`, ~2156)
 
 Clone `sendCfiData` (`src/main.mjs:2156`) for each instrument:
-`sendNfcData`, `sendCfqData`, `sendOciRData`, `sendBfi2sData`. Add matching
+`sendRei40Data`, `sendCfqData`, `sendOciRData`, `sendBfi2sData`. Add matching
 endpoint constants near `src/main.mjs:35-37`:
 ```js
-const NFC_PHP   = 'php/insert_nfc.php';
+const REI40_PHP = 'php/insert_rei40.php';
 const CFQ_PHP   = 'php/insert_cfq.php';
 const OCIR_PHP  = 'php/insert_ocir.php';
 const BFI2S_PHP = 'php/insert_bfi2s.php';
@@ -211,7 +211,7 @@ question count, validation count, and target table. Add:
 
 | File | Table | q-columns |
 |---|---|---|
-| `php/insert_nfc.php` | `spaceprl_nfc` | q0..qN (per chosen NfC length) |
+| `php/insert_rei40.php` | `spaceprl_rei40` | q0..q39 |
 | `php/insert_cfq.php` | `spaceprl_cfq` | q0..q24 |
 | `php/insert_ocir.php` | `spaceprl_ocir` | q0..q17 |
 | `php/insert_bfi2s.php` | `spaceprl_bfi2s` | q0..q29 (+ domain subscore cols) |
@@ -257,10 +257,10 @@ question count, validation count, and target table. Add:
 
 - [x] Part 0: source + record all survey materials (Sonnet)
 - [x] Part 1: constants + 4-item randomised order
-- [x] Part 6: PHP endpoints + DB tables + whitelist (NfC, CFQ, OCI-R, BFI-2-S;
+- [x] Part 6: PHP endpoints + DB tables + whitelist (REI-40, CFQ, OCI-R, BFI-2-S;
       see `php/schema_battery.sql` for `CREATE TABLE` statements — run these
       on the MySQL `basile` DB before deploying)
-- [x] Part 3 + 4: survey page fns + senders (clone CFI) — `nfcPage`, `cfqPage`,
+- [x] Part 3 + 4: survey page fns + senders (clone CFI) — `rei40Page`, `cfqPage`,
       `ociRPage`, `bfi2sPage` + matching `send*Data` fns
 - [ ] Part 5: WCST-64 page + endpoint — **NOT IMPLEMENTED** (hosting/library TBD)
 - [x] Part 2: routing (setPageInstruction, skip, debug entry) — for the 4
