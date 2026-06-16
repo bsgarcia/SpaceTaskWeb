@@ -1,6 +1,6 @@
 
 import { getInstructionPage, landingPage, restPage, consentPage } from "./modules/html_templates.mjs";
-import { getURLParams, createCode } from "./modules/utils.mjs";
+import { getURLParams, createCode, shuffle } from "./modules/utils.mjs";
 import { startUnityGame, quitUnityGame } from "./modules/game.mjs";
 
 // globals
@@ -13,16 +13,62 @@ const PERCEPTUAL_TRAINING = 7
 const RL_TRAINING_2 = 9
 const FULL = 11
 const FULL2 = 13 // Game 5 (moved after surveys)
-const CFI = 14;
-const CFS = 15;
-const CS_TASK = 18;
 
-// Randomise survey order once per participant; persist through refreshes
+// Whether the Perceptual Training (training2) phase uses the partial-reward
+// build (src/game/training2PR) instead of the standard one (src/game/training2)
+const TRAINING2_PARTIAL_REWARD = true;
+// const CFI = 14;      // RETIRED — replaced by new battery (kept for reference)
+// const CFS = 15;
+// const CS_TASK = 18;  // Color-Shape Task — retired (kept for reference)
+const CFI = 14;   // kept defined so retired cfiPage()/sendCfiData stay valid
+const CFS = 15;   // kept defined so retired cfsPage()/sendCfsData stay valid
+const CS_TASK = 18; // kept defined so retired csTaskPage() stays valid
+
+// New survey/task battery phases
+const NFC   = 19; // Need for Cognition
+const CFQ   = 20; // Cognitive Failures Questionnaire
+const OCIR  = 21; // Obsessive-Compulsive Inventory-Revised
+const BFI2S = 22; // Big Five Inventory-2 Short form
+const WCST  = 23; // Wisconsin Card Sorting Test (NOT YET IMPLEMENTED)
+
+// OLD two-item CFI/CFS order — commented out, replaced by 4-item battery below
+// const _storedOrder = localStorage.getItem('surveyOrder');
+// const surveyOrder = _storedOrder
+//     ? JSON.parse(_storedOrder)
+//     : (Math.random() < 0.5 ? [CFI, CFS] : [CFS, CFI]);
+// if (!_storedOrder) localStorage.setItem('surveyOrder', JSON.stringify(surveyOrder));
+
+// Randomise battery order once per participant; persist through refreshes
+const BATTERY = [NFC, CFQ, OCIR, BFI2S];
+const BATTERY_NAMES = { [NFC]: 'NFC', [CFQ]: 'CFQ', [OCIR]: 'OCIR', [BFI2S]: 'BFI2S' };
 const _storedOrder = localStorage.getItem('surveyOrder');
 const surveyOrder = _storedOrder
     ? JSON.parse(_storedOrder)
-    : (Math.random() < 0.5 ? [CFI, CFS] : [CFS, CFI]);
+    : shuffle([...BATTERY]);
 if (!_storedOrder) localStorage.setItem('surveyOrder', JSON.stringify(surveyOrder));
+
+// Comma-separated battery order (e.g. "NFC,CFQ,OCIR,BFI2S") sent alongside
+// each survey's data so the order can be recovered without joins.
+const surveyOrderNames = surveyOrder.map(n => BATTERY_NAMES[n]).join(',');
+
+// Returns the next phase after the survey that just completed:
+// the next survey in surveyOrder, or END once the battery is done.
+// TODO: route to WCST instead of END once WCST is implemented (Part 5).
+function nextInBattery(currentPhase) {
+    const i = surveyOrder.indexOf(currentPhase);
+    return (i >= 0 && i < surveyOrder.length - 1) ? surveyOrder[i + 1] : END;
+}
+
+// Returns the page-render function for a given battery phase constant.
+function pageForBatteryPhase(phase) {
+    switch (phase) {
+        case NFC:   return nfcPage;
+        case CFQ:   return cfqPage;
+        case OCIR:  return ociRPage;
+        case BFI2S: return bfi2sPage;
+        default:    return null;
+    }
+}
 
 // const SG = 13; // General Risk Survey (after DOSPERT)
 const SURVEY = 16 // Post-game survey (after FULL2)
@@ -35,6 +81,11 @@ const clickBlockedTime = 300;
 const SURVEY_PHP = 'php/insert_feedback.php';
 const CFI_PHP = 'php/insert_cfi.php';
 const CFS_PHP = 'php/insert_cfs.php';
+const NFC_PHP   = 'php/insert_nfc.php';
+const CFQ_PHP   = 'php/insert_cfq.php';
+const OCIR_PHP  = 'php/insert_ocir.php';
+const BFI2S_PHP = 'php/insert_bfi2s.php';
+// const WCST_PHP  = 'php/insert_wcst.php'; // WCST not yet implemented
 
 // global variables mutable
 var clickBlocked = false;
@@ -110,8 +161,8 @@ function main() {
             'training3':    RL_TRAINING_2,
             'full':         FULL,
             'full2':        FULL2,
-            'survey':       CFI,
-            'cs-task':      CS_TASK,
+            'survey':       surveyOrder[0],
+            // 'cs-task':   CS_TASK, // RETIRED — Color-Shape Task no longer in flow
             'end':          END,
         };
         Object.entries(stepMap).forEach(([id, num]) => {
@@ -135,7 +186,9 @@ function main() {
         setPreviousStepDone();
       
         // first survey is determined randomly (surveyOrder)
-        surveyOrder[0] === CFI ? cfiPage() : cfsPage();
+        // OLD two-item CFI/CFS dispatch — commented out, see new battery dispatch below
+        // surveyOrder[0] === CFI ? cfiPage() : cfsPage();
+        pageForBatteryPhase(surveyOrder[0])();
         setPageInstruction(surveyOrder[0]);
         return;
     }
@@ -191,7 +244,7 @@ const startTrainingPerceptual = () => {
     setStepDone('introduction');
     // range from 1 to idx set done
     setPreviousStepDone();
-    startUnityGame('training2');
+    startUnityGame(TRAINING2_PARTIAL_REWARD ? 'training2PR' : 'training2');
 }
 
 const startTrainingRL = (sess) => {
@@ -330,7 +383,8 @@ const skipCurrentStep = async () => {
             instNum = TUTORIAL;
             await setPageInstruction(instNum);
         } else if ([TUTORIAL, PERCEPTUAL_TRAINING, RL_TRAINING_1, RL_TRAINING_2,
-             FULL, CFI, CFS, CS_TASK, FULL2, SURVEY].includes(instNum)) {
+             FULL, FULL2, SURVEY, NFC, CFQ, OCIR, BFI2S].includes(instNum)) {
+             // CFI, CFS, CS_TASK — RETIRED, removed from this list
                 console.log('=== ENTERING GAME/SURVEY SKIP SECTION ===');
                 console.log('instNum value:', instNum);
                 console.log('SURVEY constant value:', SURVEY);
@@ -373,19 +427,27 @@ const skipCurrentStep = async () => {
                     console.log('About to call setPageInstruction with END:', END);
                     await setPageInstruction(instNum);
                     break;
-                case CFI:
+                // case CFI: // RETIRED
+                //     setStepDone('survey');
+                //     instNum = surveyOrder.indexOf(CFI) === 0 ? CFS : CS_TASK;
+                //     await setPageInstruction(instNum);
+                //     break;
+                // case CFS: // RETIRED
+                //     setStepDone('survey');
+                //     instNum = surveyOrder.indexOf(CFS) === 0 ? CFI : CS_TASK;
+                //     await setPageInstruction(instNum);
+                //     break;
+                // case CS_TASK: // RETIRED
+                //     setStepDone('cs-task');
+                //     instNum = END;
+                //     await setPageInstruction(instNum);
+                //     break;
+                case NFC:
+                case CFQ:
+                case OCIR:
+                case BFI2S:
                     setStepDone('survey');
-                    instNum = surveyOrder.indexOf(CFI) === 0 ? CFS : CS_TASK;
-                    await setPageInstruction(instNum);
-                    break;
-                case CFS:
-                    setStepDone('survey');
-                    instNum = surveyOrder.indexOf(CFS) === 0 ? CFI : CS_TASK;
-                    await setPageInstruction(instNum);
-                    break;
-                case CS_TASK:
-                    setStepDone('cs-task');
-                    instNum = END;
+                    instNum = nextInBattery(instNum);
                     await setPageInstruction(instNum);
                     break;
             }
@@ -404,14 +466,30 @@ const skipCurrentStep = async () => {
 
 window.skip = skipCurrentStep;
 
+// OLD two-item CFI/CFS debug helpers — commented out, see new battery versions below
+// window.surveyOrderInfo = () => {
+//     const names = { [CFI]: 'CFI', [CFS]: 'CFS' };
+//     console.log(
+//         `%cSurvey order: ${surveyOrder.map(n => names[n]).join(' → ')} → CS_TASK`,
+//         'color: cyan; font-weight: bold'
+//     );
+//     console.log('surveyOrder array:', surveyOrder);
+//     console.log('localStorage surveyOrder:', localStorage.getItem('surveyOrder'));
+// };
+//
+// window.setSurveyOrder = (order) => {
+//     const next = order === 'CFS_FIRST' ? [CFS, CFI] : [CFI, CFS];
+//     localStorage.setItem('surveyOrder', JSON.stringify(next));
+//     console.log(`surveyOrder set to ${next.map(n => ({[CFI]:'CFI',[CFS]:'CFS'}[n])).join(' → ')}. Reload to apply.`);
+// };
+
 /**
- * window.surveyOrderInfo()  — log the current survey order to the console
- * window.setSurveyOrder('CFI_FIRST' | 'CFS_FIRST')  — force an order for testing
+ * window.surveyOrderInfo()  — log the current battery order to the console
+ * window.setSurveyOrder([NFC, CFQ, OCIR, BFI2S])  — force an order for testing
  */
 window.surveyOrderInfo = () => {
-    const names = { [CFI]: 'CFI', [CFS]: 'CFS' };
     console.log(
-        `%cSurvey order: ${surveyOrder.map(n => names[n]).join(' → ')} → CS_TASK`,
+        `%cBattery order: ${surveyOrder.map(n => BATTERY_NAMES[n]).join(' → ')}`,
         'color: cyan; font-weight: bold'
     );
     console.log('surveyOrder array:', surveyOrder);
@@ -419,16 +497,19 @@ window.surveyOrderInfo = () => {
 };
 
 window.setSurveyOrder = (order) => {
-    const next = order === 'CFS_FIRST' ? [CFS, CFI] : [CFI, CFS];
-    localStorage.setItem('surveyOrder', JSON.stringify(next));
-    console.log(`surveyOrder set to ${next.map(n => ({[CFI]:'CFI',[CFS]:'CFS'}[n])).join(' → ')}. Reload to apply.`);
+    localStorage.setItem('surveyOrder', JSON.stringify(order));
+    console.log(`surveyOrder set to ${JSON.stringify(order)}. Reload to apply.`);
 };
 
 window.fill = () => {
     const surveys = [
-        { formId: 'cfi-form',     responseKey: 'cfiResponses',     maxScale: 7, errorId: 'cfi-error' },
-        { formId: 'cfs-form',     responseKey: 'cfsResponses',     maxScale: 6, errorId: 'cfs-error' },
-        { formId: 'dospert-form', responseKey: 'dospertResponses', maxScale: 7, errorId: 'dospert-error' },
+        { formId: 'cfi-form',     responseKey: 'cfiResponses',     minScale: 1, maxScale: 7, errorId: 'cfi-error' },
+        { formId: 'cfs-form',     responseKey: 'cfsResponses',     minScale: 1, maxScale: 6, errorId: 'cfs-error' },
+        { formId: 'dospert-form', responseKey: 'dospertResponses', minScale: 1, maxScale: 7, errorId: 'dospert-error' },
+        { formId: 'nfc-form',     responseKey: 'nfcResponses',     minScale: 1, maxScale: 5, errorId: 'nfc-error' },
+        { formId: 'cfq-form',     responseKey: 'cfqResponses',     minScale: 0, maxScale: 4, errorId: 'cfq-error' },
+        { formId: 'ocir-form',    responseKey: 'ociRResponses',    minScale: 0, maxScale: 4, errorId: 'ocir-error' },
+        { formId: 'bfi2s-form',   responseKey: 'bfi2sResponses',   minScale: 1, maxScale: 5, errorId: 'bfi2s-error' },
     ];
 
     const active = surveys.find(s => document.getElementById(s.formId));
@@ -440,7 +521,7 @@ window.fill = () => {
     const groups = document.querySelectorAll('.question-scale');
     groups.forEach(group => {
         const questionIndex = group.getAttribute('data-question');
-        const randomValue = Math.floor(Math.random() * active.maxScale) + 1;
+        const randomValue = active.minScale + Math.floor(Math.random() * (active.maxScale - active.minScale + 1));
         window[active.responseKey][`q${questionIndex}`] = randomValue;
         const button = group.querySelector(`[data-value="${randomValue}"]`);
         if (button) button.classList.add('fill-selected');
@@ -600,8 +681,10 @@ const setPageInstruction = async (instNum) => {
         PERCEPTUAL_TRAINING == instNum ||
         RL_TRAINING_1 == instNum || RL_TRAINING_2 == instNum ||
         FULL == instNum || FULL2 == instNum ||
-        SURVEY == instNum || CFI == instNum ||
-        CFS == instNum || CS_TASK == instNum) {
+        SURVEY == instNum ||
+        // CFI == instNum || CFS == instNum || CS_TASK == instNum || // RETIRED
+        NFC == instNum || CFQ == instNum ||
+        OCIR == instNum || BFI2S == instNum) {
 
     switch (instNum) {
             case TUTORIAL:
@@ -652,20 +735,28 @@ const setPageInstruction = async (instNum) => {
             // case SI:
             //     hypotheticalInvestmentPage();
             //     break;
-            case CFI:
+            // case CFI: // RETIRED
+            //     setPreviousStepDone();
+            //     setCurrentStep('survey');
+            //     cfiPage();
+            //     break;
+            // case CFS: // RETIRED
+            //     setPreviousStepDone();
+            //     setCurrentStep('survey');
+            //     cfsPage();
+            //     break;
+            // case CS_TASK: // RETIRED
+            //     setPreviousStepDone();
+            //     setCurrentStep('cs-task');
+            //     csTaskPage();
+            //     break;
+            case NFC:
+            case CFQ:
+            case OCIR:
+            case BFI2S:
                 setPreviousStepDone();
                 setCurrentStep('survey');
-                cfiPage();
-                break;
-            case CFS:
-                setPreviousStepDone();
-                setCurrentStep('survey');
-                cfsPage();
-                break;
-            case CS_TASK:
-                setPreviousStepDone();
-                setCurrentStep('cs-task');
-                csTaskPage();
+                pageForBatteryPhase(instNum)();
                 break;
         }
     } else if (instNum == END) {
@@ -1159,6 +1250,545 @@ function cfsPage() {
         sendCfsData(cfsData);
 
         instNum = surveyOrder.indexOf(CFS) === 0 ? CFI : CS_TASK;
+        setPageInstruction(instNum);
+    };
+    currentAction = submitHandler;
+}
+
+// NfC Page (Need for Cognition — 18 items, 5-point scale)
+function nfcPage() {
+    hideButton();
+    document.querySelector('#game').style.display = 'none';
+    document.querySelector('#panel').style.display = 'block';
+
+    const nfcQuestions = [
+        "I would prefer complex to simple problems.",
+        "I like to have the responsibility of handling a situation that requires a lot of thinking.",
+        "Thinking is not my idea of fun.",
+        "I would rather do something that requires little thought than something that is sure to challenge my thinking abilities.",
+        "I try to anticipate and avoid situations where there is a likely chance I will have to think in depth about something.",
+        "I find satisfaction in deliberating hard and for long hours.",
+        "I only think as hard as I have to.",
+        "I prefer to think about small, daily projects rather than long-term ones.",
+        "I like tasks that require little thought once I've learned them.",
+        "The idea of relying on thought to make my way to the top appeals to me.",
+        "I really enjoy a task that involves coming up with new solutions to problems.",
+        "Learning new ways to think doesn't excite me very much.",
+        "I prefer my life to be filled with puzzles that I must solve.",
+        "The notion of thinking abstractly appeals to me.",
+        "I would prefer a task that is intellectual, difficult, and important to one that is somewhat important but does not require much thought.",
+        "I feel relief rather than satisfaction after completing a task that required a lot of mental effort.",
+        "It's enough for me that something gets the job done; I don't care how or why it works.",
+        "I usually end up deliberating about issues even when they do not affect me personally."
+    ];
+
+    let scale = `<nav class="no-space" style="margin: 15px 0;">`;
+    for (let i = 1; i <= 5; i++) {
+        const roundClass = i === 1 ? 'left-round' : i === 5 ? 'right-round' : 'no-round';
+        scale += `
+            <button type="button" class="scale-button border ${roundClass} max vertical small" data-value="${i}" style="min-width: 60px; padding: 8px 4px;">
+                <span style="font-size: 0.8em;">${i}</span>
+            </button>`;
+    }
+    scale += `</nav>`;
+
+    const scaleLabels = `
+        <div style="display: flex; justify-content: space-between; margin: 5px 0 20px 0; font-size: 0.8em; opacity: 0.8;">
+            <span><b>1</b> = Extremely uncharacteristic of me</span>
+            <span><b>3</b> = Uncertain</span>
+            <span><b>5</b> = Extremely characteristic of me</span>
+        </div>`;
+
+    let content = `
+        <div style="display: flex; flex-direction: column; height: 130vh; max-width: 90%; margin: auto;">
+            <div style="text-align: center; flex-shrink: 0;">
+                <h2 style="margin-bottom: 5px;">Survey ${surveyOrder.indexOf(NFC) + 1} of ${surveyOrder.length}</h2>
+                <p style="font-size: 1.1em; margin-bottom: 20px; line-height: 1.6;">
+                    For each of the statements below, please indicate to what extent the statement is characteristic of you, using the scale provided.
+                </p>
+                ${scaleLabels}
+            </div>
+            <div style="height: 38%; overflow-y: auto; padding: 20px; border: 2px solid #666666; border-radius: 12px; margin: 0 20px; background-color: var(--surface-container-lowest);">
+                <form id="nfc-form" style="padding: 0;">`;
+
+    nfcQuestions.forEach((question, index) => {
+        content += `
+            <div style="border: 2px solid var(--outline-variant); border-radius: 12px; padding: 20px; margin: 15px 0; background-color: var(--surface-container-low);">
+                <div style="margin-bottom: 15px;">
+                    <p style="font-size: 1em; line-height: 1.4; margin: 0;">
+                        <b>Q${index + 1}:</b> ${question}
+                    </p>
+                </div>
+                <div class="question-scale" data-question="${index}">
+                    ${scale.replace(/data-value="/g, `data-question="${index}" data-value="`)}
+                </div>
+            </div>`;
+    });
+
+    content += `
+                </form>
+            </div>
+            <div style="padding: 15px 20px; flex-shrink: 0; border-top: 1px solid var(--outline-variant); background-color: var(--surface-container);">
+                <div id="nfc-error" style="color: var(--error); text-align: center; font-weight: bold; min-height: 20px;"></div>
+            </div>
+        </div>`;
+
+    document.querySelector('#panel').innerHTML = content;
+
+    document.querySelectorAll('.scale-button').forEach(button => {
+        button.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            const questionIndex = button.getAttribute('data-question');
+            const value = button.getAttribute('data-value');
+            document.querySelectorAll(`[data-question="${questionIndex}"]`).forEach(btn => {
+                btn.classList.remove('fill-selected');
+            });
+            button.classList.add('fill-selected');
+            if (!window.nfcResponses) window.nfcResponses = {};
+            window.nfcResponses[`q${questionIndex}`] = parseInt(value);
+            document.getElementById('nfc-error').textContent = '';
+        });
+    });
+
+    showButton();
+    hidePrevButton();
+
+    const submitHandler = () => {
+        if (!window.nfcResponses || Object.keys(window.nfcResponses).length < nfcQuestions.length) {
+            const unanswered = [];
+            for (let i = 0; i < nfcQuestions.length; i++) {
+                if (!window.nfcResponses || window.nfcResponses[`q${i}`] === undefined) {
+                    unanswered.push(i + 1);
+                }
+            }
+            document.getElementById('nfc-error').textContent = `Please answer all questions. Missing: Q${unanswered.join(', Q')}`;
+            unblockClick();
+            return;
+        }
+        document.getElementById('nfc-error').textContent = '';
+
+        // Raw responses only — reverse-scoring and totals are computed at
+        // analysis time (see surveys/NfC.md for the reverse-item key).
+        const nfcData = {
+            prolificID: window.subID,
+            expName: 'Within',
+            timestamp: new Date().toISOString(),
+            surveyOrder: surveyOrderNames,
+            ...window.nfcResponses
+        };
+        sendNfcData(nfcData);
+
+        instNum = nextInBattery(NFC);
+        setPageInstruction(instNum);
+    };
+    currentAction = submitHandler;
+}
+
+// CFQ Page (Cognitive Failures Questionnaire — 25 items, 0-4 scale)
+function cfqPage() {
+    hideButton();
+    document.querySelector('#game').style.display = 'none';
+    document.querySelector('#panel').style.display = 'block';
+
+    const cfqQuestions = [
+        "Do you read something and find you haven't been thinking about it and must read it again?",
+        "Do you find you forget why you went from one part of the house to another?",
+        "Do you fail to notice signposts on the road?",
+        "Do you find you confuse right and left when giving directions?",
+        "Do you bump into people?",
+        "Do you find you forget whether you've turned off a light, a fire, or locked the door?",
+        "Do you fail to listen to people's names when you are meeting them?",
+        "Do you say something and realize afterwards that it might be taken as insulting?",
+        "Do you fail to hear people speaking to you when you are doing something else?",
+        "Do you lose your temper and regret it?",
+        "Do you leave important letters unanswered for days?",
+        "Do you find you forget which way to turn on a road you know well but rarely use?",
+        "Do you fail to see what you want in a supermarket (although it's there)?",
+        "Do you find yourself suddenly wondering whether you've used a word correctly?",
+        "Do you have trouble making up your mind?",
+        "Do you find you forget appointments?",
+        "Do you forget where you put things like a newspaper or a book?",
+        "Do you find you accidentally throw away the thing you want and keep what you meant to throw away?",
+        "Do you daydream when you ought to be listening to something?",
+        "Do you find you forget people's names?",
+        "Do you start doing one thing at home and get distracted into doing something else (unintentionally)?",
+        "Do you find you can't quite remember a word although it's \"on the tip of your tongue\"?",
+        "Do you find you forget what you came to the shop to buy?",
+        "Do you drop things?",
+        "Do you find you can't think of anything to say?"
+    ];
+
+    let scale = `<nav class="no-space" style="margin: 15px 0;">`;
+    for (let i = 0; i <= 4; i++) {
+        const roundClass = i === 0 ? 'left-round' : i === 4 ? 'right-round' : 'no-round';
+        scale += `
+            <button type="button" class="scale-button border ${roundClass} max vertical small" data-value="${i}" style="min-width: 60px; padding: 8px 4px;">
+                <span style="font-size: 0.8em;">${i}</span>
+            </button>`;
+    }
+    scale += `</nav>`;
+
+    const scaleLabels = `
+        <div style="display: flex; justify-content: space-between; margin: 5px 0 20px 0; font-size: 0.8em; opacity: 0.8;">
+            <span><b>0</b> = Never</span>
+            <span><b>2</b> = Occasionally</span>
+            <span><b>4</b> = Very often</span>
+        </div>`;
+
+    let content = `
+        <div style="display: flex; flex-direction: column; height: 130vh; max-width: 90%; margin: auto;">
+            <div style="text-align: center; flex-shrink: 0;">
+                <h2 style="margin-bottom: 5px;">Survey ${surveyOrder.indexOf(CFQ) + 1} of ${surveyOrder.length}</h2>
+                <p style="font-size: 1.1em; margin-bottom: 20px; line-height: 1.6;">
+                    The questions below refer to minor mistakes which everyone makes from time to time, but some of which happen more often than others. We want to know how often these things have happened to you in the past 6 months. Please indicate how often.
+                </p>
+                ${scaleLabels}
+            </div>
+            <div style="height: 38%; overflow-y: auto; padding: 20px; border: 2px solid #666666; border-radius: 12px; margin: 0 20px; background-color: var(--surface-container-lowest);">
+                <form id="cfq-form" style="padding: 0;">`;
+
+    cfqQuestions.forEach((question, index) => {
+        content += `
+            <div style="border: 2px solid var(--outline-variant); border-radius: 12px; padding: 20px; margin: 15px 0; background-color: var(--surface-container-low);">
+                <div style="margin-bottom: 15px;">
+                    <p style="font-size: 1em; line-height: 1.4; margin: 0;">
+                        <b>Q${index + 1}:</b> ${question}
+                    </p>
+                </div>
+                <div class="question-scale" data-question="${index}">
+                    ${scale.replace(/data-value="/g, `data-question="${index}" data-value="`)}
+                </div>
+            </div>`;
+    });
+
+    content += `
+                </form>
+            </div>
+            <div style="padding: 15px 20px; flex-shrink: 0; border-top: 1px solid var(--outline-variant); background-color: var(--surface-container);">
+                <div id="cfq-error" style="color: var(--error); text-align: center; font-weight: bold; min-height: 20px;"></div>
+            </div>
+        </div>`;
+
+    document.querySelector('#panel').innerHTML = content;
+
+    document.querySelectorAll('.scale-button').forEach(button => {
+        button.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            const questionIndex = button.getAttribute('data-question');
+            const value = button.getAttribute('data-value');
+            document.querySelectorAll(`[data-question="${questionIndex}"]`).forEach(btn => {
+                btn.classList.remove('fill-selected');
+            });
+            button.classList.add('fill-selected');
+            if (!window.cfqResponses) window.cfqResponses = {};
+            window.cfqResponses[`q${questionIndex}`] = parseInt(value);
+            document.getElementById('cfq-error').textContent = '';
+        });
+    });
+
+    showButton();
+    hidePrevButton();
+
+    const submitHandler = () => {
+        if (!window.cfqResponses || Object.keys(window.cfqResponses).length < cfqQuestions.length) {
+            const unanswered = [];
+            for (let i = 0; i < cfqQuestions.length; i++) {
+                if (!window.cfqResponses || window.cfqResponses[`q${i}`] === undefined) {
+                    unanswered.push(i + 1);
+                }
+            }
+            document.getElementById('cfq-error').textContent = `Please answer all questions. Missing: Q${unanswered.join(', Q')}`;
+            unblockClick();
+            return;
+        }
+        document.getElementById('cfq-error').textContent = '';
+
+        // Raw responses only — totals are computed at analysis time
+        // (see surveys/CFQ.md).
+        const cfqData = {
+            prolificID: window.subID,
+            expName: 'Within',
+            timestamp: new Date().toISOString(),
+            surveyOrder: surveyOrderNames,
+            ...window.cfqResponses
+        };
+        sendCfqData(cfqData);
+
+        instNum = nextInBattery(CFQ);
+        setPageInstruction(instNum);
+    };
+    currentAction = submitHandler;
+}
+
+// OCI-R Page (Obsessive-Compulsive Inventory-Revised — 18 items, 0-4 scale)
+function ociRPage() {
+    hideButton();
+    document.querySelector('#game').style.display = 'none';
+    document.querySelector('#panel').style.display = 'block';
+
+    const ociRQuestions = [
+        "I have saved up so many things that they get in the way.",
+        "I check things more often than necessary.",
+        "I get upset if objects are not arranged properly.",
+        "I feel compelled to count while I am doing things.",
+        "I find it difficult to touch an object when I know it has been touched by strangers or certain people.",
+        "I find it difficult to control my own thoughts.",
+        "I collect things I don't need.",
+        "I repeatedly check doors, windows, drawers, etc.",
+        "I get upset if others change the way I have arranged things.",
+        "I feel I have to repeat certain numbers.",
+        "I sometimes have to wash or clean myself simply because I feel contaminated.",
+        "I am upset by unpleasant thoughts that come into my mind against my will.",
+        "I avoid throwing things away because I am afraid I might need them later.",
+        "I repeatedly check gas and water taps and light switches after turning them off.",
+        "I need things to be arranged in a particular way.",
+        "I feel that there are good and bad numbers.",
+        "I wash my hands more often and longer than necessary.",
+        "I frequently get nasty thoughts and have difficulty in getting rid of them."
+    ];
+
+    let scale = `<nav class="no-space" style="margin: 15px 0;">`;
+    for (let i = 0; i <= 4; i++) {
+        const roundClass = i === 0 ? 'left-round' : i === 4 ? 'right-round' : 'no-round';
+        scale += `
+            <button type="button" class="scale-button border ${roundClass} max vertical small" data-value="${i}" style="min-width: 60px; padding: 8px 4px;">
+                <span style="font-size: 0.8em;">${i}</span>
+            </button>`;
+    }
+    scale += `</nav>`;
+
+    const scaleLabels = `
+        <div style="display: flex; justify-content: space-between; margin: 5px 0 20px 0; font-size: 0.8em; opacity: 0.8;">
+            <span><b>0</b> = Not at all</span>
+            <span><b>2</b> = Moderately</span>
+            <span><b>4</b> = Extremely</span>
+        </div>`;
+
+    let content = `
+        <div style="display: flex; flex-direction: column; height: 130vh; max-width: 90%; margin: auto;">
+            <div style="text-align: center; flex-shrink: 0;">
+                <h2 style="margin-bottom: 5px;">Survey ${surveyOrder.indexOf(OCIR) + 1} of ${surveyOrder.length}</h2>
+                <p style="font-size: 1.1em; margin-bottom: 20px; line-height: 1.6;">
+                    The following statements refer to experiences that many people have in their everyday lives. Please indicate the number that best describes HOW MUCH that experience has DISTRESSED or BOTHERED you during the PAST MONTH.
+                </p>
+                ${scaleLabels}
+            </div>
+            <div style="height: 38%; overflow-y: auto; padding: 20px; border: 2px solid #666666; border-radius: 12px; margin: 0 20px; background-color: var(--surface-container-lowest);">
+                <form id="ocir-form" style="padding: 0;">`;
+
+    ociRQuestions.forEach((question, index) => {
+        content += `
+            <div style="border: 2px solid var(--outline-variant); border-radius: 12px; padding: 20px; margin: 15px 0; background-color: var(--surface-container-low);">
+                <div style="margin-bottom: 15px;">
+                    <p style="font-size: 1em; line-height: 1.4; margin: 0;">
+                        <b>Q${index + 1}:</b> ${question}
+                    </p>
+                </div>
+                <div class="question-scale" data-question="${index}">
+                    ${scale.replace(/data-value="/g, `data-question="${index}" data-value="`)}
+                </div>
+            </div>`;
+    });
+
+    content += `
+                </form>
+            </div>
+            <div style="padding: 15px 20px; flex-shrink: 0; border-top: 1px solid var(--outline-variant); background-color: var(--surface-container);">
+                <div id="ocir-error" style="color: var(--error); text-align: center; font-weight: bold; min-height: 20px;"></div>
+            </div>
+        </div>`;
+
+    document.querySelector('#panel').innerHTML = content;
+
+    document.querySelectorAll('.scale-button').forEach(button => {
+        button.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            const questionIndex = button.getAttribute('data-question');
+            const value = button.getAttribute('data-value');
+            document.querySelectorAll(`[data-question="${questionIndex}"]`).forEach(btn => {
+                btn.classList.remove('fill-selected');
+            });
+            button.classList.add('fill-selected');
+            if (!window.ociRResponses) window.ociRResponses = {};
+            window.ociRResponses[`q${questionIndex}`] = parseInt(value);
+            document.getElementById('ocir-error').textContent = '';
+        });
+    });
+
+    showButton();
+    hidePrevButton();
+
+    const submitHandler = () => {
+        if (!window.ociRResponses || Object.keys(window.ociRResponses).length < ociRQuestions.length) {
+            const unanswered = [];
+            for (let i = 0; i < ociRQuestions.length; i++) {
+                if (!window.ociRResponses || window.ociRResponses[`q${i}`] === undefined) {
+                    unanswered.push(i + 1);
+                }
+            }
+            document.getElementById('ocir-error').textContent = `Please answer all questions. Missing: Q${unanswered.join(', Q')}`;
+            unblockClick();
+            return;
+        }
+        document.getElementById('ocir-error').textContent = '';
+
+        // Raw responses only — total and subscale scores are computed at
+        // analysis time (see surveys/OCI-R.md).
+        const ociRData = {
+            prolificID: window.subID,
+            expName: 'Within',
+            timestamp: new Date().toISOString(),
+            surveyOrder: surveyOrderNames,
+            ...window.ociRResponses
+        };
+        sendOciRData(ociRData);
+
+        instNum = nextInBattery(OCIR);
+        setPageInstruction(instNum);
+    };
+    currentAction = submitHandler;
+}
+
+// BFI-2-S Page (Big Five Inventory-2 Short Form — 30 items, 5-point scale)
+function bfi2sPage() {
+    hideButton();
+    document.querySelector('#game').style.display = 'none';
+    document.querySelector('#panel').style.display = 'block';
+
+    const bfi2sQuestions = [
+        "...tends to be quiet.",
+        "...is compassionate, has a soft heart.",
+        "...tends to be disorganized.",
+        "...worries a lot.",
+        "...is fascinated by art, music, or literature.",
+        "...is dominant, acts as a leader.",
+        "...is sometimes rude to others.",
+        "...has difficulty getting started on tasks.",
+        "...tends to feel depressed, blue.",
+        "...has little interest in abstract ideas.",
+        "...is full of energy.",
+        "...assumes the best about people.",
+        "...is reliable, can always be counted on.",
+        "...is emotionally stable, not easily upset.",
+        "...is original, comes up with new ideas.",
+        "...is outgoing, sociable.",
+        "...can be cold and uncaring.",
+        "...keeps things neat and tidy.",
+        "...is relaxed, handles stress well.",
+        "...has few artistic interests.",
+        "...prefers to have others take charge.",
+        "...is respectful, treats others with respect.",
+        "...is persistent, works until the task is finished.",
+        "...feels secure, comfortable with self.",
+        "...is complex, a deep thinker.",
+        "...is less active than other people.",
+        "...tends to find fault with others.",
+        "...can be somewhat careless.",
+        "...is temperamental, gets emotional easily.",
+        "...has little creativity."
+    ];
+
+    let scale = `<nav class="no-space" style="margin: 15px 0;">`;
+    for (let i = 1; i <= 5; i++) {
+        const roundClass = i === 1 ? 'left-round' : i === 5 ? 'right-round' : 'no-round';
+        scale += `
+            <button type="button" class="scale-button border ${roundClass} max vertical small" data-value="${i}" style="min-width: 60px; padding: 8px 4px;">
+                <span style="font-size: 0.8em;">${i}</span>
+            </button>`;
+    }
+    scale += `</nav>`;
+
+    const scaleLabels = `
+        <div style="display: flex; justify-content: space-between; margin: 5px 0 20px 0; font-size: 0.8em; opacity: 0.8;">
+            <span><b>1</b> = Disagree strongly</span>
+            <span><b>3</b> = Neutral; no opinion</span>
+            <span><b>5</b> = Agree strongly</span>
+        </div>`;
+
+    let content = `
+        <div style="display: flex; flex-direction: column; height: 130vh; max-width: 90%; margin: auto;">
+            <div style="text-align: center; flex-shrink: 0;">
+                <h2 style="margin-bottom: 5px;">Survey ${surveyOrder.indexOf(BFI2S) + 1} of ${surveyOrder.length}</h2>
+                <p style="font-size: 1.1em; margin-bottom: 20px; line-height: 1.6;">
+                    Here are a number of characteristics that may or may not apply to you. Please indicate the extent to which you agree or disagree with each statement, completing the stem <b>"I am someone who…"</b>
+                </p>
+                ${scaleLabels}
+            </div>
+            <div style="height: 38%; overflow-y: auto; padding: 20px; border: 2px solid #666666; border-radius: 12px; margin: 0 20px; background-color: var(--surface-container-lowest);">
+                <form id="bfi2s-form" style="padding: 0;">`;
+
+    bfi2sQuestions.forEach((question, index) => {
+        content += `
+            <div style="border: 2px solid var(--outline-variant); border-radius: 12px; padding: 20px; margin: 15px 0; background-color: var(--surface-container-low);">
+                <div style="margin-bottom: 15px;">
+                    <p style="font-size: 1em; line-height: 1.4; margin: 0;">
+                        <b>Q${index + 1}:</b> I am someone who ${question.replace(/^\.\.\./, '')}
+                    </p>
+                </div>
+                <div class="question-scale" data-question="${index}">
+                    ${scale.replace(/data-value="/g, `data-question="${index}" data-value="`)}
+                </div>
+            </div>`;
+    });
+
+    content += `
+                </form>
+            </div>
+            <div style="padding: 15px 20px; flex-shrink: 0; border-top: 1px solid var(--outline-variant); background-color: var(--surface-container);">
+                <div id="bfi2s-error" style="color: var(--error); text-align: center; font-weight: bold; min-height: 20px;"></div>
+            </div>
+        </div>`;
+
+    document.querySelector('#panel').innerHTML = content;
+
+    document.querySelectorAll('.scale-button').forEach(button => {
+        button.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            const questionIndex = button.getAttribute('data-question');
+            const value = button.getAttribute('data-value');
+            document.querySelectorAll(`[data-question="${questionIndex}"]`).forEach(btn => {
+                btn.classList.remove('fill-selected');
+            });
+            button.classList.add('fill-selected');
+            if (!window.bfi2sResponses) window.bfi2sResponses = {};
+            window.bfi2sResponses[`q${questionIndex}`] = parseInt(value);
+            document.getElementById('bfi2s-error').textContent = '';
+        });
+    });
+
+    showButton();
+    hidePrevButton();
+
+    const submitHandler = () => {
+        if (!window.bfi2sResponses || Object.keys(window.bfi2sResponses).length < bfi2sQuestions.length) {
+            const unanswered = [];
+            for (let i = 0; i < bfi2sQuestions.length; i++) {
+                if (!window.bfi2sResponses || window.bfi2sResponses[`q${i}`] === undefined) {
+                    unanswered.push(i + 1);
+                }
+            }
+            document.getElementById('bfi2s-error').textContent = `Please answer all questions. Missing: Q${unanswered.join(', Q')}`;
+            unblockClick();
+            return;
+        }
+        document.getElementById('bfi2s-error').textContent = '';
+
+        // Raw responses only — reverse-scoring and domain scores are computed
+        // at analysis time (see surveys/BFI-2-S.md for the domain/reverse key).
+        const bfi2sData = {
+            prolificID: window.subID,
+            expName: 'Within',
+            timestamp: new Date().toISOString(),
+            surveyOrder: surveyOrderNames,
+            ...window.bfi2sResponses
+        };
+        sendBfi2sData(bfi2sData);
+
+        instNum = nextInBattery(BFI2S);
         setPageInstruction(instNum);
     };
     currentAction = submitHandler;
@@ -2195,6 +2825,98 @@ const sendCfsData = async (data, call = 0) => {
         }
         setTimeout(() => {
             sendCfsData(data, call + 1);
+        }, 500);
+    }
+}
+
+const sendNfcData = async (data, call = 0) => {
+    let response = await fetch(NFC_PHP, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+
+    if (response.ok) {
+        console.log('NfC data sent successfully');
+        return response.json();
+    } else {
+        if (call > 3) {
+            console.log('Failed to send NfC data');
+            return;
+        }
+        setTimeout(() => {
+            sendNfcData(data, call + 1);
+        }, 500);
+    }
+}
+
+const sendCfqData = async (data, call = 0) => {
+    let response = await fetch(CFQ_PHP, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+
+    if (response.ok) {
+        console.log('CFQ data sent successfully');
+        return response.json();
+    } else {
+        if (call > 3) {
+            console.log('Failed to send CFQ data');
+            return;
+        }
+        setTimeout(() => {
+            sendCfqData(data, call + 1);
+        }, 500);
+    }
+}
+
+const sendOciRData = async (data, call = 0) => {
+    let response = await fetch(OCIR_PHP, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+
+    if (response.ok) {
+        console.log('OCI-R data sent successfully');
+        return response.json();
+    } else {
+        if (call > 3) {
+            console.log('Failed to send OCI-R data');
+            return;
+        }
+        setTimeout(() => {
+            sendOciRData(data, call + 1);
+        }, 500);
+    }
+}
+
+const sendBfi2sData = async (data, call = 0) => {
+    let response = await fetch(BFI2S_PHP, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+
+    if (response.ok) {
+        console.log('BFI-2-S data sent successfully');
+        return response.json();
+    } else {
+        if (call > 3) {
+            console.log('Failed to send BFI-2-S data');
+            return;
+        }
+        setTimeout(() => {
+            sendBfi2sData(data, call + 1);
         }, 500);
     }
 }

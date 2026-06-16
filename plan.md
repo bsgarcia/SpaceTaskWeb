@@ -172,10 +172,11 @@ const OCIR_PHP  = 'php/insert_ocir.php';
 const BFI2S_PHP = 'php/insert_bfi2s.php';
 const WCST_PHP  = 'php/insert_wcst.php'; // see Part 5
 ```
-Keep the 3-retry pattern. Payload mirrors CFI:
-`{ prolificID, expName: 'Within', timestamp, score, ...qN }` (include computed
-`score` and per-question `qN`; for BFI-2-S consider also storing per-domain
-subscores).
+Keep the 3-retry pattern. Payload: `{ prolificID, expName: 'Within', timestamp,
+...qN }` — raw per-question responses only. No computed `score` or per-domain
+subscores are stored; reverse-scoring, totals, and (for BFI-2-S) domain scores
+are computed at analysis time from the raw `qN` values using the keys
+documented in `surveys/*.md`.
 
 ---
 
@@ -254,12 +255,21 @@ question count, validation count, and target table. Add:
 
 ## Checklist (implementation order)
 
-- [ ] Part 0: source + record all survey materials (Sonnet)
-- [ ] Part 1: constants + 4-item randomised order
-- [ ] Part 6: PHP endpoints + DB tables + whitelist
-- [ ] Part 3 + 4: survey page fns + senders (clone CFI)
-- [ ] Part 5: WCST-64 page + endpoint
-- [ ] Part 2: routing (setPageInstruction, skip, debug entry)
-- [ ] Part 7: index.html stepper
-- [ ] Part 8: build, verify, deploy, update docs
-- [ ] Confirm: nothing deleted — retired code only commented out
+- [x] Part 0: source + record all survey materials (Sonnet)
+- [x] Part 1: constants + 4-item randomised order
+- [x] Part 6: PHP endpoints + DB tables + whitelist (NfC, CFQ, OCI-R, BFI-2-S;
+      see `php/schema_battery.sql` for `CREATE TABLE` statements — run these
+      on the MySQL `basile` DB before deploying)
+- [x] Part 3 + 4: survey page fns + senders (clone CFI) — `nfcPage`, `cfqPage`,
+      `ociRPage`, `bfi2sPage` + matching `send*Data` fns
+- [ ] Part 5: WCST-64 page + endpoint — **NOT IMPLEMENTED** (hosting/library TBD)
+- [x] Part 2: routing (setPageInstruction, skip, debug entry) — for the 4
+      Likert surveys. `nextInBattery()` currently routes the last survey to
+      `END` instead of `WCST` (TODO once Part 5 lands)
+- [x] Part 7: index.html stepper — cs-task step commented out, "end" renumbered
+      to 8; "wcst" step placeholder left as a TODO comment
+- [ ] Part 8: build, verify, deploy, update docs — `npx webpack` build passes;
+      DB tables still need creating on the server; PROJECT_STRUCTURE.md not
+      yet updated (deferring full doc refresh until WCST lands)
+- [x] Confirm: nothing deleted — retired code (CFI/CFS/CS_TASK, old 2-item
+      survey order, old debug helpers) only commented out
