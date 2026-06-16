@@ -427,21 +427,6 @@ const skipCurrentStep = async () => {
                     console.log('About to call setPageInstruction with END:', END);
                     await setPageInstruction(instNum);
                     break;
-                // case CFI: // RETIRED
-                //     setStepDone('survey');
-                //     instNum = surveyOrder.indexOf(CFI) === 0 ? CFS : CS_TASK;
-                //     await setPageInstruction(instNum);
-                //     break;
-                // case CFS: // RETIRED
-                //     setStepDone('survey');
-                //     instNum = surveyOrder.indexOf(CFS) === 0 ? CFI : CS_TASK;
-                //     await setPageInstruction(instNum);
-                //     break;
-                // case CS_TASK: // RETIRED
-                //     setStepDone('cs-task');
-                //     instNum = END;
-                //     await setPageInstruction(instNum);
-                //     break;
                 case NFC:
                 case CFQ:
                 case OCIR:
@@ -465,23 +450,6 @@ const skipCurrentStep = async () => {
 }
 
 window.skip = skipCurrentStep;
-
-// OLD two-item CFI/CFS debug helpers — commented out, see new battery versions below
-// window.surveyOrderInfo = () => {
-//     const names = { [CFI]: 'CFI', [CFS]: 'CFS' };
-//     console.log(
-//         `%cSurvey order: ${surveyOrder.map(n => names[n]).join(' → ')} → CS_TASK`,
-//         'color: cyan; font-weight: bold'
-//     );
-//     console.log('surveyOrder array:', surveyOrder);
-//     console.log('localStorage surveyOrder:', localStorage.getItem('surveyOrder'));
-// };
-//
-// window.setSurveyOrder = (order) => {
-//     const next = order === 'CFS_FIRST' ? [CFS, CFI] : [CFI, CFS];
-//     localStorage.setItem('surveyOrder', JSON.stringify(next));
-//     console.log(`surveyOrder set to ${next.map(n => ({[CFI]:'CFI',[CFS]:'CFS'}[n])).join(' → ')}. Reload to apply.`);
-// };
 
 /**
  * window.surveyOrderInfo()  — log the current battery order to the console
@@ -727,29 +695,6 @@ const setPageInstruction = async (instNum) => {
                 setCurrentStep('final-survey');
                 surveyPage();
                 break;
-            // case SG:
-            //     setPreviousStepDone()
-            //     setCurrentStep('survey');
-            //     generalRiskSurveyPage();
-            //     break;
-            // case SI:
-            //     hypotheticalInvestmentPage();
-            //     break;
-            // case CFI: // RETIRED
-            //     setPreviousStepDone();
-            //     setCurrentStep('survey');
-            //     cfiPage();
-            //     break;
-            // case CFS: // RETIRED
-            //     setPreviousStepDone();
-            //     setCurrentStep('survey');
-            //     cfsPage();
-            //     break;
-            // case CS_TASK: // RETIRED
-            //     setPreviousStepDone();
-            //     setCurrentStep('cs-task');
-            //     csTaskPage();
-            //     break;
             case NFC:
             case CFQ:
             case OCIR:
@@ -1525,51 +1470,7 @@ const sendFeedback = async (data, call = 0) => {
     }
 }
 
-const sendCfiData = async (data, call = 0) => {
-    let response = await fetch(CFI_PHP, {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
 
-    if (response.ok) {
-        console.log('CFI data sent successfully');
-        return response.json();
-    } else {
-        if (call > 3) {
-            console.log('Failed to send CFI data');
-            return;
-        }
-        setTimeout(() => {
-            sendCfiData(data, call + 1);
-        }, 500);
-    }
-}
-
-const sendCfsData = async (data, call = 0) => {
-    let response = await fetch(CFS_PHP, {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
-
-    if (response.ok) {
-        console.log('CFS data sent successfully');
-        return response.json();
-    } else {
-        if (call > 3) {
-            console.log('Failed to send CFS data');
-            return;
-        }
-        setTimeout(() => {
-            sendCfsData(data, call + 1);
-        }, 500);
-    }
-}
 
 const sendNfcData = async (data, call = 0) => {
     let response = await fetch(NFC_PHP, {
