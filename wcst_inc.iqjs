@@ -1,0 +1,1597 @@
+<userManual>
+______________________________________________________________________________________________________
+
+							Wisconsin Cardsort Test - WCST
+______________________________________________________________________________________________________
+
+Script Author: Katja Borchert, Ph.D. (katjab@millisecond.com), Millisecond
+Created: 07-24-2012
+Last Updated:  12-02-2025 by K. Borchert (katjab@millisecond.com), Millisecond
+
+Script Copyright © 12-02-2025 Millisecond Software, LLC
+
+credits: Millisecond thanks Stephanie Miles and Caitlin Howlett for ample support in continuously 
+improving the Inquisit WCST script!
+
+______________________________________________________________________________________________________
+BACKGROUND INFO
+______________________________________________________________________________________________________
+This script implements a computerized version of the Wisconsin Cardsort Test (WCST);
+a test of cognitive flexibility upon (unannounced) rule changes.
+The WCST implemented in this script is based in part on Grant & Berg (1948)* as well as Heaton et al (1993)
+and is played with 2 decks of cards (64 cards in each deck).
+
+DISCLAIMER
+This script* runs Millisecond's best effort attempt to code perserverative responses according to the guidelines
+outlined by Heaton et al (1993). Coding may, however, still differ from published definitions or contain errors. 
+Please check the definitions of the coded variables used in this script under the data glossary.
+If in doubt, manually score the raw responses.
+
+*Note: previous Inquisit WCST scripts may have used a different definition of Perserverative Responses
+
+______________________________________________________________________________________________________
+REFERENCES
+______________________________________________________________________________________________________
+
+Grant, D.A. & Berg. E.A. (1948). A behavioral analysis of degree of reinforcement and ease of shifting to
+new responses in a Weigl-type card sorting problem. Journal of Experimental Psychology, 38, 404-411.
+
+Heaton, R., Chelune, G., Talley, J., Kay, G., & Curtiss, G. Wisconsin Card Sorting Test Manual—Revised
+and Expanded 1993. Lutz, FL: Psychological Assessment Resources Inc
+
+Miles, S., Howlett, C.A., Berryman, C. et al. Considerations for using the Wisconsin Card Sorting Test 
+to assess cognitive flexibility. Behav Res (2021). https://doi.org/10.3758/s13428-021-01551-3
+
+______________________________________________________________________________________________________
+TASK DESCRIPTION
+______________________________________________________________________________________________________
+
+Participants are asked to sort cards into four different "categories". No instructions are
+given in regard to the categorization rules.
+The four different categories are
+- one red triangle
+- two green stars
+- three yellow crosses
+- four blue circles.
+The cards to sort into these piles have similar designs and 
+vary in color (4), shape (4), and number (4).
+
+______________________________________________________________________________________________________
+DURATION 
+______________________________________________________________________________________________________
+5 minutes
+
+___________________________________________________________________________________________________________________
+SCORING
+___________________________________________________________________________________________________________________
+
+Once the trial-by-responses have been collected, the raw data gets re-analyzed to determine
+perseverative responding (which can only be done in retrospect).
+The re-analyzed raw data columns are added by block.rawDataScoring
+
+
+//Scoring Algorithm of Perserverative Responses (see Heaton et al, 1993)
+
+Perserverative Responses: “persistence to respond according to a stimulus characteristic 
+that is currently incorrect (although perseverative responses can also be correct because of the potential 
+for ambiguous responses and the sandwich rule)”
+
+First (Color) Block:
+- the first unambiguous error sets the pResponse-Principle BUT is not scored as a pResponse in itself
+(Note: only C/F/N responses considered for setting the pResponse-Principle)
+- the next time an unambiguous error of the pResponse-Principle is made, it's scored as a pResponse
+
+Subsequent Blocks:
+- the previous correct category becomes automatically the pResponse-Principle and all subsequent
+unambiguous errors of the pResponse-Principle are scored as a pResponse.
+
+Sandwich pResponses: 
+all ambiguous responses (can also be scored as correct!) that contain the pResponse-Principle
+made inbetween two unambiguous pResponses (=sandwiched btw. two pResponses) are also scored as pResponses.
+
+Example: 
+Begin of Form Block: Form category is correct, Color category is pResponse-Principle
+
+CF => correct response (contains F)
+C (incorrect response) => unambiguous C error: pResponse
+  CF (correct response) => sandwiched btween two pResponses AND contains C => all responses btw. 2 pResponses contain C => all are scored as pResponses as well (even if the response is scored as correct)
+  CN (incorrect response) => sandwiched btween two pResponses AND contains C => all responses btw. 2 pResponses contain C => all are scored as pResponses as well 
+  CFN (correct response )=> sandwich btween two pResponses AND contains C => all responses btw. 2 pResponses contain C => all are scored as pResponses as well 
+C => second unambiguous C error: pResponse (the script retrospectively scores the sandwich responses as pResponses)
+
+!IMPORTANT: pResponse-Principle changes
+According to Heaton et al (1993) the pResponse-Principle of a block can change.
+This can happen if a participant makes three unambiguous errors of the NON-pResponse-Principle (in this script: 
+these responses have to be made UNinterrupted by unambiguous errors of the pResponse Principle but can be interrupted by correct responses
+or responses of the O-category) and ALL AMBIGUOUS responses 
+inbetween these three unambiguous error responses contain the NON-pResponse-Principle). 
+In these cases the pResponse-principle changes and all responses that contain the new pResponse-principle from (and including) the 
+SECOND to the THIRD unambiguous error are scored as a pResponse.
+
+Example: 1. Block (color is the correct category)
+
+1) N (first unambiguous incorrect response)
+=> sets the pResponse-principle (N) (but not a pResponse!)
+
+2) NC 
+=> 'correct' (not sandwiched inbetween pResponses)
+
+3) N (incorrect)
+=> first actual pResponse
+
+4) F (incorrect)
+=> first unambiguous error of the F-category
+
+5) CN (correct)
+=> ambiguous C/N response (scorred as 'correct')
+
+6) F (incorrect)
+=> second unambiguous error of the F-category (after trial7 will turn into the first unambiguous error of the F-category)
+
+7) F (incorrect)
+=> third unambiguous error of the F-category 
+=> HOWEVER, not all responses btw, the third (trial7) and first F-error (trial4) contain F 
+=> therefore trial7 unambiguous F-error will be re-classified as the second F-error
+=> after trial8 this error will be retrospectively scored as the first pResponse of the F category
+
+8) F (incorrect) => scored as the NEW third unambiguous F-error 
+=> all responses up to trial 6 contain F 
+=> F is the new pResponse-principle 
+=> all trials btw. trial 8 and trial7 (including trial 7) are retrospectively scored as pResponses
+
+9) N (incorrect)
+=> 'simple' error (not a pResponse as the pResponse-Principle has changed)
+
+______________________________________________________________________________________________________
+DATA OUTPUT DICTIONARY
+______________________________________________________________________________________________________
+
+(1) Raw data file: 'wcst_raw*.iqdat'
+
+build:								The specific Inquisit version used (the 'build') that was run
+computer.platform:					the platform the script was run on (win/mac/ios/android)
+computer.touch:						0 = device has no touchscreen capabilities; 1 = device has touchscreen capabilities
+computer.hasKeyboard:				0 = no external keyboard detected; 1 = external keyboard detected
+date: 								date script was run
+time: 								(local) time script was run 
+subject:							current subjectId 
+group: 								current groupnumber
+session:							with the current session id
+blockcode:							the name the current block (built-in Inquisit variable) 
+blocknum:							the number of the current block (built-in Inquisit variable)
+trialcode: 							the name of the currently recorded trial (built-in Inquisit variable)
+trialnum: 							the number of the currently recorded trial (built-in Inquisit variable)
+										Note: trialnum is a built-in Inquisit variable; it counts all trials run;  
+										even those that do not store data to the data file.
+
+phase:								'testing'
+									'scoring' - 'duplicates' the selected raw data and adds scoring of perserverative response
+
+countColorBlocks:					the number of color blocks started
+countFormBlocks:					the number of number blocks started
+countNumberBlocks:					the number of form blocks started
+
+colortrialcount:					sum up the trials run by category 'color'
+numbertrialcount:					sum up the trials run by category 'number'
+formtrialcount:						sum up the trials run by category 'form'
+
+trialCount:							counts the total trials run
+category :							1 = color; 2 = form; 3 = number
+
+card:								index of presented card
+
+stimulusItem.1:						the presented target card
+stimulusItem.2-
+stimulusItem.5:						the selection of cards to choose from (stay the same throughout the task)
+
+response:							the participant's response (card selection)
+latency: 							the response latency in ms; measured from onset of target card
+
+responseCategory:					=> records features that the selected card (response) and the test card have in common
+									CFN (color, form, number); CF (color; form); CN (color, number); FN (form, number)
+									C (color); F (form); N (number); O (other)
+
+ambiguous:							0 = responseCategory "C", "F", "N" are unambiguous
+									1 = any other response
+
+correct:							the correctness of the response (1 = correct; 0 = otherwise)
+correctStreak:						counts consecutive correct responses (if an error is made, it's reset back to 0)
+
+totalCorrect:						sums up all the correct responses across the task
+totalError:							sums up all the incorrect responses across the task
+
+scoringDeckCount:					tracks the number of decks run
+scoringTrialCount:					tracks the number of total trials run
+scoringtrialCountPerCategory:		tracks the number of trials run per category
+scoringCategoryCount:				tracks the number of categories run
+scoringCategory:					tracks the category run: 1 = C; 2 = F; 3 = N
+scoringCard:						tracks the specific card presented during the trial
+scoringResponse:					tracks the selected response card
+scoringRespCategories:				tracks the response category; e.g. CN => the response falls into the color/number categories
+scoringAcc:							tracks the accuracy of the response: 1 = correct (aka respCategories contained the current category); 0 = error
+scoringCorrectStreak:				tracks the number of consecutive correct responses
+scoringAmbiguousResponse:			tracks the ambiguity of the response: 1 = ambiguous response (falls into one than more than one response category); 0 = unambiguous response
+
+scoringPerseverativeResponse:		tracks perseverative responses: 
+									1 = perseverative response (pResponse); 
+									0 = not scored as a pResponse* (see below for how pResponses are scored in this script)
+
+scoringpResponsePrinciple:			tracks the pResponse-principle that were (likely) currently in effect for scoring pResponses
+
+scoringPerseverativeError:			1 = response was incorrect AND coded as perserverative
+									0 = otherwise
+
+(2) Summary data file: 'WCST_summary*.iqdat'
+
+inquisit.version:					Inquisit version run
+computer.platform:					the platform the script was run on (win/mac/ios/android)
+computer.touch:						0 = device has no touchscreen capabilities; 1 = device has touchscreen capabilities
+computer.hasKeyboard:				0 = no external keyboard detected; 1 = external keyboard detected
+startDate:							date script was run
+startTime:							time script was started
+subjectId:							assigned subject id number
+groupId:							assigned group id number
+sessionId:							assigned session id number
+elapsedTime:						time it took to run script (in ms); measured from onset to offset of script
+completed:							0 = script was not completed (prematurely aborted); 
+									1 = script was completed (all conditions run)
+
+csTotalTrials:						Maximum Number of trials (default = 128 => 2 decks x 64 cards)
+
+csTotalBlocks:  					Maximum Number each category is tested (default = 2)
+correctStreakThreshold: 			Number of consecutive correct responses before a rule change (default = 10)
+
+setmaintainThreshold: 				Number of consecutive correct responses after which an incorrect
+									response is scored as a "Failure to maintain Set" (default = 5)
+								
+showDeckInfo:  						if set to "true" information about the deck (e.g. 1 of 2) and card number
+									(e.g. 7 of 64) are displayed on the screen for the participant to see (default: false (0)
+								
+countColorBlocks:					the number of color blocks started
+countFormBlocks:					the number of form blocks started
+countNumberBlocks:					the number of number blocks started
+
+colortrialcount:					sum up the trials run by category 'color'
+numbertrialcount:					sum up the trials run by category 'number'
+formtrialcount:						sum up the trials run by category 'form'
+
+trialCount:							counts the total trials run
+totalCorrect:						number of correct responses across the task
+
+numberErrors:						number of total errors (all incorrect responses) made
+percentErrors:						percentage of incorrect responses (relative to all responses) 
+
+numberpResponses:					number of perseverative responses made
+percentpResponses:					percentage of Perserverative Responses (relative to all responses)
+
+numberPErrors:						number of perseverative errors (Note: responses have to be incorrect AND scored as perseverative)
+percentPErrors:						percentage of Perserverative Errors (relative to all responses)
+
+
+numberOtherErrors:					number of 'Other' error responses
+percentOtherErrors:					percentage of Other error responses (relative to all responses)
+
+completedCategories:				number of categories (color, form, number) successfully completed (min = 0, max = 6)
+
+sumFailureMaintainSet:				keeps a total of the number of times a participants selects an incorrect card
+									after a correctstreak that was >= setmaintainThreshold
+
+trialsCompleteFirstCategory:		keeps track of how many trials a participant needed to complete the first category
+									after having maintained a correct streak of 5 or higher (default)
+
+								
+percentErrorsBlock1:				percent ERROR responses in block1 (relative to all responses in that block)
+percentErrorsBlock1:				percent ERROR responses in block2 (relative to all responses in that block)
+percentErrorsBlock1:				percent ERROR responses in block3 (relative to all responses in that block)
+percentErrorsBlock1:				percent ERROR responses in block4 (relative to all responses in that block)
+percentErrorsBlock1:				percent ERROR responses in block5 (relative to all responses in that block)
+percentErrorsBlock1:				percent ERROR responses in block6 (relative to all responses in that block)
+
+diffC1F1-diffF2N2:					Difference scores of percent errors in adjacent categories
+									(e.g. DiffC1F1 = percenterrors in first color category - percenterrors in first form category)
+													
+diffC1F1:							Difference scores of percent ERRORS in adjacent categories (e.g. diffC1F1 = percenterrors in first color category - percenterrors in first form category)
+diffF1N1:							Difference scores of percent ERRORS in adjacent categories (F1-N1)
+diffN1C2:							Difference scores of percent ERRORS in adjacent categories (N1-C2)
+diffC2F2:							Difference scores of percent ERRORS in adjacent categories (C2-F2)
+diffF2N2:							Difference scores of percent ERRORS in adjacent categories (F2-N2)
+
+learningToLearn:					the mean of the obtained difference scores
+
+______________________________________________________________________________________________________
+EXPERIMENTAL SET-UP 
+______________________________________________________________________________________________________
+(1)  Cards:
+- Participants receive the equivalent of 2 decks of cards. Each deck contains 64 different cards.
+- Researchers can set whether to display the deck/card info for the participants 
+on the screen under section EDITABLE PARAMETERS
+- the cards of each deck are randomized without replacement (see list.selectcard for more detail)
+
+(2) Order of Categorization Rules: Color -> Form -> Number
+- Maximal 2 of each category
+- Rules change after 10 consecutive correct responses for a category (default, can be changed under 
+VALUES)
+
+(3) End of Task:
+(a) reached the maximum number of cards:
+- Maximum Number of Trials/Cards: 2 (decks) x 64 (cards) => 128 cards 
+(b) successfully completed 2 sequences of the color->form->number sequence
+- Minimum number of trials/Cards = 10 (correct trials per block) * 6 (max number of blocks)=> 60 cards
+
+(4) Instructions
+- Instructions can easily be changed under EDITABLE INSTRUCTIONS
+- Text Stimuli can be easily changed under EDITABLE STIMULI
+
+(5) Dependent Variables/Scores:
+- latency of response
+- accuracy of response
+- total number of correct responses/total number of errors
+- Total Number/Percentage of perseverative responses
+- total number of trials
+- number of trials needed to complete first category
+- categories completed (Max = 6)
+- Number of "Failures to Maintain Set" across Experiment
+- "Learning to Learn" measures: error difference scores (of percentages) from adjacent categories
+
+IMPORTANT NOTE: please be aware that the definitions of the summary variables in this script might differ from the originals
+as well as from other published ones.
+
+______________________________________________________________________________________________________
+INSTRUCTIONS 
+______________________________________________________________________________________________________
+provided by Millisecond - can be edited in script "wcst_instructions_inc.iqjs"
+
+______________________________________________________________________________________________________
+EDITABLE CODE 
+______________________________________________________________________________________________________
+
+// design parameters
+/ csTotalTrials = 128: 					Maximum Number of trials (default = 128 => 2 decks x 64 cards)
+/ csTotalBlocks = 2:					Maximum Number each category is tested (default = 2)
+/ correctStreakThreshold = 10:			Number of consecutive correct responses before a rule change (default = 10)
+/ setmaintainThreshold = 5:				Number of consecutive correct responses after which an incorrect response is scored as a "Failure to maintain Set" (default = 5)
+
+/ showDeckInfo = false:					if set to " true" information about the deck (e.g. 1 of 2) and card number (e.g. 7 of 64) 
+										are displayed on the screen for the participant to see (default: false)
+
+// sizing parameters
+/ picSize = 30%:						size of cards determined by canvas height percentage (default:30%)
+
+
+</userManual>
+
+
+**************************************************************************************************************
+**************************************************************************************************************
+	EDITABLE PARAMETERS: change editable parameters here
+**************************************************************************************************************
+**************************************************************************************************************
+
+<parameters>
+// design parameters
+/ csTotalTrials = 128 					//Maximum Number of trials (default = 128 => 2 decks x 64 cards)
+/ csTotalBlocks = 2						//Maximum Number each category is tested (default = 2)
+/ correctStreakThreshold = 10			//Number of consecutive correct responses before a rule change (default = 10)
+/ setmaintainThreshold = 5				//Number of consecutive correct responses after which an incorrect response is scored as a "Failure to maintain Set" (default = 5)
+
+/ showDeckInfo = false					//if set to " true" information about the deck (e.g. 1 of 2) and card number (e.g. 7 of 64) 
+										//are displayed on the screen for the participant to see (default: false)
+
+// sizing parameters
+/ picSize = 30%							//size of cards determined by canvas height percentage (default:30%)
+</parameters>
+
+**************************************************************************************************************
+**************************************************************************************************************
+	EDITABLE STIMULI: change editable stimuli here
+**************************************************************************************************************
+**************************************************************************************************************
+
+************************
+Deck of Cards
+***********************
+
+<item playCards>
+/ 1 = "redtriangle1.gif"
+/ 2 = "redtriangle2.gif"
+/ 3 = "redtriangle3.gif"
+/ 4 = "redtriangle4.gif"
+/ 5 = "greentriangle1.gif"
+/ 6 = "greentriangle2.gif"
+/ 7 = "greentriangle3.gif"
+/ 8 = "greentriangle4.gif"
+/ 9 = "yellowtriangle1.gif"
+/ 10 = "yellowtriangle2.gif"
+/ 11 = "yellowtriangle3.gif"
+/ 12 = "yellowtriangle4.gif"
+/ 13 = "bluetriangle1.gif"
+/ 14 = "bluetriangle2.gif"
+/ 15 = "bluetriangle3.gif"
+/ 16 = "bluetriangle4.gif"
+/ 17 = "redstar1.gif"
+/ 18 = "redstar2.gif"
+/ 19 = "redstar3.gif"
+/ 20 = "redstar4.gif"
+/ 21 = "greenstar1.gif"
+/ 22 = "greenstar2.gif"
+/ 23 = "greenstar3.gif"
+/ 24 = "greenstar4.gif"
+/ 25 = "yellowstar1.gif"
+/ 26 = "yellowstar2.gif"
+/ 27 = "yellowstar3.gif"
+/ 28 = "yellowstar4.gif"
+/ 29 = "bluestar1.gif"
+/ 30 = "bluestar2.gif"
+/ 31 = "bluestar3.gif"
+/ 32 = "bluestar4.gif"
+/ 33 = "redcross1.gif"
+/ 34 = "redcross2.gif"
+/ 35 = "redcross3.gif"
+/ 36 = "redcross4.gif"
+/ 37 = "greencross1.gif"
+/ 38 = "greencross2.gif"
+/ 39 = "greencross3.gif"
+/ 40 = "greencross4.gif"
+/ 41 = "yellowcross1.gif"
+/ 42 = "yellowcross2.gif"
+/ 43 = "yellowcross3.gif"
+/ 44 = "yellowcross4.gif"
+/ 45 = "bluecross1.gif"
+/ 46 = "bluecross2.gif"
+/ 47 = "bluecross3.gif"
+/ 48 = "bluecross4.gif"
+/ 49 = "redcircle1.gif"
+/ 50 = "redcircle2.gif"
+/ 51 = "redcircle3.gif"
+/ 52 = "redcircle4.gif"
+/ 53 = "greencircle1.gif"
+/ 54 = "greencircle2.gif"
+/ 55 = "greencircle3.gif"
+/ 56 = "greencircle4.gif"
+/ 57 = "yellowcircle1.gif"
+/ 58 = "yellowcircle2.gif"
+/ 59 = "yellowcircle3.gif"
+/ 60 = "yellowcircle4.gif"
+/ 61 = "bluecircle1.gif"
+/ 62 = "bluecircle2.gif"
+/ 63 = "bluecircle3.gif"
+/ 64 = "bluecircle4.gif"
+</item>
+
+
+
+**************************************************************************************************************
+								!!!REMAINING CODE: Customize after careful consideration only!!!
+**************************************************************************************************************
+
+**************************************************************************************************************
+**************************************************************************************************************
+	DEFAULT SCREEN SETTING
+**************************************************************************************************************
+**************************************************************************************************************
+script requires Inquisit "7.0.8.0" or higher
+
+<defaults>
+/ canvasAspectRatio = (4,3)
+/ screenColor = white
+/ fontStyle = ("Arial", 2%, false, false, false, false, 5, 0)
+/ txBGColor = white
+/ txColor = black
+/ inputDevice = mouse
+/ minimumVersion = "7.0.8.0"
+</defaults>
+
+**************************************************************************************************************
+**************************************************************************************************************
+	DATA
+**************************************************************************************************************
+**************************************************************************************************************												
+NOTE: various summary scores are not updated on a trial- but rather on a block basis 
+(e.g. values.completedCategories).
+The last line in the data file provides the final data point for these measures.
+
+************************
+raw data
+************************
+
+<data> 
+/ columns = (build, computer.platform, computer.touch, computer.hasKeyboard, 
+date, time, subject, group, session, 
+blockCode, blockNum, trialCode, trialNum, 
+
+values.countColorBlocks, values.countFormBlocks, values.countNumberBlocks,
+values.colorTrialCount, values.formTrialCount, values.numberTrialCount, expressions.trialCount, values.category,
+values.card,
+stimulusitem, stimulusitem, stimulusitem, stimulusitem, stimulusitem,
+response, latency, values.responseCategory, values.ambiguous, correct, values.correctStreak, 
+values.totalCorrect, values.totalError,
+
+//duplicates raw data for scoring purposes
+values.scoringDeckCount,
+values.scoringTrialCount,
+values.scoringtrialCountPerCategory,
+values.scoringCategoryCount,
+values.scoringCategory,
+values.scoringCard,
+values.scoringResponse,
+values.scoringRespCategories,
+values.scoringAcc,
+values.scoringCorrectStreak,
+values.scoringAmbiguousResponse,
+values.scoringPerseverativeResponse,
+values.scoringpResponsePrinciple,
+values.scoringPerseverativeError,)
+</data>
+
+************************
+summary data
+************************
+
+<summaryData>
+/ columns = (inquisit.version, computer.platform, computer.touch, computer.hasKeyboard,
+ script.startDate, script.startTime, script.subjectId, script.groupId, script.sessionId, 
+script.elapsedTime, script.completed, 
+parameters.csTotalTrials, parameters.csTotalBlocks, parameters.correctStreakThreshold, parameters.setmaintainThreshold, 
+parameters.showDeckInfo,
+values.countColorBlocks, values.countFormBlocks, values.countNumberBlocks,					
+values.colorTrialCount, values.formTrialCount, values.numberTrialCount, expressions.trialCount,
+values.totalCorrect,  
+
+expressions.numberErrors,
+expressions.percentErrors,
+expressions.numberpResponses,
+expressions.percentpResponses,
+expressions.numberPErrors,
+expressions.percentPErrors,
+values.numberOtherErrors,
+expressions.percentOtherErrors,
+
+values.completedCategories, values.sumFailureMaintainSet, values.trialsCompleteFirstCategory,
+values.percentErrorC1, values.percentErrorF1, values.percentErrorN1,
+values.percentErrorC2, values.percentErrorF2, values.percentErrorN2,
+expressions.diffC1F1, expressions.diffF1N1, expressions.diffN1C2,
+expressions.diffC2F2, expressions.diffF2N2, values.learningToLearn,
+)
+</summaryData>
+
+**************************************************************************************************************
+**************************************************************************************************************
+	VALUES: automatically updated at runtime
+**************************************************************************************************************
+**************************************************************************************************************
+
+global Inquisit variables; accessible throughout the script (CAN be written to datafile directly)
+<values>
+/ phase = ""
+/ colorBlockCount = 0
+/ formBlockCount = 0
+/ numberBlockCount = 0
+/ correctStreak = 0
+/ colorTrialCount = 0
+/ formTrialCount = 0
+/ numberTrialCount = 0
+/ card = 0
+/ category = 0
+/ numberOfDecks = 1
+/ cardsFromADeck = 0
+/ errorSumBlock = 0
+/ percentErrorC1 = ""
+/ percentErrorC2 = ""
+/ percentErrorF1 = ""
+/ percentErrorF2 = ""
+/ percentErrorN1 = ""
+/ percentErrorN2 = ""
+/ totalCorrect = 0
+/ totalError = 0
+/ pResponse = 0
+/ responseCategory = ""
+/ sumFailureMaintainSet = 0
+/ trialsCompleteFirstCategory = 0
+/ completedCategories = 0
+/ ambiguous = 0
+/ countDiffScores = 0
+/ sumDiffScores = 0
+/ learningToLearn = 0
+/ countColorBlocks = 0
+/ countNumberBlocks = 0
+/ countFormBlocks = 0
+/ numberOtherErrors = "not analyzed yet"
+/ cardCode = ""
+
+/ debug1 = ""
+/ debug2 = ""
+
+//scoring variables:
+/ scoringDeckCount = ""
+/ scoringTrialCount = ""
+/ scoringtrialCountPerCategory = ""
+/ scoringCategoryCount = ""
+/ scoringCategory = ""
+/ scoringCard = ""
+/ scoringResponse = ""
+/ scoringRespCategories = ""
+/ scoringAcc = ""
+/ scoringCorrectStreak = ""
+/ scoringAmbiguousResponse = ""
+/ scoringPerseverativeResponse = ""
+/ scoringPerseverativeError = ""
+/ index = ""
+/ break = ""
+/ scoringpResponsePrinciple = ""
+/ trialData = ""
+</values>
+
+global Javascript variables; accessible throughout the script (but cannot written to datafile directly)
+<script>
+var trialData = [];
+</script>
+
+**************************************************************************************************************
+**************************************************************************************************************
+	EXPRESSIONS
+**************************************************************************************************************
+*************************************************************************************************************
+
+<expressions>
+/ trialCount = return (values.colorTrialCount + values.formTrialCount + values.numberTrialCount)
+/ tooManyTrials = return (values.colorTrialCount + values.formTrialCount + values.numberTrialCount == parameters.csTotalTrials)
+/ tooManyBlocks = return ((block.color.count == parameters.csTotalBlocks) && (block.form.count == parameters.csTotalBlocks) && (block.number.count == parameters.csTotalBlocks))
+</expressions>
+
+**************************************************************************************************************
+**************************************************************************************************************
+	SCORING
+**************************************************************************************************************
+**************************************************************************************************************
+\
+<script>
+function determineConsecutiveCorrectResponses() {
+
+	var category = "";
+	var prevCategory = "";
+	var acc = "";
+	var conACC = 0;
+	var blockCounts = 0;
+	var trialCountPerCategory = 0;
+	
+	for (var i=0; i<trialData.length;i++){
+		prevCategory = category;
+		category = trialData[i].category;
+		if (prevCategory != category){//for category changes, reset cumACC
+			conACC = 0;
+			blockCounts++;//a new block is started
+			trialCountPerCategory = 0; //this is the first trial in a new block;
+		}
+		trialCountPerCategory++;
+		
+		acc = trialData[i].acc;
+		if (acc){
+			conACC++;
+		} else {
+			conACC = 0;
+		}
+		
+		trialData[i].consecutiveAcc = conACC;
+		trialData[i].blockCount = blockCounts;
+		trialData[i].trialCountPerCategory = trialCountPerCategory;		
+	}//end of for loop
+	
+}//end of expression
+
+function determineAmbiguousResponses() {
+
+	var responseCategory = "";
+	var ambiguous = 0;
+	
+	for (var i=0; i<trialData.length;i++){
+		ambiguous = 0;
+		
+		responseCategory = trialData[i].respCategory;
+		if (responseCategory == "O"){
+			ambiguous = 1;
+		} else if (length(responseCategory) > 1){
+			ambiguous = 1;
+		}
+		trialData[i].ambiguousResponse = ambiguous;
+	}
+}
+
+function countOtherErrors(){
+	var resp = "";
+	var countO = 0;
+	
+	for(var i=0; i<trialData.length;i++){
+		if (trialData[i].respCategory == "O"){
+			countO++;
+		}
+	}
+	return (countO);
+}
+//////////////////////////////////////////////////////
+//PerserverativeResponses Re-scoring
+//////////////////////////////////////////////////////
+
+//the following helper array stores the counts for consecutive C,F,N errors during scoring of PerserverativeResponses
+var helperErrorCountsArray = [
+	{
+		category:"C",
+		counts:0
+	},
+	{
+		category:"F",
+		counts:0
+	},
+	{
+		category:"N",
+		counts:0
+	}
+]
+
+function determinePerserverativeResponses() {
+
+	var ambiguous = "";
+	var acc = "";
+	var responseCategory = "";
+	var category = "";
+	var previousCategory = "";
+	var pResponsePrinciple = "";
+	var pResponse = "";
+	var lastpResponseIndex = "";
+	var j = "";
+	
+	//reset counts for consecutive C,F,N errors
+	for (var m=0; m<3;m++){
+		helperErrorCountsArray[m].counts = 0;
+	}
+	
+	var ua_error_index1 = 0; //stores the index of the first unambiguous error
+	var ua_error_index2 = 0; //stores the index of the second unambiguous error
+	
+	for(var i=0; i<trialData.length;i++){
+		pResponse = 0;//default value of the pResponse (0 = no pResponse)
+		
+		//check if status of 'pResponse' needs to be changed:
+		//retrieve necessary data from the rawData lists:
+		acc = trialData[i].acc;
+		previousCategory = category;		
+		category = trialData[i].category;
+		ambiguous = trialData[i].ambiguousResponse;
+			
+		//check if this is the start of a new block:
+		if (trialData[i].trialCountPerCategory == 1){		
+
+			//reset counts for consecutive C,F,N errors
+			for (var m=0; m<3;m++){
+				helperErrorCountsArray[m].counts = 0;
+			}
+				
+			//reset indices that track unambiguous errors of the non-p error category
+			ua_error_index1 = -1;
+			ua_error_index2 = -1;
+			
+			//reset/determine pResponse for the new block
+			pResponsePrinciple = "";	
+			if (previousCategory == 1){
+				pResponsePrinciple = "C";
+			} else if (previousCategory == 2){
+				pResponsePrinciple = "F";
+			} else if (previousCategory == 3){
+				pResponsePrinciple = "N";
+			}
+			lastpResponseIndex = "";
+		}	
+		
+		if (!acc && trialData[i].respCategory != "O"){//ONLY for ERROR responses of C,F,N category (other errors and correct responses are not checked for pResponse status at this point - although they may be retroactively scored as a p-value later)
+			if (!ambiguous){//only for unambiguous error responses (ambiguous errors are not further checked for for pResponse status at this point - although they may be retroactively scored as a p-value later))
+				if (pResponsePrinciple == ""){//the pResponse-principle has not been set yet (should only be the case for first block)
+					pResponsePrinciple = trialData[i].respCategory;//set the pResponsePrinciple
+				
+					//update consecutive unambiguous pResponse categories in the helperErrorCountsArray
+					for (m = 0; m<3; m++){
+						if (pResponsePrinciple == helperErrorCountsArray[m].category){
+							helperErrorCountsArray[m].counts++;
+							ua_error_index1 = i;
+						} else {
+							helperErrorCountsArray[m].counts = 0;
+						}
+					}		
+				} else {//pResponse-principle has been previously set
+				
+					for (m = 0; m<3; m++){
+						if (trialData[i].respCategory == helperErrorCountsArray[m].category){//update unambiguous consecutive counts for the current error category
+							helperErrorCountsArray[m].counts++;
+							if (helperErrorCountsArray[m].counts == 1){
+								ua_error_index1 = i;
+							} else if (helperErrorCountsArray[m].counts == 2){
+								ua_error_index2 = i;
+							}
+						} else {
+							helperErrorCountsArray[m].counts=0;//reset unambiguous consecutive counts for the other two categories
+						}
+					}
+	
+
+					//check if pResponse-principle may need to change:
+					if (trialData[i].respCategory != pResponsePrinciple){//for all unambiguous errors that are NOT of the pResponse-principle
+						for (m = 0; m<3; m++){//check which helperErrorCountsArray category corresponds to the current error
+							if (trialData[i].respCategory == helperErrorCountsArray[m].category){
+								if (helperErrorCountsArray[m].counts == 3){//the last three consecutive unambiguous errors were error of the current responseCategory
+								//need to check the intermediate responses (between the first and third consecutive unambiguous error)
+									j = i - 1;
+									pResponse = 1;
+									while (j > ua_error_index1 && pResponse == 1){
+										pResponse = trialData[j].respCategory;
+										if (contains(pResponse,helperErrorCountsArray[m].category) || pResponse == "O" || trialData[j].acc){//'Other' errors and correct responses get ignored in checking previous errors
+											pResponse = 1;//'other' error/correct responses responses get temporarily classified as a p-response
+											j--;
+										} else {	
+											pResponse = 0;
+										}
+									}
+								
+									if (j == ua_error_index1){//responses btw. the third and the first pResponse all contain current responseCategory as a response
+										pResponsePrinciple = helperErrorCountsArray[m].category; //pResponse-principle changes!
+										helperErrorCountsArray[m].counts = 0;//reset the counts	
+										j = i-1;
+										while (j >= ua_error_index2){////retrospectively change the status of the previously errors to pResponses
+											if (contains(pResponse,pResponsePrinciple)){
+												trialData[j].pResponse = 1;
+											}
+											trialData[j].pResponsePrinciple = helperErrorCountsArray[m].category;											
+											j--;
+										}
+																														
+										pResponse = 1;//the item at index i is a pResponse
+										lastpResponseIndex = i;
+										
+										ua_error_index1 = -1;
+										ua_error_index2 = -1;																				
+									} else {
+										helperErrorCountsArray[m].counts--;//there was at least one case that did not conform to the possible 'new' pResponse
+										ua_error_index1 = ua_error_index2;
+										ua_error_index2 = i;
+									}
+								}
+							}												
+						}	
+					} else if (trialData[i].respCategory == pResponsePrinciple){	
+						if (lastpResponseIndex != ""){//check if a pResponse has already been found in this block
+							//now we need to check for sandwich pResponses:
+							j = i-1;
+							pResponse = 1;//yes,the current response is a pResponse
+						
+							while (j > lastpResponseIndex && pResponse==1){//same block, consecutive pResponse, index still larger lastpResponseIndex
+								pResponse = trialData[j].respCategory; 
+								if (contains(pResponse,pResponsePrinciple) || pResponse == "O" || trialData[j].acc){//other errors/correct responses get ignored
+									j--;
+									pResponse = 1;
+								} else {
+									pResponse = 0;
+								}		
+
+							}//once the while loop ends, compare index j to lastpResponseIndex
+							
+							if (j == lastpResponseIndex){//potential sandwich pResponses found!
+								j = i-1;
+								while (j > lastpResponseIndex){
+									if (contains(pResponse,pResponsePrinciple)){
+										trialData[j].pResponse = 1;//retrospectively change the status of the previously recorded pResponses
+									}									
+									j--;
+								}	
+							}
+						}												
+						pResponse = 1;//the item at index i is a pResponse
+						lastpResponseIndex = i;								
+					}
+				}
+			}
+		}		
+		trialData[i].pResponse = pResponse;
+		trialData[i].pResponsePrinciple = pResponsePrinciple;	
+		trialData[i].lastpResponseIndex = lastpResponseIndex;
+		trialData[i].conErrorCounts[0] = helperErrorCountsArray[0].counts;
+		trialData[i].conErrorCounts[1] = helperErrorCountsArray[1].counts;
+		trialData[i].conErrorCounts[2] = helperErrorCountsArray[2].counts;		
+		
+	}//end big for loop
+	
+}
+</script>
+
+<expressions>
+/ numberpResponses = {
+	if (trialData[0].pResponse == null){
+		return ("not analyzed yet")
+	} 
+	
+	var countpResponses = 0;
+	for (var i=0; i<trialData.length; i++){
+		countpResponses += trialData[i].pResponse;
+	}
+	return (countpResponses);
+}
+
+/ percentpResponses = {
+	if (trialData[0].pResponse == null){
+		return ("not analyzed yet")
+	}
+	return (expressions.numberpResponses/trialData.length)*100;	
+}
+
+/ numberPErrors = {
+	if (trialData.length == 0){
+		return ("not analyzed yet")
+	}
+	
+	var countErrors = 0;
+	for (var i=0; i<trialData.length; i++){
+		if (trialData[i].pError == 1){
+			countErrors += 1;			
+		}		
+	}
+	return (countErrors);			
+	
+}	
+
+/ percentPErrors = {
+	if (trialData.length == 0){
+		return ("not analyzed yet")
+	}
+	return (expressions.numberPErrors/trialData.length)*100;		
+	
+}
+/ numberErrors = {
+	if (trialData.length == 0){
+		return ("not analyzed yet")
+	}
+	
+	var countErrors = 0;
+	for (var i=0; i<trialData.length; i++){
+		if (trialData[i].acc == 0){
+			countErrors += 1;			
+		}		
+	}
+	return (countErrors);	
+}	
+
+/ percentErrors = {
+	if (trialData.length == 0){
+		return ("not analyzed yet")
+	}
+	return (expressions.numberErrors/trialData.length)*100;		
+}
+
+/ percentOtherErrors = if (values.numberOtherErrors != "not analyzed yet") {
+	return (values.numberOtherErrors/trialData.length);
+} else return "not analyzed yet";
+
+/ diffC1F1 = if (values.percentErrorF1 != ""){
+	return (values.percentErrorC1 - values.percentErrorF1);	
+} else {
+	return "NA";
+}
+
+/ diffF1N1 = if (values.percentErrorF1 != "" && values.percentErrorN1 != ""){
+		return (values.percentErrorF1 - values.percentErrorN1);	
+} else {
+	return "NA";
+}
+
+/ diffN1C2 = if (values.percentErrorN1 != "" && values.percentErrorC2 != ""){
+	return (values.percentErrorN1 - values.percentErrorC2);
+} else {
+	return "NA";
+}
+
+/ diffC2F2 = if (values.percentErrorC2 != "" && values.percentErrorF2 != ""){
+	return (values.percentErrorC2 - values.percentErrorF2);
+} else {
+	return "NA";
+}
+
+/ diffF2N2 = if (values.percentErrorF2 != "" && values.percentErrorN2 != ""){
+	return (values.percentErrorF2 - values.percentErrorN2);
+} else {
+	return "NA";
+}
+/ calculateLearningToLearn = {
+	if (expressions.diffF1N1 != "NA"){
+		values.sumDiffScores += expressions.diffF1N1;
+		values.countDiffScores++;
+	}	
+	if (expressions.diffN1C2 != "NA"){
+		values.sumDiffScores += expressions.diffN1C2;
+		values.countDiffScores++;
+	}	
+	if (expressions.diffC2F2 != "NA"){
+		values.sumDiffScores += expressions.diffC2F2;
+		values.countDiffScores++;
+	}
+	if (expressions.diffF2N2 != "NA"){
+		values.sumDiffScores += expressions.diffF2N2;
+		values.countDiffScores++;
+	}	
+	
+	if (values.countDiffScores > 0){
+		values.learningToLearn = values.sumDiffScores/values.countDiffScores;				
+	} else {
+		values.learningToLearn = "NA";
+	}
+}
+</expressions>
+
+<trial scoring>
+/ onTrialBegin = {
+	values.index++;
+		
+	values.scoringDeckCount = trialData[values.index].deckCount;
+	values.scoringTrialCount = trialData[values.index].trialCount;
+	values.scoringtrialCountPerCategory = trialData[values.index].trialCountPerCategory;
+	values.scoringCategoryCount = trialData[values.index].blockCount;
+	values.scoringCategory = trialData[values.index].category;
+	values.scoringCard = trialData[values.index].card;
+	values.scoringResponse = trialData[values.index].resp;
+	values.scoringRespCategories = trialData[values.index].respCategory;
+	values.scoringAcc = trialData[values.index].acc;
+	values.scoringCorrectStreak = trialData[values.index].consecutiveAcc;
+	values.scoringAmbiguousResponse = trialData[values.index].ambiguousResponse;
+	values.scoringPerseverativeResponse = trialData[values.index].pResponse;
+	values.scoringpResponsePrinciple = trialData[values.index].pResponsePrinciple;
+	values.scoringPerseverativeError = 0;
+	if (values.scoringAcc == 0 && values.scoringPerseverativeResponse == 1) {
+		values.scoringPerseverativeError = 1;
+	}
+	trialData[values.index].pError = values.scoringPerseverativeError;
+}
+/ trialDuration = 0
+/ recordData = true
+/ branch = {
+	if (values.index < trialData.length-1) {
+		return this;
+	} else {
+		return null;
+	}
+}
+</trial>
+
+**************************************************************************************************************
+**************************************************************************************************************
+	INSTRUCTIONS
+**************************************************************************************************************
+**************************************************************************************************************
+
+<text instructions>
+/ items = instructions
+/ select = sequence
+/ fontStyle = ("Arial", 2.5%, true, false, false, false, 5, 1)
+/ size = (80%, 80%)
+/ vJustify = center
+/ hJustify = left
+/ position = (50%, 50%)
+/ erase = false
+</text>
+
+<trial intro>
+/ stimulusFrames = [1=clearScreen, instructions, redTriangle1, greenStar2, yellowCross3, blueCircle4, header, start]
+/ validResponse = (start)
+</trial>
+
+<trial finish>
+/ stimulusFrames = [1 = clearScreen, finish]
+/ timeout = 1000
+/ recordData = false
+</trial>
+
+**************************************************************************************************************
+**************************************************************************************************************
+	STIMULI
+**************************************************************************************************************
+**************************************************************************************************************
+
+***********************
+Feedback
+***********************
+<text wrong>
+/ items = wrong
+/ select = 0
+/ color = red
+/ fontStyle = ("Arial", 5%, true, false, false, false, 5, 0)
+/ position = (50,50)
+</text>
+
+<text correctFeedback>
+/ items = correctFeedback
+/ select = 0
+/ color = (0, 255, 64)
+/ fontStyle = ("Arial", 5%, true, false, false, false, 5, 0)
+/ position = (50,50)
+</text>
+
+<picture playCard>
+/ items = playCards
+/ select = expressions.card
+/ position = (50%,30%)
+/ size = (parameters.picSize, parameters.picSize)
+</picture>
+<expressions>
+/ card = return (values.card - 1); //0-based selection
+</expressions>
+
+
+**********************
+Reponse Stimuli 
+**********************
+<picture redTriangle1>
+/ items = ("redtriangle1_test.gif")
+/ position = (20%,65%)
+/ size = (parameters.picSize, parameters.picSize)
+</picture>
+
+<picture greenStar2>
+/ items = ("greenstar2_test.gif")
+/ position = (40%,65%)
+/ size = (parameters.picSize, parameters.picSize)
+</picture>
+
+<picture yellowCross3>
+/ items = ("yellowcross3_test.gif")
+/ position = (60%,65%)
+/ size = (parameters.picSize, parameters.picSize)
+</picture>
+
+<picture blueCircle4>
+/ items = ("bluecircle4_test.gif")
+/ position = (80%,65%)
+/ size = (parameters.picSize, parameters.picSize)
+</picture>
+
+**************************************************************************************************************
+**************************************************************************************************************
+															LIST
+**************************************************************************************************************
+**************************************************************************************************************
+Note: selects a random number between 1-64 without replacement (is reset after 64 trials in 
+trial.selectcard). Each number references one of the 64 cards.
+
+<list selectCard>
+/ items = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
+41, 42, 43, 44, 45, 46, 47, 48, 49, 50,
+51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 
+61, 62, 63, 64)
+/ replace = false
+</list>
+
+**************************************************************************************************************
+**************************************************************************************************************
+	TRIALS
+**************************************************************************************************************
+**************************************************************************************************************
+
+<trial card>
+/ inputDevice = mouse
+/ beginResponseTime = 200
+/ correctMessage = true(correctFeedback, 400)
+/ errorMessage = true(wrong,400)
+/ onTrialBegin = {
+	values.pResponse = 0;
+	values.ambiguous = 1;//by default, a response is ambiguous until proven otherwise
+	values.cardsFromADeck++;
+
+	//check if list.selectCard has to be resetted to mimic deck#2
+	if ((values.colorTrialCount + values.formTrialCount + values.numberTrialCount) == 64) {
+		list.selectCard.reset();
+		values.numberOfDecks++;
+		values.cardsFromADeck = 1;
+	}
+	
+	//select next card:
+	values.card = list.selectCard.nextValue;
+	if (values.card == 1) {
+		values.cardCode = "redTriangle1";
+	} else if (values.card == 2) {
+		values.cardCode = "redTriangle2";
+	} else if (values.card == 3) {
+		values.cardCode = "redTriangle3";
+	} else if (values.card == 4) {
+		values.cardCode = "redTriangle4";
+	} else if (values.card == 5) {
+		values.cardCode = "greenTriangle1";
+	} else if (values.card == 6) {
+		values.cardCode = "greenTriangle2";
+	} else if (values.card == 7) {
+		values.cardCode = "greenTriangle3";
+	} else if (values.card == 8) {
+		values.cardCode = "greenTriangle4";
+	} else if (values.card == 9) {
+		values.cardCode = "yellowTriangle1";
+	} else if (values.card == 10) {
+		values.cardCode = "yellowTriangle2";
+	} else if (values.card == 11) {
+		values.cardCode = "yellowTriangle3";
+	} else if (values.card == 12) {
+		values.cardCode = "yellowTriangle4";
+	} else if (values.card == 13) {
+		values.cardCode = "blueTriangle1";
+	} else if (values.card == 14) {
+		values.cardCode = "blueTriangle2";
+	} else if (values.card == 15) {
+		values.cardCode = "blueTriangle3";
+	} else if (values.card == 16) {
+		values.cardCode = "blueTriangle4";
+	} else if (values.card == 17) {
+		values.cardCode = "redStar1";
+	} else if (values.card == 18) {
+		values.cardCode = "redStar2";
+	} else if (values.card == 19) {
+		values.cardCode = "redStar3";
+	} else if (values.card == 20) {
+		values.cardCode = "redStar4";
+	} else if (values.card == 21) {
+		values.cardCode = "greenStar1";
+	} else if (values.card == 22) {
+		values.cardCode = "greenStar2";
+	} else if (values.card == 23) {
+		values.cardCode = "greenStar3";
+	} else if (values.card == 24) {
+		values.cardCode = "greenStar4";
+	} else if (values.card == 25) {
+		values.cardCode = "yellowStar1";
+	} else if (values.card == 26) {
+		values.cardCode = "yellowStar2";
+	} else if (values.card == 27) {
+		values.cardCode = "yellowStar3";
+	} else if (values.card == 28) {
+		values.cardCode = "yellowStar4";
+	} else if (values.card == 29) {
+		values.cardCode = "blueStar1";
+	} else if (values.card == 30) {
+		values.cardCode = "blueStar2";
+	} else if (values.card == 31) {
+		values.cardCode = "blueStar3";
+	} else if (values.card == 32) {
+		values.cardCode = "blueStar4";
+	} else if (values.card == 33) {
+		values.cardCode = "redCross1";
+	} else if (values.card == 34) {
+		values.cardCode = "redCross2";
+	} else if (values.card == 35) {
+		values.cardCode = "redCross3";
+	} else if (values.card == 36) {
+		values.cardCode = "redCross4";
+	} else if (values.card == 37) {
+		values.cardCode = "greenCross1";
+	} else if (values.card == 38) {
+		values.cardCode = "greenCross2";
+	} else if (values.card == 39) {
+		values.cardCode = "greenCross3";
+	} else if (values.card == 40) {
+		values.cardCode = "greenCross4";
+	} else if (values.card == 41) {
+		values.cardCode = "yellowCross1";
+	} else if (values.card == 42) {
+		values.cardCode = "yellowCross2";
+	} else if (values.card == 43) {
+		values.cardCode = "yellowCross3";
+	} else if (values.card == 44) {
+		values.cardCode = "yellowCross4";
+	} else if (values.card == 45) {
+		values.cardCode = "blueCross1";
+	} else if (values.card == 46) {
+		values.cardCode = "blueCross2";
+	} else if (values.card == 47) {
+		values.cardCode = "blueCross3";
+	} else if (values.card == 48) {
+		values.cardCode = "blueCross4";
+	} else if (values.card == 49) {
+		values.cardCode = "redCircle1";
+	} else if (values.card == 50) {
+		values.cardCode = "redCircle2";
+	} else if (values.card == 51) {
+		values.cardCode = "redCircle3";
+	} else if (values.card == 52) {
+		values.cardCode = "redCircle4";
+	} else if (values.card == 53) {
+		values.cardCode = "greenCircle1";
+	} else if (values.card == 54) {
+		values.cardCode = "greenCircle2";
+	} else if (values.card == 55) {
+		values.cardCode = "greenCircle3";
+	} else if (values.card == 56) {
+		values.cardCode = "greenCircle4";
+	} else if (values.card == 57) {
+		values.cardCode = "yellowCircle1";
+	} else if (values.card == 58) {
+		values.cardCode = "yellowCircle2";
+	} else if (values.card == 59) {
+		values.cardCode = "yellowCircle3";
+	} else if (values.card == 60) {
+		values.cardCode = "yellowCircle4";
+	} else if (values.card == 61) {
+		values.cardCode = "blueCircle1";
+	} else if (values.card == 62) {
+		values.cardCode = "blueCircle2";
+	} else if (values.card == 63) {
+		values.cardCode = "blueCircle3";
+	} else if (values.card == 64) {
+		values.cardCode = "blueCircle4";
+	}
+	
+	//update trialCounts based on current category
+	if (values.category == 1) {
+		values.colorTrialCount++;
+	} else if (values.category == 2) {
+		values.formTrialCount++;
+	} else if (values.category == 3) {
+		values.numberTrialCount++;
+	}
+}
+/ stimulusFrames = [1=playCard, redTriangle1, greenStar2, yellowCross3, blueCircle4, deck]
+/ validResponse = (redTriangle1, greenStar2, yellowCross3, blueCircle4)
+/ isCorrectResponse = {
+	//determine the category letter of correct category:
+	var correctCat = ""
+	if (values.category == 1){
+		correctCat = "C";
+	} else if (values.category == 2){
+		correctCat = "F";
+	} else if (values.category == 3){
+		correctCat = "N";
+	}
+
+	//determine played card's color, form and number based on values.cardCode
+	var cardNumber = subString(values.cardCode, length(values.cardCode)-1,1);
+	var cardForm = "Cross";
+	if (contains(values.cardCode,"Circle")){
+		cardForm = "Circle";
+	} else if (contains(values.cardCode,"Triangle")){
+		cardForm = "Triangle";
+	} else if (contains(values.cardCode,"Star")){
+		cardForm = "Star";
+	}
+	var cardColor = "red";
+	if (contains(values.cardCode,"green")){
+		cardColor = "green";
+	} else if (contains(values.cardCode,"blue")){
+		cardColor = "blue";
+	} else if (contains(values.cardCode,"yellow")){
+		cardColor = "yellow";
+	}
+
+	//determine the response card's color, form and number based on the trialcode	
+	var respNumber = subString(this.response, length(this.response)-1,1);
+	var respForm = "Cross";
+	if (contains(this.response,"Circle")){
+		respForm = "Circle";
+	} else if (contains(this.response,"Triangle")){
+		respForm = "Triangle";
+	} else if (contains(this.response,"Star")){
+		respForm = "Star";
+	}
+	var respColor = "red";
+	if (contains(this.response,"green")){
+		respColor = "green";
+	} else if (contains(this.response,"blue")){
+		respColor = "blue";
+	} else if (contains(this.response,"yellow")){
+		respColor = "yellow";
+	}
+	
+	//determine the responseCategory:
+	values.responseCategory = "";
+	if (respColor == cardColor) {
+		values.responseCategory += "C";
+	}
+	if (respForm == cardForm) {
+		values.responseCategory += "F";
+	}
+	if (respNumber == cardNumber) {
+		values.responseCategory += "N";
+	}
+	
+	//if responseCategory is still empty at this point, the category is "O(ther)"
+	if (values.responseCategory == ""){
+		values.responseCategory = "O";
+	}
+	
+	//if the responseCategory contains the correct category, then it's a correct selection
+	if (contains(values.responseCategory,correctCat)){
+		return true;
+	} else {
+		return false;
+	}	
+}
+/ onTrialEnd = {	
+	//determine if response choice was unambiguous
+	if (length(values.responseCategory)==1){
+		values.ambiguous = 0;
+	}
+
+	//check for set maintaining error:
+	if (values.correctStreak >= parameters.setmaintainThreshold  && this.error) {
+		values.sumFailureMaintainSet++;
+	}
+	
+	//trial accuracy assessment
+	if (this.correct) {
+		values.correctStreak++;
+		values.totalCorrect++;
+	} else {
+		values.correctStreak = 0;
+		values.errorSumBlock++;
+		values.totalError++ ;
+	}
+
+	//store all data of the current trial in the raw data array:	
+	trialData.push({
+		deckCount: values.numberOfDecks,
+		trialCount: expressions.trialCount,
+		category: values.category,
+		card: values.cardCode,
+		respCategory: values.responseCategory,
+		acc: this.correct,
+		rt: this.latency,
+		resp: this.response,
+		//updated later:
+		ambiguousResponse: values.ambiguous,
+		consecutiveAcc: null,
+		blockCount: null,
+		trialCountPerCategory: null,
+		pResponse: null,
+		pResponsePrinciple: null,
+		pError: null,
+		lastpResponseIndex: null,
+		conErrorCounts:[0,0,0]
+	});
+	values.trialData = JSON.stringify(trialData);	
+}
+/ branch = {
+	return this;
+}
+</trial>
+
+**************************************************************************************************************
+**************************************************************************************************************
+	BLOCKS
+**************************************************************************************************************
+**************************************************************************************************************
+
+<script>
+function blockInit(categoryNumber, categoryLabel){//categoryLabel with capital letter (Example: Color)
+	values.correctStreak = 0;
+	values.errorSumBlock = 0;
+	values["count" + categoryLabel + "Blocks"]++;
+	var helperCategoryLabel = toLower(categoryLabel);
+	values[helperCategoryLabel + "BlockCount"]++
+	values.category = categoryNumber;	
+}
+
+function onBlockEnd(categoryLabel){//categoryLabel with capital letter (Example: Color)
+	if (categoryLabel == "Color"){
+		if (values.colorBlockCount == 1) {
+			values.trialsCompleteFirstCategory = values.colorTrialCount;
+		}		
+	}
+	
+	if (values.correctStreak == parameters.correctStreakThreshold) {
+		values.completedCategories++;
+	}
+
+	var categoryChar = subString(categoryLabel,0,1);	//Example: turns 'Color' into 'C'
+	var helperCategoryLabel = toLower(categoryLabel);
+	if (values[helperCategoryLabel + "BlockCount"] == 1) {
+		values["percentError" + categoryChar + "1"] = 100 * (values.errorSumBlock/trial.card.count);
+	} else {
+		values["percentError" + categoryChar + "2"] = 100*(values.errorSumBlock/trial.card.count);
+	}
+}
+</script>
+
+<block instructions>
+/ onBlockBegin = {
+	values.phase = "testing";
+}
+
+/ trials = [1 = intro]
+</block>
+
+<block color>
+/ skip = {
+	return (values.colorBlockCount >= parameters.csTotalBlocks)
+}
+/ stop = {
+	return (expressions.tooManyTrials || (values.correctStreak > 0 && mod(values.correctStreak, parameters.correctStreakThreshold)==0))
+}
+/ onBlockBegin = {
+	blockInit(1, "Color");
+}
+/ trials = [1 = card]
+/ onBlockEnd = {
+	onBlockEnd("Color");
+}
+/ branch = {
+	if (!expressions.tooManyTrials) return block.form; else return null;
+}
+</block>
+
+<block form>
+/ skip = {
+	return (values.formBlockCount >= parameters.csTotalBlocks)
+}
+/ stop = {
+	return (expressions.tooManyTrials || (values.correctStreak > 0 && mod(values.correctStreak, parameters.correctStreakThreshold)==0))
+}
+/ onBlockBegin = {
+	blockInit(2, "Form");
+}
+/ trials = [1 = card]
+/ onBlockEnd = {
+	onBlockEnd("Form");
+}
+/ branch = {
+	if (!expressions.tooManyTrials) return block.number; else return null;
+}
+</block>
+
+<block number>
+/ skip = {
+	return (values.numberBlockCount >= parameters.csTotalBlocks)
+}
+/ stop = {
+	return (expressions.tooManyTrials || (values.correctStreak > 0 && mod(values.correctStreak, parameters.correctStreakThreshold)==0))
+}
+/ onBlockBegin = {
+	blockInit(3, "Number");
+}
+/ trials = [1 = card]
+/ onBlockEnd = {
+	onBlockEnd("Number");
+}
+/ branch = {
+	if (!expressions.tooManyTrials && !expressions.tooManyBlocks) return block.color; else return null;
+}
+</block>
+
+<block rawDataScoring>
+/ onBlockBegin = {
+	values.category="";
+	values.responseCategory = "";
+	values.ambiguous = "";
+	values.correctStreak = "";
+	values.pResponse = "";
+	values.index = -1; //0-based indices; first values.index needs to be 0
+
+	determineConsecutiveCorrectResponses();
+	determineAmbiguousResponses();
+	determinePerserverativeResponses();
+	values.numberOtherErrors = countOtherErrors();
+}
+/ trials = [1 = scoring]
+/ onBlockEnd = {
+	values.trialData = JSON.stringify(trialData);
+}
+</block>
+
+**************************************************************************************************************
+**************************************************************************************************************
+	EXPERIMENT 
+**************************************************************************************************************
+**************************************************************************************************************
+
+<expt a>
+/ onExptBegin = {
+	if (!parameters.showDeckInfo) {
+		text.deck.skip = true;
+	}
+}
+/ blocks = [
+	1 = instructions;
+	2 = color; 
+	3 = rawDataScoring;	
+]
+</expt>
+
+****************************************************End of Script************************************************************

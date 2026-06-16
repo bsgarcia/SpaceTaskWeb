@@ -14,14 +14,24 @@ const RL_TRAINING_2 = 9
 const FULL = 11
 const FULL2 = 13 
 
+// Per-participant partial-reward condition, set via the ?partial_first=1 URL
+// param (e.g. from Prolific). Persisted to localStorage so it survives page
+// refreshes once the Prolific URL params are gone (same pattern as subID /
+// surveyOrder); the URL param only takes effect on the first load.
+const _storedPRFirst = localStorage.getItem('partialRewardFirst');
+const PARTIAL_REWARD_FIRST = _storedPRFirst !== null
+    ? _storedPRFirst === 'true'
+    : getURLParams('partial_first') === '1';
+if (_storedPRFirst === null) localStorage.setItem('partialRewardFirst', PARTIAL_REWARD_FIRST);
+
 // Whether the Perceptual Training (training2) phase uses the partial-reward
-// build (src/game/training2PR) instead of the standard one (src/game/training2)
-const TRAINING2_PARTIAL_REWARD = false;
+// build (src/game/training2PR) instead of the standard one (src/game/training2).
+// Tied to the same partial-first condition.
+const TRAINING2_PARTIAL_REWARD = PARTIAL_REWARD_FIRST;
 
 // Order of the two final games (FULL = game 4, FULL2 = game 5).
 // false (default): all_or_none first (FULL), then partial_reward (FULL2).
 // true: partial_reward first (FULL), then all_or_none (FULL2).
-const PARTIAL_REWARD_FIRST = false;
 
 // Survey/task battery phases
 const REI40 = 19; // Rational-Experiential Inventory (40-item)
