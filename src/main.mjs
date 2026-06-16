@@ -44,11 +44,12 @@ if (!_storedOrder) localStorage.setItem('surveyOrder', JSON.stringify(surveyOrde
 const surveyOrderNames = surveyOrder.map(n => BATTERY_NAMES[n]).join(',');
 
 // Returns the next phase after the survey that just completed:
-// the next survey in surveyOrder, or END once the battery is done.
-// TODO: route to WCST instead of END once WCST is implemented (Part 5).
+// the next survey in surveyOrder, or WCST (the card-sorting interstitial)
+// once the whole battery is done. WCST then links out to Millisecond and the
+// participant is brought back to the final page via the ?end=1 return URL.
 function nextInBattery(currentPhase) {
     const i = surveyOrder.indexOf(currentPhase);
-    return (i >= 0 && i < surveyOrder.length - 1) ? surveyOrder[i + 1] : END;
+    return (i >= 0 && i < surveyOrder.length - 1) ? surveyOrder[i + 1] : WCST;
 }
 
 // Returns the page-render function for a given battery phase constant.
@@ -151,6 +152,7 @@ function main() {
             'full':         FULL,
             'full2':        FULL2,
             'survey':       surveyOrder[0],
+            'wcst':         WCST,
             'end':          END,
         };
         Object.entries(stepMap).forEach(([id, num]) => {
@@ -270,7 +272,7 @@ const setSubID = () => {
 
 // ------------------------------ UI Managment ------------------------------ //
 const setPreviousStepDone = () => {
-    let steps = ['introduction', 'training1', 'training2', 'training3', 'full', 'full2', 'survey', 'final-survey', 'end'];
+    let steps = ['introduction', 'training1', 'training2', 'training3', 'full', 'full2', 'survey', 'wcst', 'end'];
     // get current step
     let currentStep = getCurrentStep();
     console.log(currentStep);
@@ -314,7 +316,7 @@ const setCurrentStep = (step) => {
 }
 // unset all steps
 const unsetAllSteps = () => {
-    let steps = ['introduction', 'training1', 'training2', 'training3', 'full', 'full2', 'survey', 'final-survey', 'end'];
+    let steps = ['introduction', 'training1', 'training2', 'training3', 'full', 'full2', 'survey', 'wcst', 'end'];
     steps.forEach((step) => {
         unsetStep(step);
     })
@@ -666,6 +668,8 @@ const setPageInstruction = async (instNum) => {
                 pageForBatteryPhase(instNum)();
                 break;
         }
+    } else if (instNum == WCST) {
+        wcstPage();
     } else if (instNum == END) {
         lastPage();
 
@@ -1263,6 +1267,44 @@ function bfi2sPage() {
         setPageInstruction(instNum);
     };
     currentAction = submitHandler;
+}
+
+// WCST (Wisconsin Card Sorting Test) interstitial page.
+// Links out to the Millisecond-hosted task, passing the Prolific ID as
+// ?subjectid=<id>. The task opens in a new tab; the participant is returned to
+// the final page via the ?end=1 return URL configured on the Millisecond side.
+function wcstPage() {
+    hideButton();
+    setCurrentStep('wcst');
+    document.querySelector('#game').style.display = 'none';
+    document.querySelector('#panel').style.display = 'flex';
+
+    const taskURL = `https://mili2nd.co/lbmc?subjectid=${encodeURIComponent(window.subID)}`;
+
+    document.querySelector('#panel').innerHTML = `
+        <div style="margin: auto; max-width: 650px; padding: 48px 32px; text-align: center;">
+            <h2 style="margin-bottom: 24px; margin-left: 10%;">Card Sorting Task</h2>
+
+            <p style="font-size: 1.05em; line-height: 1.8; margin-bottom: 16px;">
+                You've completed the surveys — well done!
+            </p>
+            <p style="font-size: 1.05em; line-height: 1.8; margin-bottom: 24px;">
+                Before finishing, please complete a short <b>Card Sorting Task</b>.<br>
+                If you feel cognitively tired, feel free to take a short break before starting it.
+            </p>
+
+            <a href="${taskURL}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+                <button style="font-size: 1.1em; padding: 16px 36px; border-radius: 50px; cursor: pointer;">
+                    Open Card Sorting Task &nbsp;&#8599;
+                </button>
+            </a>
+
+            <p style="font-size: 0.9em; margin-top: 36px; opacity: 0.7; line-height: 1.6;">
+                The task will open in a new tab.<br>
+                You will be automatically redirected back here when you are done.
+            </p>
+        </div>
+    `;
 }
 
 const lastPage = () => {

@@ -31,7 +31,15 @@
   <!-- load custom js -->
   <!-- <script src="./src/main.mjs" type="module" crossorigin="anonymous"></script> -->
   <!-- <script src="src/modules/utils.mjs" type="module" crossorigin="anonymous"></script> -->
-  <script src="dist/bundle.js" defer></script>
+  <script>
+    if (new URLSearchParams(window.location.search).get('reset') === '1') {
+      localStorage.clear();
+      var url = new URL(window.location.href);
+      url.searchParams.delete('reset');
+      window.location.replace(url.toString());
+    }
+  </script>
+  <script src="dist/bundle.js?v=1" defer></script>
 </head>
 
 <body class="dark">
@@ -132,19 +140,13 @@
       -->
 
 
-      <!-- Post-game survey step hidden -->
-      <div class="mdl-stepper-step" id="final-survey" style="display:none"></div>
-
-      <!-- Color-Shape Task step retired (CS_TASK no longer in flow)
-      <div class="mdl-stepper-step" id="cs-task">
+      <!-- WCST (Wisconsin Card Sorting Test) interstitial — links out to Millisecond -->
+      <div class="mdl-stepper-step" id="wcst">
         <div class="mdl-stepper-circle"><span>8</span></div>
-        <div class="mdl-stepper-title">color-shape task</div>
+        <div class="mdl-stepper-title">card sorting task</div>
         <div class="mdl-stepper-bar-left"></div>
         <div class="mdl-stepper-bar-right"></div>
       </div>
-      -->
-
-      <!-- TODO: add a "wcst" step here once WCST-64 (Part 5) is implemented -->
 
       <div class="mdl-stepper-step" id="end">
         <div class="mdl-stepper-circle"><span>8</span></div>

@@ -2,10 +2,11 @@ export const getInstructionPage = async (path) => {
   // add loading beer.css
   // document.querySelector('#panel').innerHTML = '<progress style="width:35%; margin: auto"></progress>';
   // read file 
-  const file = await fetch(path).then(r => r.text());
+  const bust = `?t=${Date.now()}`;
+  const file = await fetch(path + bust).then(r => r.text());
   // if there is the word video in it, use video html template
-  // 
-  let template = `<zero-md src="${path}">
+  //
+  let template = `<zero-md src="${path + bust}">
       <template data-merge="append">
         <link rel="stylesheet" href="lib/css/admonition.css">
         <style>
