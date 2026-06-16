@@ -143,17 +143,17 @@ function main() {
         document.getElementById('skip').style.display = '';
         document.getElementById('reload').style.display = '';
 
-        // Map stepper step IDs to instNums
+        // Map stepper step IDs to the instruction page just before that phase
         const stepMap = {
             'introduction': 0,
-            'training1':    RL_TRAINING_1,
-            'training2':    PERCEPTUAL_TRAINING,
-            'training3':    RL_TRAINING_2,
-            'full':         FULL,
-            'full2':        FULL2,
-            'survey':       surveyOrder[0],
-            'wcst':         WCST,
-            'end':          END,
+            'training1':    RL_TRAINING_1 - 1,
+            'training2':    PERCEPTUAL_TRAINING - 1,
+            'training3':    RL_TRAINING_2 - 1,
+            'full':         FULL - 1,
+            'full2':        FULL2 - 1,
+            'survey':       surveyOrder[0] - 1,
+            'wcst':         WCST - 1,
+            'end':          END - 1,
         };
         Object.entries(stepMap).forEach(([id, num]) => {
             const el = document.getElementById(id);
