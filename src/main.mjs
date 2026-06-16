@@ -151,9 +151,13 @@ function main() {
             'training3':    RL_TRAINING_2 - 1,
             'full':         FULL - 1,
             'full2':        FULL2 - 1,
-            'survey':       surveyOrder[0] - 1,
-            'wcst':         WCST - 1,
-            'end':          END - 1,
+            // Survey/WCST/end phases have no preceding instruction page (the
+            // surveys are contiguous, 19-22), so jump straight to the phase
+            // itself rather than PHASE - 1 (which would land on the previous
+            // survey and start the battery partway through).
+            'survey':       surveyOrder[0],
+            'wcst':         WCST,
+            'end':          END,
         };
         Object.entries(stepMap).forEach(([id, num]) => {
             const el = document.getElementById(id);
