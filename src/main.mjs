@@ -1516,7 +1516,11 @@ window.endTrainingRL = (sess) => {
 }
 
 window.endFull = (sess) => {
-    if (sess == 3) {
+    // Decide based on which slot just finished (FULL = game 4 vs FULL2 = game 5),
+    // NOT on `sess`: the session number is baked into each Unity build per game
+    // (all_or_none vs partial_reward), so when PARTIAL_REWARD_FIRST swaps the
+    // order the first game would report "I'm last" and skip the second game.
+    if (instNum == FULL) {
         // After game 4 (FULL), show instruction page before game 5 (FULL2)
         quitUnityGame();
         localStorage.setItem('score', JSON.stringify(window.score));
